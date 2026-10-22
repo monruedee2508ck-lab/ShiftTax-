@@ -549,6 +549,9 @@ h1,h2,h3{font-weight:500}
 .donate-bar{margin-top:10px;background:linear-gradient(135deg,var(--coral-soft),#FFF6E0)!important;border-color:var(--coral)!important}.dn-ic{width:38px;height:38px;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:22px;flex:0 0 auto}
 .dn-sheet{gap:12px;max-width:420px}.dn-qr{background:#fff;border-radius:18px;padding:12px;border:1px solid var(--line);display:flex;justify-content:center}.dn-qr img{width:min(100%,300px);height:auto;image-rendering:auto}
 .dn-info{display:flex;flex-direction:column;gap:4px;font-size:14px}.dn-info div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 2px}.dn-info span{color:var(--muted)}
+.lagbox{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--field)}.lag-h{font-weight:600;font-size:14px}
+.lag-row{display:grid!important;grid-template-columns:minmax(0,1fr) 150px;gap:8px;align-items:center;font-size:13.5px}.lag-pre{display:flex;flex-wrap:wrap;gap:6px}.lag-pre .tbtn{white-space:normal;text-align:left}
+.stat small{display:block;font-size:11px;margin-top:2px}
 </style>
 
 <div class="wrap">
@@ -673,7 +676,7 @@ function normMonth(d){const m=Object.assign(emptyMonth(),d?clone(d):{});m.shifts
 const whMonth=mo=>mo.whSet?num(mo.withheld):(num(mo.withheld)||num(S.whDefault));
 const otVal=x=>x.mode==='hr'?num(x.hrs)*num(x.rate):num(x.amt);
 const otList=(mo,d)=>Array.isArray((mo.ot||{})[d])?mo.ot[d]:[];
-function normSettings(d){d=d?clone(d):null;const s=Object.assign(clone(DEFAULTS),d||{});if(!Array.isArray(s.shiftTypes)||!s.shiftTypes.length)s.shiftTypes=clone(DEFAULTS.shiftTypes);if(!Array.isArray(s.allowances))s.allowances=[];if(!Array.isArray(s.deductions))s.deductions=[];if(!s.shareOpt||typeof s.shareOpt!=='object')s.shareOpt={};s.shareOpt=Object.assign({name:true,avatar:false,ot:true,sum:true,income:false,theme:'cream'},s.shareOpt);if(!s.cneu||typeof s.cneu!=='object')s.cneu={};if(!Array.isArray(s.cneu.list))s.cneu.list=[];if(!s.cneu.req)s.cneu.req=50;if(!s.nw||typeof s.nw!=='object')s.nw={};if(!Array.isArray(s.nw.assets))s.nw.assets=[];if(!Array.isArray(s.nw.debts))s.nw.debts=[];if(!Array.isArray(s.catsCustom))s.catsCustom=[];if(!Array.isArray(s.catsHidden))s.catsHidden=[];if(!Array.isArray(s.combos))s.combos=[];if(!d||!d.combosCleared){s.combos=s.combos.filter(cb=>!['N,E','M,E','N,M'].includes((cb||[]).join(',')));s.combosCleared=true}if(!d||!d.timesAdded){for(const t of s.shiftTypes){const df=DEFAULTS.shiftTypes.find(x=>x.id===t.id);if(t.start==null)t.start=df?df.start||'':'';if(t.end==null)t.end=df?df.end||'':''}s.timesAdded=true}if(!d||!d.vacAdded){if(!s.shiftTypes.some(t=>t.id==='V'))s.shiftTypes.push({id:'V',code:'VAC',name:'พักร้อน (Vacation)',hours:0,color:7,wd:0,hd:0,tax:'401',work:false});s.vacAdded=true}if(!d||!d.mtAdded){for(const x of [{id:'MT',code:'ปช',name:'ประชุม',color:1},{id:'TR',code:'อบ',name:'อบรม',color:3}])if(!s.shiftTypes.some(t=>t.id===x.id))s.shiftTypes.push(Object.assign({start:'',end:'',hours:0,wd:0,hd:0,tax:'401',work:false},x));s.mtAdded=true}s.tax=s.tax||{};return s}
+function normSettings(d){d=d?clone(d):null;const s=Object.assign(clone(DEFAULTS),d||{});if(!Array.isArray(s.shiftTypes)||!s.shiftTypes.length)s.shiftTypes=clone(DEFAULTS.shiftTypes);if(!Array.isArray(s.allowances))s.allowances=[];if(!s.payLag||typeof s.payLag!=='object')s.payLag={};if(!Array.isArray(s.deductions))s.deductions=[];if(!s.shareOpt||typeof s.shareOpt!=='object')s.shareOpt={};s.shareOpt=Object.assign({name:true,avatar:false,ot:true,sum:true,income:false,theme:'cream'},s.shareOpt);if(!s.cneu||typeof s.cneu!=='object')s.cneu={};if(!Array.isArray(s.cneu.list))s.cneu.list=[];if(!s.cneu.req)s.cneu.req=50;if(!s.nw||typeof s.nw!=='object')s.nw={};if(!Array.isArray(s.nw.assets))s.nw.assets=[];if(!Array.isArray(s.nw.debts))s.nw.debts=[];if(!Array.isArray(s.catsCustom))s.catsCustom=[];if(!Array.isArray(s.catsHidden))s.catsHidden=[];if(!Array.isArray(s.combos))s.combos=[];if(!d||!d.combosCleared){s.combos=s.combos.filter(cb=>!['N,E','M,E','N,M'].includes((cb||[]).join(',')));s.combosCleared=true}if(!d||!d.timesAdded){for(const t of s.shiftTypes){const df=DEFAULTS.shiftTypes.find(x=>x.id===t.id);if(t.start==null)t.start=df?df.start||'':'';if(t.end==null)t.end=df?df.end||'':''}s.timesAdded=true}if(!d||!d.vacAdded){if(!s.shiftTypes.some(t=>t.id==='V'))s.shiftTypes.push({id:'V',code:'VAC',name:'พักร้อน (Vacation)',hours:0,color:7,wd:0,hd:0,tax:'401',work:false});s.vacAdded=true}if(!d||!d.mtAdded){for(const x of [{id:'MT',code:'ปช',name:'ประชุม',color:1},{id:'TR',code:'อบ',name:'อบรม',color:3}])if(!s.shiftTypes.some(t=>t.id===x.id))s.shiftTypes.push(Object.assign({start:'',end:'',hours:0,wd:0,hd:0,tax:'401',work:false},x));s.mtAdded=true}s.tax=s.tax||{};return s}
 
 /* ---------- state ---------- */
 const now=new Date();
@@ -728,7 +731,7 @@ function pvdRefresh(pct,sal){document.querySelectorAll('.pvd-calc').forEach(e=>e
 function defRate(t,hol,ot){return ot&&t.otr!=null&&t.otr!==''?num(t.otr):num(hol?t.hd:t.wd)}
 function shiftRate(mo,d,t,hol){const o=(mo.pay||{})[d];return o&&o[t.id]!=null&&o[t.id]!==''?num(o[t.id]):defRate(t,hol,isOTs(mo,d,t.id))}
 function isHol(y,m,d,mo){const wd=new Date(y,m-1,d).getDay();return wd===0||wd===6||!!(mo.hol||{})[pad(d)]}
-function monthCalc(key){
+function earnCalc(key){
   const mo=getM(key,false);const [y,m]=key.split('-').map(Number);
   let otShiftN=0,s401=0,s402=0,hours=0,workDays=0,doubles=0,ot=0,otIn=0,otOut=0,otHrs=0;const counts={};
   for(const d in mo.ot){for(const x of otList(mo,d)){const v=otVal(x);ot+=v;if(x.tax==='402'){s402+=v;otOut+=v}else{s401+=v;otIn+=v}if(x.mode==='hr'){otHrs+=num(x.hrs);hours+=num(x.hrs)}}}
@@ -752,6 +755,25 @@ function monthCalc(key){
   return {fixDed,key,y,m,mo,otShiftN,salary,allow,s401,s402,shift,ot,otIn,otOut,otHrs,hours,workDays,doubles,counts,x401,x402,xNone,whE,withheld,exp,byCat,byGroup,inGroup,ded,sso,pvd,gross,net,left:net-exp,
     hasShift:Object.keys(mo.shifts).some(d=>(mo.shifts[d]||[]).length)};
 }
+const PAY_ITEMS=[['salary','เงินเดือน'],['allow','เงินเพิ่มประจำ (พ.ต.ส. / ค่าใบประกอบวิชาชีพ ฯลฯ)'],['shift','ค่าเวร'],['ot','OT / งานนอก']];
+const LAG_LAB=['เดือนเดียวกับที่ทำงาน','เดือนถัดไป','อีก 2 เดือน'];
+function lagPreset(){const L=PAY_ITEMS.map(([k])=>payLag(k));if(L.every(x=>x===0))return '0';if(L.every(x=>x===1))return 'all';if(!L[0]&&!L[1]&&L[2]===1&&L[3]===1)return 'shift';return ''}
+function payLag(k){return Math.max(0,Math.min(2,Math.round(num((S.payLag||{})[k]))))}
+function anyLag(){return PAY_ITEMS.some(([k])=>payLag(k))}
+function keyShift(key,n){let [y,m]=key.split('-').map(Number);m-=n;while(m<1){m+=12;y--}while(m>12){m-=12;y++}return mkey(y,m)}
+const mShort=key=>{const [y,m]=key.split('-').map(Number);return TH_MS[m-1]}
+function srcTag(c,k){const L=payLag(k);return L?` <span class="tag">ของเดือน${mShort(keyShift(c.key,L))}</span>`:''}
+function monthCalc(key){const e=earnCalc(key);e.earn=e;if(!anyLag())return e;
+  const src=k=>payLag(k)?earnCalc(keyShift(key,payLag(k))):e;
+  const sS=src('salary'),sA=src('allow'),sR=src('shift'),sO=src('ot');
+  const c=Object.assign({},e);
+  c.salary=sS.salary;c.allow=sA.allow;
+  c.otIn=sO.otIn;c.otOut=sO.otOut;c.ot=sO.ot;c.otHrs=sO.otHrs;c.otShiftN=sO.otShiftN;
+  c.s401=(sR.s401-sR.otIn)+sO.otIn;c.s402=(sR.s402-sR.otOut)+sO.otOut;c.shift=c.s401+c.s402;
+  c.sso=S.sso?Math.round(0.05*Math.min(Math.max(c.salary,SSO_MIN_WAGE),SSO_CAP_WAGE)):0;
+  c.pvd=Math.round(c.salary*num(S.pvdPct)/100);
+  c.gross=c.salary+c.allow+c.shift+e.x401+e.x402+e.xNone;c.net=c.gross-c.sso-c.pvd-e.withheld-e.fixDed;c.left=c.net-e.exp;
+  c.hasShift=sR.hasShift||sO.hasShift;c.earn=e;c.lagged=true;return c}
 function progressive(net){let tax=0,marg=0;const rows=BRACKETS.map(([lo,hi,r])=>{const amt=Math.max(0,Math.min(net,hi)-lo);const t=amt*r;tax+=t;if(amt>0)marg=r;return{lo,hi,r,amt,t}});return{tax,rows,marg}}
 function taxCalc(y,extra){
   extra=extra||{};const T=taxP(y);const mons=[];for(let m=1;m<=12;m++)mons.push(monthCalc(mkey(y,m)));
@@ -835,8 +857,8 @@ function vRoster(){
     <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 class="h-ico"><img src="${IMG.calendar}" alt="">ตารางเวร</h2>
       <div class="rtools"><button class="tbtn" data-act="share-open" aria-label="แชร์ตารางเวร">แชร์</button><button class="tbtn ${showSum?'on':''}" data-act="rtog" data-k="rsum" aria-expanded="${showSum}">สรุป ${showSum?'▴':'▾'}</button><button class="tbtn ${showPal?'on':''}" data-act="rtog" data-k="rpal" aria-expanded="${showPal}">ลงหลายวัน ${showPal?'▴':'▾'}</button></div></div>${(()=>{const cc=cneuCalc();const pc=Math.min(100,Math.round(cc.got/cc.req*100));return `<button class="cneu-bar ${cc.lvl}" data-act="cneu-open"><span>🎓 CNEU</span><span class="pbar"><i style="width:${pc}%"></i></span><b class="num">${fmt(cc.got)}/${cc.req}</b><small>${cc.got>=cc.req?'ครบแล้ว':cc.exp&&cc.mLeft>0?'อีก '+cc.mLeft+' เดือน':'หน่วย'}</small><span class="chev">›</span></button>`})()}
     ${showSum?`<div class="stats stats4">
-    <div class="stat t-mint"><span class="si"><img src="${IMG.income}" alt="">ค่าเวร</span><b>${baht(c.shift-c.ot)}</b></div>
-    <div class="stat t-yel"><span class="si"><img src="${IMG.ot}" alt="">OT / งานนอก</span><b>${baht(c.ot)}</b></div>
+    <div class="stat t-mint"><span class="si"><img src="${IMG.income}" alt="">ค่าเวร</span><b>${baht(c.earn.shift-c.earn.ot)}</b>${payLag('shift')?`<small class="muted">ได้รับเดือน${mShort(keyShift(key,-payLag('shift')))}</small>`:''}</div>
+    <div class="stat t-yel"><span class="si"><img src="${IMG.ot}" alt="">OT / งานนอก</span><b>${baht(c.earn.ot)}</b>${payLag('ot')?`<small class="muted">ได้รับเดือน${mShort(keyShift(key,-payLag('ot')))}</small>`:''}</div>
     <div class="stat t-lav"><span class="si"><img src="${IMG.money}" alt="">ชั่วโมงทำงาน</span><b>${fmt(c.hours)} ชม.</b></div>
     <div class="stat t-pink"><span class="si"><img src="${IMG.calendar}" alt="">วันควบเวร</span><b>${c.doubles} วัน</b></div>
   </div>`:''}
@@ -1140,6 +1162,9 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     body=`<h2>ค่าเวรและ OT ⏰</h2><p class="muted">ขั้นที่ 3/4 · ใส่อัตราต่อเวร แอปจะคิดเงินให้ทุกครั้งที่ลงตารางเวร</p>
     <div class="onb-rates r2"><div class="hd"><span>เวร</span><span>ค่าเวร (บาท)</span><span>OT (บาท)</span></div>
     ${W.map(t=>`<div class="rr"><span class="chip k${t.color}">${esc(t.code)}</span><input class="num" data-st="wd" data-sync="hd" data-id="${t.id}" inputmode="decimal" value="${t.wd||''}" placeholder="0" aria-label="${esc(t.name)} ค่าเวร"><input class="num" data-st="otr" data-id="${t.id}" inputmode="decimal" value="${t.otr===''||t.otr==null?'':t.otr}" placeholder="เท่าปกติ" aria-label="${esc(t.name)} OT"></div>`).join('')}</div>
+ <div class="lagbox"><div class="lag-h">โรงพยาบาลโอนเงินให้เดือนไหน?</div>
+    <div class="lag-pre">${[['0','จ่ายเดือนเดียวกับที่ทำงาน'],['shift','ค่าเวร + OT ได้เดือนถัดไป'],['all','ทุกอย่างได้เดือนถัดไป']].map(([v,l])=>`<button class="tbtn ${lagPreset()===v?'on':''}" data-act="lag-preset" data-v="${v}">${l}</button>`).join('')}</div>
+    <p class="small muted" style="margin:0">ทุกอย่าง = เงินเดือน พ.ต.ส. ค่าใบประกอบฯ ค่าเวร และ OT · ตั้งแยกทีละรายการได้ที่ ตั้งค่า › เงินเดือนและรายการหัก</p></div>
     <label>OT / งานนอกแบบรายชั่วโมง (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
     <p class="small muted" style="margin:0">ช่อง OT ว่างไว้ = ใช้อัตราเดียวกับค่าเวร · วันหยุดคิดอัตราเดียวกัน ถ้าโรงพยาบาลจ่ายวันหยุดต่างกัน ตั้งเพิ่มได้ที่ ตั้งค่า › ประเภทเวร เวลา และอัตราค่าเวร</p>
     <div class="row onb-nav"><button class="btn" data-act="onb-back">‹ ย้อนกลับ</button><button class="wl-next grow" data-act="onb-done">ถัดไป ›</button></div>`}
@@ -1173,9 +1198,10 @@ function fitOnb(){const w=document.querySelector('#onb .onb-wrap.wl');if(!w)retu
   let hh=Math.min(want,vh-ch-pad*2);if(hero){if(hh<90){top.style.display='none';hh=0}else hero.style.height=hh+'px'}
   card.style.maxHeight=(vh-hh-pad*2+(hh?2:0))+'px'}
 window.addEventListener('resize',()=>{clearTimeout(fitOnb._t);fitOnb._t=setTimeout(fitOnb,80)});
+function onbPut(el,html){const k=(UI.lock?'L':'O')+String(UI.onb)+(UI.pin?UI.pin.mode:'');if(el.dataset.k===k&&el.firstElementChild)html=html.replace(/ pop"/g,'"');el.dataset.k=k;el.innerHTML=html;fitOnb()}
 function renderOnb(){const el=$('#onb');if(!el)return;
-  if(UI.lock){el.innerHTML=lockHtml();fitOnb();return}
-  if(!UI.onb){el.innerHTML='';return}el.innerHTML=onbHtml();fitOnb();
+  if(UI.lock){onbPut(el,lockHtml());return}
+  if(!UI.onb){el.innerHTML='';el.dataset.k='';return}onbPut(el,onbHtml());
   if(UI.onb===1)setTimeout(()=>{const n=$('#onb-name');if(n&&!n.value)n.focus()},50)}
 async function pinHash(pin,salt){const str=salt+':'+pin+':shifttax';
   try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
@@ -1341,9 +1367,10 @@ function exDetail(c){
   `}
 function inDetail(c){return `
     <div class="lines">
-      <div class="line"><span class="l">เงินเดือน + เงินเพิ่มประจำ <span class="tag">อัตโนมัติ</span></span><span class="v num">${fmt(c.salary+c.allow)}</span></div>
-      <div class="line"><span class="l">ค่าเวร <span class="tag">อัตโนมัติ</span></span><span class="v num">${fmt(c.shift-c.ot)}</span></div>
-      <div class="line"><span class="l">OT / งานนอก <span class="tag">อัตโนมัติ</span></span><span class="v num">${fmt(c.ot)}</span></div>
+      <div class="line"><span class="l">เงินเดือน${srcTag(c,'salary')} <span class="tag">อัตโนมัติ</span></span><span class="v num">${fmt(c.salary)}</span></div>
+      <div class="line"><span class="l">เงินเพิ่มประจำ${srcTag(c,'allow')} <span class="tag">อัตโนมัติ</span></span><span class="v num">${fmt(c.allow)}</span></div>
+      <div class="line"><span class="l">ค่าเวร${srcTag(c,'shift')} <span class="tag">อัตโนมัติ</span></span><span class="v num">${fmt(c.shift-c.ot)}</span></div>
+      <div class="line"><span class="l">OT / งานนอก${srcTag(c,'ot')} <span class="tag">อัตโนมัติ</span></span><span class="v num">${fmt(c.ot)}</span></div>
       ${GROUPS.in.map(([g,gl])=>`<div class="line"><span class="l">${gl}</span><span class="v num">${fmt(c.inGroup[g]||0)}</span></div>`).join('')}
       <div class="line total"><span class="l">รวม</span><span class="v num">${fmt(c.gross)}</span></div>
     </div>
@@ -1372,7 +1399,7 @@ function detailSheet(){const c=monthCalc(mkey(UI.y,UI.m));const isEx=UI.dsheet==
 function shareText(){const key=mkey(UI.y,UI.m);const mo=getM(key,false);const dim=new Date(UI.y,UI.m,0).getDate();const O=S.shareOpt;const lines=[`ตารางเวร${O.name&&S.userName?'ของ '+S.userName+' ':''}เดือน${TH_M[UI.m-1]} ${UI.y+543}`];
   for(let d=1;d<=dim;d++){const dd=pad(d);const arr=mo.shifts[dd]||[];if(!arr.length)continue;const wd=new Date(UI.y,UI.m-1,d).getDay();
     lines.push(`${d} (${TH_D[wd]}) ${arr.map(id=>{const t=typeById(id);return t?t.code+(O.ot&&t.work&&isOTs(mo,dd,id)?' OT':''):''}).filter(Boolean).join(' + ')}`)}
-  if(lines.length===1)lines.push('ยังไม่มีเวรเดือนนี้');{const c=monthCalc(key);if(O.sum)lines.push(`รวม ทำงาน ${c.workDays} วัน · ${fmt(Math.round(c.hours))} ชม.`);if(O.income)lines.push(`ค่าเวร + OT ฿${fmt(c.shift)}`)}lines.push('— จาก ShiftTax ♡');return lines.join('\n')}
+  if(lines.length===1)lines.push('ยังไม่มีเวรเดือนนี้');{const c=monthCalc(key);if(O.sum)lines.push(`รวม ทำงาน ${c.workDays} วัน · ${fmt(Math.round(c.hours))} ชม.`);if(O.income)lines.push(`ค่าเวร + OT ฿${fmt(c.earn.shift)}`)}lines.push('— จาก ShiftTax ♡');return lines.join('\n')}
 const loadImg=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=src});
 async function rosterCanvas(){
   const key=mkey(UI.y,UI.m);const mo=getM(key,false);const c=monthCalc(key);
@@ -1412,7 +1439,7 @@ async function rosterCanvas(){
   if(!used.length){g.fillStyle=TH.mute;g.font=`400 26px ${FB}`;g.fillText('ยังไม่มีเวรเดือนนี้',P,ly+30)}
   let sy=ly+legRows*58+14;const pill=(txt,clr)=>{rr(P,sy,W-P*2,52,16);g.fillStyle=TH.cell;g.fill();g.lineWidth=2;g.strokeStyle=TH.line;g.stroke();g.fillStyle=clr||TH.ink;g.font=`600 26px ${FB}`;g.textAlign='center';g.fillText(txt,W/2,sy+35);g.textAlign='left';sy+=64};
   if(O.sum){const otN=O.ot?c.otShiftN:0;pill(`ทำงาน ${c.workDays} วัน · ${fmt(Math.round(c.hours))} ชม.${otN?` · OT ${otN} เวร`:''}${c.doubles?` · ควบ ${c.doubles} วัน`:''}`)}
-  if(O.income)pill(`ค่าเวร + OT เดือนนี้ ฿${fmt(c.shift)}`,TH.title);
+  if(O.income)pill(`ค่าเวร + OT เดือนนี้ ฿${fmt(c.earn.shift)}`,TH.title);
   g.textAlign='center';g.fillStyle=TH.mute;g.globalAlpha=.75;g.font=`400 22px ${FB}`;g.fillText('ShiftTax · Your Shifts. Your Income. Your Balance.',W/2,H-28);g.globalAlpha=1;
   return cv}
 const SHARE_TH={cream:{n:'ครีมพาสเทล',bg:'#fbf7f0',cell:'#ffffff',line:'#ece3d7',ink:'#3d3a36',mute:'#8a8178',title:'#2f8f72',we:'#d9607a',hol:'#fff4f6'},
@@ -1512,12 +1539,12 @@ function vSlip(){
   const rate=c.net>0?Math.round((c.left+c.byGroup.save)/c.net*100):0;
   return `${monthSwitch()}${donutCard(c)}
   <section class="card">
-    <div class="h-ico"><img src="${IMG.slip}" alt=""><div><div class="eyebrow">สลิปประมาณการ</div><h2>รายได้เดือน${TH_M[UI.m-1]} ${UI.y+543}</h2></div></div>
+    <div class="h-ico"><img src="${IMG.slip}" alt=""><div><div class="eyebrow">สลิปประมาณการ${c.lagged?' · ยอดที่ได้รับจริงเดือนนี้':''}</div><h2>รายได้เดือน${TH_M[UI.m-1]} ${UI.y+543}</h2></div></div>
     <div class="lines">
-      <div class="line"><span class="l">เงินเดือน</span><span class="v num">${fmt(c.salary)}</span></div>
-      ${S.allowances.map(a=>`<div class="line"><span class="l">${esc(a.name)}</span><span class="v num">${fmt(a.amount)}</span></div>`).join('')}
-      <div class="line"><span class="l">ค่าเวร (${c.workDays} วันทำงาน)</span><span class="v num">${fmt(c.shift-c.ot)}</span></div>
-      ${c.ot?`<div class="line"><span class="l">OT / งานนอก</span><span class="v num">${fmt(c.ot)}</span></div>`:''}
+      <div class="line"><span class="l">เงินเดือน${srcTag(c,'salary')}</span><span class="v num">${fmt(c.salary)}</span></div>
+      ${S.allowances.map(a=>`<div class="line"><span class="l">${esc(a.name)}${srcTag(c,'allow')}</span><span class="v num">${fmt(a.amount)}</span></div>`).join('')}
+      <div class="line"><span class="l">ค่าเวร${payLag('shift')?srcTag(c,'shift'):` (${c.workDays} วันทำงาน)`}</span><span class="v num">${fmt(c.shift-c.ot)}</span></div>
+      ${c.ot?`<div class="line"><span class="l">OT / งานนอก${srcTag(c,'ot')}</span><span class="v num">${fmt(c.ot)}</span></div>`:''}
       ${c.x401+c.x402+c.xNone?`<div class="line"><span class="l">รายรับอื่นที่บันทึก</span><span class="v num">${fmt(c.x401+c.x402+c.xNone)}</span></div>`:''}
       <div class="line total"><span class="l">รายรับรวม</span><span class="v num">${fmt(c.gross)}</span></div>
     </div>
@@ -1532,6 +1559,7 @@ function vSlip(){
       <div class="line"><span class="l">ออมและลงทุน</span><span class="v num">−${fmt(c.byGroup.save)}</span></div>
       <div class="line total"><span class="l">เงินเหลือ</span><span class="v num ${c.left>=0?'pos':'neg'}">${baht(c.left)}</span></div>
     </div>
+    ${c.lagged&&(c.earn.shift||c.earn.salary)?`<div class="banner"><span>ค่าเวร + OT ที่ทำเดือน${TH_M[UI.m-1]} <b class="num">฿${fmt(c.earn.shift)}</b> จะได้รับเดือน${mShort(keyShift(key,-Math.max(payLag('shift'),payLag('ot'))))} · ตั้งรอบการจ่ายได้ที่ ตั้งค่า › เงินเดือนและรายการหัก</span></div>`:''}
     ${c.net>0?`<div class="row"><span class="pill ${rate>=20?'good':rate>=0?'neutral':'bad'}">ออม + เงินเหลือ ${rate}% ของรายได้สุทธิ</span></div>`:''}
     <div class="grid2">
       <label>ภาษีที่ถูกหักจากเงินเดือนเดือนนี้<input id="m-wh" class="num" inputmode="decimal" value="${whMonth(mo)||''}" placeholder="ดูจากสลิปเงินเดือน"></label>
@@ -1678,6 +1706,9 @@ function settingsAll(){
       <div><label>กองทุนสำรองเลี้ยงชีพ / กบข. (% ของเงินเดือน)<input class="num" data-set="pvdPct" inputmode="decimal" value="${S.pvdPct||''}" placeholder="เช่น 3 หรือ 10"><span class="pvd-calc small">${pvdText()}</span></label>
     <div class="pvd-chips">${[2,3,5,10,15].map(v=>`<button class="tbtn ${num(S.pvdPct)===v?'on':''}" data-act="pvd-pick" data-v="${v}">${v}%</button>`).join('')}</div></div>
     </div>
+    <div class="lagbox"><div class="lag-h">รอบการจ่ายของโรงพยาบาล <span class="muted small">เงินแต่ละอย่างโอนเข้าบัญชีเดือนไหน</span></div>
+      ${PAY_ITEMS.map(([k,l])=>`<label class="lag-row"><span>${l}</span><select data-lag="${k}">${LAG_LAB.map((t,i)=>`<option value="${i}" ${payLag(k)===i?'selected':''}>${t}</option>`).join('')}</select></label>`).join('')}
+      <p class="small muted" style="margin:0">ตัวอย่าง: ค่าเวรที่ทำเดือน ต.ค. แต่โรงพยาบาลโอนให้เดือน พ.ย. ให้เลือก "เดือนถัดไป" · หน้ารายรับรายจ่าย สลิป และภาษีจะคิดตามเดือนที่ได้รับเงินจริง ส่วนหน้าตารางเวรยังแสดงค่าเวรของเดือนที่ทำงาน</p></div>
     <label>อัตรา OT / งานนอกรายชั่วโมงเริ่มต้น (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
     <label>งบรายจ่ายต่อเดือน (บาท) ว่างไว้ = ไม่ตั้งงบ<input class="num" data-set="budget" inputmode="decimal" value="${S.budget||''}" placeholder="เช่น 15000"></label>
     <label>สิทธิวันพักร้อนต่อปี (วัน)<input class="num" data-set="vacQuota" inputmode="numeric" value="${S.vacQuota||''}" placeholder="10"></label>
@@ -1773,6 +1804,7 @@ document.addEventListener('click',async ev=>{
     case 'donate-open':UI.donate=true;renderSheet();break;
     case 'donate-close':UI.donate=false;renderSheet();break;
     case 'donate-save':saveDonateQR();break;
+    case 'lag-preset':{const v=b.dataset.v;S.payLag={salary:v==='all'?1:0,allow:v==='all'?1:0,shift:v==='0'?0:1,ot:v==='0'?0:1};S.sample=false;touch('settings');render();break}
     case 'mpick-open':UI.mpick=true;UI.mpy=UI.y;renderSheet();break;
     case 'mpick-close':UI.mpick=false;renderSheet();break;
     case 'mpy':UI.mpy+=+b.dataset.v;renderSheet();break;
@@ -1939,6 +1971,7 @@ document.addEventListener('change',ev=>{
   if(t.dataset.so){S.shareOpt[t.dataset.so]=t.checked;touch('settings');const w=$('#so-warn');if(w)w.hidden=!S.shareOpt.income;const tx=$('#share-txt');if(tx)tx.value=shareText();buildShare();return}
   if(t.id==='set-email'){const em=t.value.trim().toLowerCase();if(em&&!EMAIL_RE.test(em)){toast('รูปแบบ Gmail ไม่ถูกต้อง');t.value=S.email||'';return}S.email=em;touch('settings');return}
   if(t.id==='set-name'){S.userName=t.value.trim();touch('settings');return}
+  if(t.dataset.lag){S.payLag=Object.assign({},S.payLag||{});S.payLag[t.dataset.lag]=num(t.value);S.sample=false;touch('settings');render();return}
   if(t.id==='mp-ysel'){UI.mpy=+t.value;renderSheet();return}
   if(t.id==='cneu-exp'){S.cneu.exp=t.value;touch('settings');renderSheet();return}
   if(t.id==='cneu-req'){S.cneu.req=num(t.value)||50;touch('settings');renderSheet();return}
