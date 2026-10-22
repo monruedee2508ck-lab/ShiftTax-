@@ -293,6 +293,9 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .onb-dots{display:flex;gap:6px;justify-content:center}
 .onb-card p{font-size:15.5px;line-height:1.55}.onb-card label{font-size:15px}.onb-card label input:not([type=checkbox]){font-size:16px;padding:13px 14px}.onb-card .btn.big{padding:15px;font-size:16.5px}.onb-dots i{width:8px;height:8px;border-radius:99px;background:var(--line)}.onb-dots i.on{width:22px;background:var(--accent)}.onb-dots i.done{background:color-mix(in srgb,var(--accent) 50%,#fff)}
 .onb-sub{font-weight:600;font-size:14px;margin-top:4px}.onb-allow{display:grid;grid-template-columns:minmax(0,1fr) 110px auto;gap:6px}
+.onb-g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}@media (max-width:420px){.onb-g2{grid-template-columns:1fr}}
+.ded-quick{display:flex;flex-wrap:wrap;gap:6px}
+.grid2.ded-row{grid-template-columns:minmax(0,1fr) 120px auto}
 .onb-rates{display:flex;flex-direction:column;gap:6px}.onb-rates .hd,.onb-rates .rr{display:grid;grid-template-columns:56px repeat(3,minmax(0,1fr));gap:6px;align-items:center}.onb-rates .hd{font-size:11.5px;color:var(--muted);text-align:center}.onb-rates .rr input{min-width:0;text-align:center}.onb-rates .chip{justify-self:start}
 .onb-nav{gap:8px;margin-top:4px}.onb-skip{border:0;background:transparent;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:4px}
 [hidden]{display:none!important}
@@ -572,7 +575,7 @@ const DEDUCT_FIELDS=[
   {k:'other',label:'ลดหย่อนอื่นๆ',cap:'เช่น Solar rooftop หรือมาตรการรัฐอื่น'}];
 const DEFAULTS={
   sample:true, salary:25000,
-  allowances:[{id:'a1',name:'ค่าตอบแทนวิชาชีพ (พ.ต.ส.)',amount:1500}],
+  allowances:[{id:'a1',name:'ค่าตอบแทนวิชาชีพ (พ.ต.ส.)',amount:1500}], deductions:[], whDefault:0,
   sso:true, pvdPct:0, otRate:200, catsCustom:[], catsHidden:[], vacQuota:10, vacAdded:true, mtAdded:true, combos:[], combosCleared:true, timesAdded:true,
   shiftTypes:[
     {id:'M',code:'ช',name:'เวรเช้า',start:'08:00',end:'16:00',hours:8,color:1,wd:0,hd:600,tax:'401',work:true},
@@ -601,9 +604,10 @@ const mkey=(y,m)=>y+'-'+pad(m);
 const uidGen=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
 const emptyMonth=()=>({shifts:{},otShifts:{},hol:{},entries:[],todos:{},pay:{},ot:{},withheld:0,salary:null});
 function normMonth(d){const m=Object.assign(emptyMonth(),d?clone(d):{});m.shifts=m.shifts||{};m.hol=m.hol||{};m.entries=Array.isArray(m.entries)?m.entries:[];m.todos=m.todos&&typeof m.todos==='object'?m.todos:{};m.pay=m.pay&&typeof m.pay==='object'?m.pay:{};m.ot=m.ot&&typeof m.ot==='object'?m.ot:{};m.otShifts=m.otShifts&&typeof m.otShifts==='object'?m.otShifts:{};for(const d in m.ot){const v=m.ot[d];if(!Array.isArray(v)){const n=num(v);if(n)m.ot[d]=[{id:'o'+d,mode:'amt',amt:n,hrs:'',rate:'',tax:'401',note:''}];else delete m.ot[d]}}return m}
+const whMonth=mo=>mo.whSet?num(mo.withheld):(num(mo.withheld)||num(S.whDefault));
 const otVal=x=>x.mode==='hr'?num(x.hrs)*num(x.rate):num(x.amt);
 const otList=(mo,d)=>Array.isArray((mo.ot||{})[d])?mo.ot[d]:[];
-function normSettings(d){d=d?clone(d):null;const s=Object.assign(clone(DEFAULTS),d||{});if(!Array.isArray(s.shiftTypes)||!s.shiftTypes.length)s.shiftTypes=clone(DEFAULTS.shiftTypes);if(!Array.isArray(s.allowances))s.allowances=[];if(!s.cneu||typeof s.cneu!=='object')s.cneu={};if(!Array.isArray(s.cneu.list))s.cneu.list=[];if(!s.cneu.req)s.cneu.req=50;if(!s.nw||typeof s.nw!=='object')s.nw={};if(!Array.isArray(s.nw.assets))s.nw.assets=[];if(!Array.isArray(s.nw.debts))s.nw.debts=[];if(!Array.isArray(s.catsCustom))s.catsCustom=[];if(!Array.isArray(s.catsHidden))s.catsHidden=[];if(!Array.isArray(s.combos))s.combos=[];if(!d||!d.combosCleared){s.combos=s.combos.filter(cb=>!['N,E','M,E','N,M'].includes((cb||[]).join(',')));s.combosCleared=true}if(!d||!d.timesAdded){for(const t of s.shiftTypes){const df=DEFAULTS.shiftTypes.find(x=>x.id===t.id);if(t.start==null)t.start=df?df.start||'':'';if(t.end==null)t.end=df?df.end||'':''}s.timesAdded=true}if(!d||!d.vacAdded){if(!s.shiftTypes.some(t=>t.id==='V'))s.shiftTypes.push({id:'V',code:'VAC',name:'พักร้อน (Vacation)',hours:0,color:7,wd:0,hd:0,tax:'401',work:false});s.vacAdded=true}if(!d||!d.mtAdded){for(const x of [{id:'MT',code:'ปช',name:'ประชุม',color:1},{id:'TR',code:'อบ',name:'อบรม',color:3}])if(!s.shiftTypes.some(t=>t.id===x.id))s.shiftTypes.push(Object.assign({start:'',end:'',hours:0,wd:0,hd:0,tax:'401',work:false},x));s.mtAdded=true}s.tax=s.tax||{};return s}
+function normSettings(d){d=d?clone(d):null;const s=Object.assign(clone(DEFAULTS),d||{});if(!Array.isArray(s.shiftTypes)||!s.shiftTypes.length)s.shiftTypes=clone(DEFAULTS.shiftTypes);if(!Array.isArray(s.allowances))s.allowances=[];if(!Array.isArray(s.deductions))s.deductions=[];if(!s.cneu||typeof s.cneu!=='object')s.cneu={};if(!Array.isArray(s.cneu.list))s.cneu.list=[];if(!s.cneu.req)s.cneu.req=50;if(!s.nw||typeof s.nw!=='object')s.nw={};if(!Array.isArray(s.nw.assets))s.nw.assets=[];if(!Array.isArray(s.nw.debts))s.nw.debts=[];if(!Array.isArray(s.catsCustom))s.catsCustom=[];if(!Array.isArray(s.catsHidden))s.catsHidden=[];if(!Array.isArray(s.combos))s.combos=[];if(!d||!d.combosCleared){s.combos=s.combos.filter(cb=>!['N,E','M,E','N,M'].includes((cb||[]).join(',')));s.combosCleared=true}if(!d||!d.timesAdded){for(const t of s.shiftTypes){const df=DEFAULTS.shiftTypes.find(x=>x.id===t.id);if(t.start==null)t.start=df?df.start||'':'';if(t.end==null)t.end=df?df.end||'':''}s.timesAdded=true}if(!d||!d.vacAdded){if(!s.shiftTypes.some(t=>t.id==='V'))s.shiftTypes.push({id:'V',code:'VAC',name:'พักร้อน (Vacation)',hours:0,color:7,wd:0,hd:0,tax:'401',work:false});s.vacAdded=true}if(!d||!d.mtAdded){for(const x of [{id:'MT',code:'ปช',name:'ประชุม',color:1},{id:'TR',code:'อบ',name:'อบรม',color:3}])if(!s.shiftTypes.some(t=>t.id===x.id))s.shiftTypes.push(Object.assign({start:'',end:'',hours:0,wd:0,hd:0,tax:'401',work:false},x));s.mtAdded=true}s.tax=s.tax||{};return s}
 
 /* ---------- state ---------- */
 const now=new Date();
@@ -672,11 +676,12 @@ function monthCalc(key){
     else{exp+=a;byCat[e.cat]=(byCat[e.cat]||0)+a;const c=catById('ex',e.cat);const g=c?c.g:'var';byGroup[g]=(byGroup[g]||0)+a;if(c&&c.ded)ded[c.ded]=(ded[c.ded]||0)+a}}
   const sso=S.sso?Math.round(0.05*Math.min(Math.max(salary,SSO_MIN_WAGE),SSO_CAP_WAGE)):0;
   const pvd=Math.round(salary*num(S.pvdPct)/100);
-  const withheld=num(mo.withheld)+whE;
+  const fixDed=sum(S.deductions.map(x=>num(x.amount)));
+  const withheld=whMonth(mo)+whE;
   const shift=s401+s402;
   const gross=salary+allow+shift+x401+x402+xNone;
-  const net=gross-sso-pvd-withheld;
-  return {key,y,m,mo,otShiftN,salary,allow,s401,s402,shift,ot,otIn,otOut,otHrs,hours,workDays,doubles,counts,x401,x402,xNone,whE,withheld,exp,byCat,byGroup,inGroup,ded,sso,pvd,gross,net,left:net-exp,
+  const net=gross-sso-pvd-withheld-fixDed;
+  return {fixDed,key,y,m,mo,otShiftN,salary,allow,s401,s402,shift,ot,otIn,otOut,otHrs,hours,workDays,doubles,counts,x401,x402,xNone,whE,withheld,exp,byCat,byGroup,inGroup,ded,sso,pvd,gross,net,left:net-exp,
     hasShift:Object.keys(mo.shifts).some(d=>(mo.shifts[d]||[]).length)};
 }
 function progressive(net){let tax=0,marg=0;const rows=BRACKETS.map(([lo,hi,r])=>{const amt=Math.max(0,Math.min(net,hi)-lo);const t=amt*r;tax+=t;if(amt>0)marg=r;return{lo,hi,r,amt,t}});return{tax,rows,marg}}
@@ -985,6 +990,10 @@ function debtRow(x){const f=(n,v,ph,lab)=>`<label class="dfl"><span>${lab}</span
     <div class="dfields">${f('rate',x.rate,'0','ดอกเบี้ย %/ปี')}${f('pay',x.pay,'0','ผ่อน/เดือน')}${f('due',x.due,'1–31','ครบทุกวันที่')}</div></div>`}
 
 
+const DED_QUICK=['สหกรณ์ออมทรัพย์','ค่าสาธารณูปโภค','เงินกู้ / ผ่อนชำระ','รายการหักอื่น'];
+function dedRows(cls){return S.deductions.map(x=>`<div class="${cls}"><input data-ded="name" data-id="${x.id}" value="${esc(x.name)}" placeholder="ชื่อรายการหัก" aria-label="ชื่อรายการหัก"><input class="num" data-ded="amount" data-id="${x.id}" inputmode="decimal" value="${x.amount||''}" placeholder="0" aria-label="จำนวนเงินที่หัก"><button class="icon-btn" data-act="del-ded" data-id="${x.id}" aria-label="ลบรายการหัก">×</button></div>`).join('')}
+function dedQuick(){const have=S.deductions.map(x=>x.name);return `<div class="ded-quick">${DED_QUICK.filter(n=>n==='รายการหักอื่น'||!have.includes(n)).map(n=>`<button class="btn sm" data-act="add-ded" data-name="${n}">+ ${n}</button>`).join('')}</div>`}
+
 /* ---------- onboarding ---------- */
 function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
   const dots=`<div class="onb-dots">${[1,2,3].map(i=>`<i class="${i===st?'on':i<st?'done':''}"></i>`).join('')}</div>`;
@@ -999,6 +1008,12 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     <div class="onb-sub">เงินเพิ่มประจำ <span class="muted small">เช่น พ.ต.ส. ค่าตอบแทนวิชาชีพ ค่าครองชีพ</span></div>
     ${S.allowances.map(a=>`<div class="onb-allow"><input data-allow="name" data-id="${a.id}" value="${esc(a.name)}" aria-label="ชื่อเงินเพิ่ม"><input class="num" data-allow="amount" data-id="${a.id}" inputmode="decimal" value="${a.amount||''}" placeholder="0" aria-label="จำนวนเงิน"><button class="icon-btn" data-act="del-allow" data-id="${a.id}" aria-label="ลบ">×</button></div>`).join('')}
     <button class="btn sm" data-act="add-allow" style="align-self:flex-start">+ เพิ่มเงินเพิ่ม</button>
+    <div class="onb-sub">รายการหักจากเงินเดือน <span class="muted small">ดูจากสลิปเงินเดือน</span></div>
+    <div class="onb-g2"><label>หักสะสม / กองทุนสำรองฯ / กบข. (% ของเงินเดือน)<input class="num" data-set="pvdPct" inputmode="decimal" value="${S.pvdPct||''}" placeholder="เช่น 3 หรือ 10"></label>
+    <label>ภาษีหัก ณ ที่จ่าย (บาท/เดือน)<input class="num" data-set="whDefault" inputmode="decimal" value="${S.whDefault||''}" placeholder="0"></label></div>
+    ${dedRows('onb-allow')}
+    ${dedQuick()}
+    <p class="small muted" style="margin:0">กองทุนใส่เป็น % เพื่อนำไปลดหย่อนภาษี · ภาษีที่ถูกหักนำไปคิดคืนภาษีปลายปี · ประกันสังคมคิดให้อัตโนมัติ</p>
     <div class="row onb-nav"><button class="btn" data-act="onb-back">‹ ย้อนกลับ</button><button class="btn primary grow" data-act="onb-next">ถัดไป ›</button></div>`;
   if(st===3){const W=S.shiftTypes.filter(t=>t.work);
     body=`<h2>ค่าเวรและ OT ⏰</h2><p class="muted">ขั้นที่ 3/3 · ใส่อัตราต่อเวร แอปจะคิดเงินให้ทุกครั้งที่ลงตารางเวร</p>
@@ -1307,6 +1322,7 @@ function vSlip(){
     <div class="lines">
       ${S.sso?`<div class="line"><span class="l">ประกันสังคม 5% (เพดาน ${fmt(SSO_CAP_WAGE)})</span><span class="v num neg">−${fmt(c.sso)}</span></div>`:''}
       ${c.pvd?`<div class="line"><span class="l">กบข. / กองทุนสำรองเลี้ยงชีพ ${num(S.pvdPct)}%</span><span class="v num neg">−${fmt(c.pvd)}</span></div>`:''}
+      ${S.deductions.filter(x=>num(x.amount)).map(x=>`<div class="line"><span class="l">${esc(x.name||'รายการหัก')}</span><span class="v num neg">−${fmt(x.amount)}</span></div>`).join('')}
       <div class="line"><span class="l">ภาษีหัก ณ ที่จ่าย</span><span class="v num neg">−${fmt(c.withheld)}</span></div>
       <div class="line total"><span class="l">รับสุทธิ</span><span class="v num">${fmt(c.net)}</span></div>
       <div class="line"><span class="l">ค่าใช้จ่ายคงที่</span><span class="v num neg">−${fmt(c.byGroup.fixed)}</span></div>
@@ -1316,7 +1332,7 @@ function vSlip(){
     </div>
     ${c.net>0?`<div class="row"><span class="pill ${rate>=20?'good':rate>=0?'neutral':'bad'}">ออม + เงินเหลือ ${rate}% ของรายได้สุทธิ</span></div>`:''}
     <div class="grid2">
-      <label>ภาษีที่ถูกหักจากเงินเดือนเดือนนี้<input id="m-wh" class="num" inputmode="decimal" value="${num(mo.withheld)||''}" placeholder="ดูจากสลิปเงินเดือน"></label>
+      <label>ภาษีที่ถูกหักจากเงินเดือนเดือนนี้<input id="m-wh" class="num" inputmode="decimal" value="${whMonth(mo)||''}" placeholder="ดูจากสลิปเงินเดือน"></label>
       <label>เงินเดือนเดือนนี้ (ถ้าต่างจากปกติ)<input id="m-sal" class="num" inputmode="decimal" value="${mo.salary!=null&&mo.salary!==''?mo.salary:''}" placeholder="${fmt(S.salary)}"></label>
     </div>
   </section>
@@ -1432,7 +1448,7 @@ function renderTaxResults(){
 
 /* ---------- settings ---------- */
 function setSecs(){return [
-  ['pay','เงินเดือนและรายการหัก',`เงินเดือน ฿${fmt(S.salary)} · ${S.sso?'หักประกันสังคม':'ไม่หักประกันสังคม'}${num(S.budget)?' · งบ ฿'+fmt(S.budget):''}`,'money'],
+  ['pay','เงินเดือนและรายการหัก',`เงินเดือน ฿${fmt(S.salary)} · ${S.sso?'หักประกันสังคม':'ไม่หักประกันสังคม'}${S.deductions.length?' · หักอื่น '+S.deductions.length+' รายการ':''}${num(S.budget)?' · งบ ฿'+fmt(S.budget):''}`,'money'],
   ['combo','ปุ่มเวรควบ',(S.combos||[]).length?`${S.combos.length} ปุ่ม`:'ยังไม่มี · ตั้งปุ่มลัดลงหลายเวรในวันเดียว','ot'],
   ['types','ประเภทเวร เวลา และอัตราค่าเวร',`${S.shiftTypes.length} ประเภท · เวลาเริ่ม-เลิก ค่าเวร OT`,'calendar'],
   ['cats','หมวดหมู่รายรับ-รายจ่าย',S.catsCustom.length?`เพิ่มเอง ${S.catsCustom.length} หมวด`:'ดูหรือลบหมวดหมู่','summary'],
@@ -1458,6 +1474,10 @@ function settingsAll(){
     <h3>เงินเพิ่มประจำทุกเดือน</h3>
     ${S.allowances.map(a=>`<div class="grid2" style="grid-template-columns:minmax(0,1fr) 120px auto"><input data-allow="name" data-id="${a.id}" value="${esc(a.name)}" aria-label="ชื่อรายการ"><input class="num" data-allow="amount" data-id="${a.id}" inputmode="decimal" value="${a.amount}" aria-label="จำนวนเงิน"><button class="icon-btn" data-act="del-allow" data-id="${a.id}" aria-label="ลบ">×</button></div>`).join('')||'<p class="small muted">ยังไม่มี เช่น พ.ต.ส. เงินประจำตำแหน่ง ค่าครองชีพ</p>'}
     <div><button class="btn sm" data-act="add-allow">+ เพิ่มรายการ</button></div>
+    <h3>รายการหักประจำทุกเดือน</h3>
+    <label>ภาษีหัก ณ ที่จ่ายต่อเดือน (บาท) ใช้ทุกเดือนที่ไม่ได้แก้เอง<input class="num" data-set="whDefault" inputmode="decimal" value="${S.whDefault||''}" placeholder="0"></label>
+    ${dedRows('grid2 ded-row')||'<p class="small muted" style="margin:0">ยังไม่มี เช่น สหกรณ์ออมทรัพย์ ค่าสาธารณูปโภค เงินกู้</p>'}
+    ${dedQuick()}
   </section>
   <section class="card">
     <h2 class="h-ico"><img src="${IMG.ot}" alt="">ปุ่มเวรควบ</h2>
@@ -1646,6 +1666,8 @@ document.addEventListener('click',async ev=>{
     case 'add-nw':{const k=b.dataset.k;S.nw[k].push(k==='assets'?{id:uidGen(),name:'',type:'cash',amt:0}:{id:uidGen(),name:'',cat:'card',amt:0,rate:'',pay:'',due:''});touch('settings');renderSheet();const ins=document.querySelectorAll('[data-nw="name"][data-k="'+k+'"]');if(ins.length)ins[ins.length-1].focus();break}
     case 'del-nw':{const k=b.dataset.k;S.nw[k]=S.nw[k].filter(x=>x.id!==b.dataset.id);touch('settings');renderSheet();break}
     case 'add-allow':S.allowances.push({id:uidGen(),name:'เงินเพิ่ม',amount:0});S.sample=false;touch('settings');render();break;
+    case 'add-ded':{const nm=b.dataset.name==='รายการหักอื่น'?'':(b.dataset.name||'');S.deductions.push({id:uidGen(),name:nm,amount:0});S.sample=false;touch('settings');render();const ins=document.querySelectorAll(nm?'[data-ded="amount"]':'[data-ded="name"]');if(ins.length)ins[ins.length-1].focus();break}
+    case 'del-ded':S.deductions=S.deductions.filter(x=>x.id!==b.dataset.id);S.sample=false;touch('settings');render();break;
     case 'del-allow':S.allowances=S.allowances.filter(a=>a.id!==b.dataset.id);S.sample=false;touch('settings');render();break;
     case 'add-st':{const used=S.shiftTypes.map(t=>+t.color);const col=[1,2,3,4,5,6,7,8].find(c=>!used.includes(c))||7;
       S.shiftTypes.push({id:'t'+uidGen(),code:'ใหม่',name:'เวรใหม่',hours:8,color:col,wd:0,hd:0,tax:'401',work:true});S.sample=false;touch('settings');render();break}
@@ -1667,7 +1689,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='todo-
 document.addEventListener('change',ev=>{
   const t=ev.target;const key=mkey(UI.y,UI.m);
   if(t.id==='e-amt'&&UI.esheet&&num(t.value)>0&&!UI.esheet.cat&&!UI.esheet.pick){captureSheet();UI.esheet.pick=true;UI.esheet.pickT=Date.now();UI.esheet.pi=null;UI.esheet.q='';renderPicker();return}
-  if(t.id==='m-wh'){getM(key,true).withheld=num(t.value);touch(key);return}
+  if(t.id==='m-wh'){const mw=getM(key,true);mw.withheld=num(t.value);mw.whSet=t.value.trim()!=='';touch(key);return}
   if(t.id==='m-sal'){const mo=getM(key,true);mo.salary=t.value.trim()===''?null:num(t.value);touch(key);return}
   if(t.dataset.set){S[t.dataset.set]=num(t.value);S.sample=false;touch('settings');return}
   if(t.dataset.setb){S[t.dataset.setb]=t.checked;S.sample=false;touch('settings');return}
@@ -1677,6 +1699,7 @@ document.addEventListener('change',ev=>{
   if(t.id==='cneu-req'){S.cneu.req=num(t.value)||50;touch('settings');renderSheet();return}
   if(t.id==='notif-dev'){if(t.checked){try{Notification.requestPermission().then(p=>{S.notifOn=p==='granted';touch('settings');if(p==='granted'){try{localStorage.removeItem('nr-notified')}catch(e){}devNotify();toast('เปิดแจ้งเตือนแล้ว')}else{toast('เครื่องนี้ไม่อนุญาตแจ้งเตือน');renderSheet()}})}catch(e){toast('เบราว์เซอร์นี้ไม่รองรับแจ้งเตือน');t.checked=false}}else{S.notifOn=false;touch('settings')}return}
   if(t.dataset.nw){const x=(S.nw[t.dataset.k]||[]).find(x=>x.id===t.dataset.id);if(x){const f=t.dataset.nw;x[f]=['amt','rate','pay','due'].includes(f)?num(t.value):t.value;if(f==='cat')x.type=['card','install'].includes(t.value)?'short':'long';if(f==='amt'&&t.dataset.k==='debts'&&!(num(x.orig)>=x.amt))x.orig=x.amt;touch('settings');nwRefresh()}return}
+  if(t.dataset.ded){const x=S.deductions.find(x=>x.id===t.dataset.id);if(x){x[t.dataset.ded]=t.dataset.ded==='amount'?num(t.value):t.value;S.sample=false;touch('settings')}return}
   if(t.dataset.allow){const a=S.allowances.find(a=>a.id===t.dataset.id);if(a){a[t.dataset.allow]=t.dataset.allow==='amount'?num(t.value):t.value;S.sample=false;touch('settings')}return}
   if(t.dataset.st){const s=S.shiftTypes.find(x=>x.id===t.dataset.id);if(!s)return;const f=t.dataset.st;
     s[f]=['hours','wd','hd','color'].includes(f)?num(t.value):f==='otr'?(t.value.trim()===''?'':num(t.value)):t.value;if(f==='start'||f==='end'){const h=hoursFrom(s.start,s.end);if(h!=null){s.hours=h;const hi=t.closest('.st-row').querySelector('[data-st="hours"]');if(hi)hi.value=h}}S.sample=false;touch('settings');if(f==='color'||f==='code'){const ch=t.closest('.st-row').querySelector('.chip');ch.className='chip k'+s.color;ch.textContent=s.code}return}
