@@ -298,6 +298,12 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .grid2.ded-row{grid-template-columns:minmax(0,1fr) 120px auto}
 .onb-rates{display:flex;flex-direction:column;gap:6px}.onb-rates .hd,.onb-rates .rr{display:grid;grid-template-columns:56px repeat(3,minmax(0,1fr));gap:6px;align-items:center}.onb-rates .hd{font-size:11.5px;color:var(--muted);text-align:center}.onb-rates .rr input{min-width:0;text-align:center}.onb-rates .chip{justify-self:start}
 .onb-nav{gap:8px;margin-top:4px}.slogan{margin:2px 0 0;text-align:center;font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.2px;line-height:1.5}.slogan .s1{color:#2f6fc0}.slogan .s2{color:#3fa34d}.slogan .s3{color:#1c2b45}.onb-card .slogan{margin:-4px 0 2px}.setlogo+.slogan{margin:6px 0 4px}
+.avatar{border-radius:50%;object-fit:cover;display:inline-grid;place-items:center;flex:0 0 auto;background:#e6f1fb;color:#2f6fc0;font-family:var(--f-display);font-weight:600;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.prof{display:flex;align-items:center;gap:14px}.prof .grow{flex:1;min-width:0}.onb-prof{gap:10px}.avbtn{position:relative;cursor:pointer}.avplus{position:absolute;right:-4px;bottom:-2px;font-size:16px;background:#fff;border-radius:50%;padding:2px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.hav{border:0;background:transparent;padding:0;border-radius:50%;width:38px;height:38px;display:grid;place-items:center}
+.so-box{border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}.so-h{font-weight:600;font-size:13.5px}
+.so-grid{display:flex;flex-wrap:wrap;gap:6px}.so-t{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px;cursor:pointer;border:1px solid var(--line);border-radius:99px;padding:5px 11px;font-size:12.5px;background:var(--surface)}.so-t input{width:16px!important;height:16px;margin:0;flex:0 0 auto;padding:0;accent-color:var(--accent)}
+.so-t:has(input:checked){background:var(--soft);border-color:var(--accent);color:var(--accent)}.so-th{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;font-size:13px}.so-th select{flex:1}
 .onb-skip{border:0;background:transparent;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:4px}
 [hidden]{display:none!important}
 .catpick-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--accent);background:var(--soft);border-radius:16px;padding:10px 12px;color:inherit}.catpick-btn.empty{border-style:dashed}.catpick-btn .grow{display:flex;flex-direction:column;min-width:0}.catpick-btn small{font-size:11.5px;color:var(--muted)}.catpick-btn b{color:var(--accent)}.catpick-btn .ico{flex:0 0 auto}
@@ -494,7 +500,7 @@ h1,h2,h3{font-weight:500}
       <img class="brand-logo" id="brandLogo" alt="">
       <div><h1><span class="bn1">Shift</span><span class="bn2">Tax</span></h1><p class="tagline">Smart Tax Solutions for Growth</p></div>
     </div>
-    <div class="row" style="gap:8px;flex-wrap:nowrap"><div class="sync wait" id="sync" role="status"><i></i><span>กำลังเชื่อมต่อ</span></div><button class="bell" data-act="notif-open" aria-label="การแจ้งเตือน"><img id="bellImg" alt=""><span id="bellN" class="belln" hidden></span></button></div>
+    <div class="row" style="gap:8px;flex-wrap:nowrap"><div class="sync wait" id="sync" role="status"><i></i><span>กำลังเชื่อมต่อ</span></div><button class="hav" id="hav" data-act="profile-open" aria-label="โปรไฟล์" hidden></button><button class="bell" data-act="notif-open" aria-label="การแจ้งเตือน"><img id="bellImg" alt=""><span id="bellN" class="belln" hidden></span></button></div>
   </header>
   <main id="view" class="wrap"></main>
 </div>
@@ -608,7 +614,7 @@ function normMonth(d){const m=Object.assign(emptyMonth(),d?clone(d):{});m.shifts
 const whMonth=mo=>mo.whSet?num(mo.withheld):(num(mo.withheld)||num(S.whDefault));
 const otVal=x=>x.mode==='hr'?num(x.hrs)*num(x.rate):num(x.amt);
 const otList=(mo,d)=>Array.isArray((mo.ot||{})[d])?mo.ot[d]:[];
-function normSettings(d){d=d?clone(d):null;const s=Object.assign(clone(DEFAULTS),d||{});if(!Array.isArray(s.shiftTypes)||!s.shiftTypes.length)s.shiftTypes=clone(DEFAULTS.shiftTypes);if(!Array.isArray(s.allowances))s.allowances=[];if(!Array.isArray(s.deductions))s.deductions=[];if(!s.cneu||typeof s.cneu!=='object')s.cneu={};if(!Array.isArray(s.cneu.list))s.cneu.list=[];if(!s.cneu.req)s.cneu.req=50;if(!s.nw||typeof s.nw!=='object')s.nw={};if(!Array.isArray(s.nw.assets))s.nw.assets=[];if(!Array.isArray(s.nw.debts))s.nw.debts=[];if(!Array.isArray(s.catsCustom))s.catsCustom=[];if(!Array.isArray(s.catsHidden))s.catsHidden=[];if(!Array.isArray(s.combos))s.combos=[];if(!d||!d.combosCleared){s.combos=s.combos.filter(cb=>!['N,E','M,E','N,M'].includes((cb||[]).join(',')));s.combosCleared=true}if(!d||!d.timesAdded){for(const t of s.shiftTypes){const df=DEFAULTS.shiftTypes.find(x=>x.id===t.id);if(t.start==null)t.start=df?df.start||'':'';if(t.end==null)t.end=df?df.end||'':''}s.timesAdded=true}if(!d||!d.vacAdded){if(!s.shiftTypes.some(t=>t.id==='V'))s.shiftTypes.push({id:'V',code:'VAC',name:'พักร้อน (Vacation)',hours:0,color:7,wd:0,hd:0,tax:'401',work:false});s.vacAdded=true}if(!d||!d.mtAdded){for(const x of [{id:'MT',code:'ปช',name:'ประชุม',color:1},{id:'TR',code:'อบ',name:'อบรม',color:3}])if(!s.shiftTypes.some(t=>t.id===x.id))s.shiftTypes.push(Object.assign({start:'',end:'',hours:0,wd:0,hd:0,tax:'401',work:false},x));s.mtAdded=true}s.tax=s.tax||{};return s}
+function normSettings(d){d=d?clone(d):null;const s=Object.assign(clone(DEFAULTS),d||{});if(!Array.isArray(s.shiftTypes)||!s.shiftTypes.length)s.shiftTypes=clone(DEFAULTS.shiftTypes);if(!Array.isArray(s.allowances))s.allowances=[];if(!Array.isArray(s.deductions))s.deductions=[];if(!s.shareOpt||typeof s.shareOpt!=='object')s.shareOpt={};s.shareOpt=Object.assign({name:true,avatar:false,ot:true,sum:true,income:false,theme:'cream'},s.shareOpt);if(!s.cneu||typeof s.cneu!=='object')s.cneu={};if(!Array.isArray(s.cneu.list))s.cneu.list=[];if(!s.cneu.req)s.cneu.req=50;if(!s.nw||typeof s.nw!=='object')s.nw={};if(!Array.isArray(s.nw.assets))s.nw.assets=[];if(!Array.isArray(s.nw.debts))s.nw.debts=[];if(!Array.isArray(s.catsCustom))s.catsCustom=[];if(!Array.isArray(s.catsHidden))s.catsHidden=[];if(!Array.isArray(s.combos))s.combos=[];if(!d||!d.combosCleared){s.combos=s.combos.filter(cb=>!['N,E','M,E','N,M'].includes((cb||[]).join(',')));s.combosCleared=true}if(!d||!d.timesAdded){for(const t of s.shiftTypes){const df=DEFAULTS.shiftTypes.find(x=>x.id===t.id);if(t.start==null)t.start=df?df.start||'':'';if(t.end==null)t.end=df?df.end||'':''}s.timesAdded=true}if(!d||!d.vacAdded){if(!s.shiftTypes.some(t=>t.id==='V'))s.shiftTypes.push({id:'V',code:'VAC',name:'พักร้อน (Vacation)',hours:0,color:7,wd:0,hd:0,tax:'401',work:false});s.vacAdded=true}if(!d||!d.mtAdded){for(const x of [{id:'MT',code:'ปช',name:'ประชุม',color:1},{id:'TR',code:'อบ',name:'อบรม',color:3}])if(!s.shiftTypes.some(t=>t.id===x.id))s.shiftTypes.push(Object.assign({start:'',end:'',hours:0,wd:0,hd:0,tax:'401',work:false},x));s.mtAdded=true}s.tax=s.tax||{};return s}
 
 /* ---------- state ---------- */
 const now=new Date();
@@ -738,7 +744,7 @@ function render(){
   renderNav();const v=$('#view');
   v.innerHTML=({roster:vRoster,money:vMoney,slip:vSlip,tax:vTax,settings:vSettings})[UI.tab]();
   if(UI.tab==='tax')renderTaxResults();
-  renderSheet();renderPicker();renderOnb();renderFab();paintIcons();updateBell();needRender=false;
+  renderSheet();renderPicker();renderOnb();updateHeadAv();renderFab();paintIcons();updateBell();needRender=false;
   const st=$('#dstrip');if(st){const on=st.querySelector('.on');if(on)st.scrollLeft=on.offsetLeft-st.clientWidth/2+on.offsetWidth/2}
 }
 
@@ -995,12 +1001,20 @@ const DED_QUICK=['สหกรณ์ออมทรัพย์','ค่าส�
 function dedRows(cls){return S.deductions.map(x=>`<div class="${cls}"><input data-ded="name" data-id="${x.id}" value="${esc(x.name)}" placeholder="ชื่อรายการหัก" aria-label="ชื่อรายการหัก"><input class="num" data-ded="amount" data-id="${x.id}" inputmode="decimal" value="${x.amount||''}" placeholder="0" aria-label="จำนวนเงินที่หัก"><button class="icon-btn" data-act="del-ded" data-id="${x.id}" aria-label="ลบรายการหัก">×</button></div>`).join('')}
 function dedQuick(){const have=S.deductions.map(x=>x.name);return `<div class="ded-quick">${DED_QUICK.filter(n=>n==='รายการหักอื่น'||!have.includes(n)).map(n=>`<button class="btn sm" data-act="add-ded" data-name="${n}">+ ${n}</button>`).join('')}</div>`}
 
+
+function avatarEl(sz,cls){return S.avatar?`<img class="avatar ${cls||''}" src="${S.avatar}" alt="รูปโปรไฟล์" style="width:${sz}px;height:${sz}px">`:`<span class="avatar ph ${cls||''}" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*.42)}px">${esc((S.userName||'?').slice(0,1))}</span>`}
+async function setAvatarFile(f){if(!f)return;try{const url=URL.createObjectURL(f);const im=await loadImg(url);if(!im){toast('เปิดรูปนี้ไม่ได้');return}
+  const sz=256,cv=document.createElement('canvas');cv.width=cv.height=sz;const g=cv.getContext('2d');const m=Math.min(im.width,im.height);
+  g.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,sz,sz);S.avatar=cv.toDataURL('image/jpeg',.85);URL.revokeObjectURL(url);touch('settings');render();toast('ตั้งรูปโปรไฟล์แล้ว')}catch(e){toast('ตั้งรูปไม่สำเร็จ')}}
+function updateHeadAv(){const b=$('#hav');if(!b)return;b.hidden=!(S.avatar||S.userName);b.innerHTML=avatarEl(36)}
 /* ---------- onboarding ---------- */
 function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
   const dots=`<div class="onb-dots">${[1,2,3].map(i=>`<i class="${i===st?'on':i<st?'done':''}"></i>`).join('')}</div>`;
   let body='';
   if(st===1)body=`<img class="onb-logo" src="${LOGO_FULL}" alt="ShiftTax">
     <p class="slogan"><span class="s1">Your Shifts.</span> <span class="s2">Your Income.</span> <span class="s3">Your Balance.</span></p><h2>ยินดีต้อนรับค่ะ 👋</h2><p class="muted">ShiftTax ช่วยลงตารางเวร คิดค่าเวร OT รายรับรายจ่าย และวางแผนภาษีให้อัตโนมัติ</p>
+    <div class="prof onb-prof"><label for="av-file" class="avbtn" aria-label="เพิ่มรูปโปรไฟล์">${avatarEl(64)}<span class="avplus">📷</span></label><span class="small muted">แตะเพื่อเพิ่มรูปโปรไฟล์ (ไม่บังคับ)</span></div>
+    <input type="file" id="av-file" accept="image/*" hidden>
     <label>ชื่อของคุณ (ชื่อเล่นก็ได้)<input id="onb-name" value="${nm}" maxlength="30" placeholder="เช่น ฝน" autocomplete="nickname"></label>
     <button class="btn primary big" data-act="onb-next">ถัดไป ›</button>`;
   if(st===2)body=`<h2>สวัสดีค่ะ คุณ${nm||'พยาบาล'} 💚</h2><p class="muted">ขั้นที่ 2/3 · ใส่รายได้ประจำต่อเดือน เพื่อคำนวณเงินได้และภาษี</p>
@@ -1184,49 +1198,65 @@ function detailSheet(){const c=monthCalc(mkey(UI.y,UI.m));const isEx=UI.dsheet==
     <div class="small muted">${TH_M[UI.m-1]} ${UI.y+543}</div>
     ${isEx?exDetail(c):inDetail(c)}</div></div>`}
 /* ---------- share roster ---------- */
-function shareText(){const key=mkey(UI.y,UI.m);const mo=getM(key,false);const dim=new Date(UI.y,UI.m,0).getDate();const lines=[`ตารางเวร${S.userName?'ของ '+S.userName+' ':''}เดือน${TH_M[UI.m-1]} ${UI.y+543}`];
+function shareText(){const key=mkey(UI.y,UI.m);const mo=getM(key,false);const dim=new Date(UI.y,UI.m,0).getDate();const O=S.shareOpt;const lines=[`ตารางเวร${O.name&&S.userName?'ของ '+S.userName+' ':''}เดือน${TH_M[UI.m-1]} ${UI.y+543}`];
   for(let d=1;d<=dim;d++){const dd=pad(d);const arr=mo.shifts[dd]||[];if(!arr.length)continue;const wd=new Date(UI.y,UI.m-1,d).getDay();
-    lines.push(`${d} (${TH_D[wd]}) ${arr.map(id=>{const t=typeById(id);return t?t.code+(t.work&&isOTs(mo,dd,id)?' OT':''):''}).filter(Boolean).join(' + ')}`)}
-  if(lines.length===1)lines.push('ยังไม่มีเวรเดือนนี้');lines.push('— จาก ShiftTax ♡');return lines.join('\n')}
+    lines.push(`${d} (${TH_D[wd]}) ${arr.map(id=>{const t=typeById(id);return t?t.code+(O.ot&&t.work&&isOTs(mo,dd,id)?' OT':''):''}).filter(Boolean).join(' + ')}`)}
+  if(lines.length===1)lines.push('ยังไม่มีเวรเดือนนี้');{const c=monthCalc(key);if(O.sum)lines.push(`รวม ทำงาน ${c.workDays} วัน · ${fmt(Math.round(c.hours))} ชม.`);if(O.income)lines.push(`ค่าเวร + OT ฿${fmt(c.shift)}`)}lines.push('— จาก ShiftTax ♡');return lines.join('\n')}
 const loadImg=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=src});
 async function rosterCanvas(){
   const key=mkey(UI.y,UI.m);const mo=getM(key,false);const c=monthCalc(key);
   const first=new Date(UI.y,UI.m-1,1).getDay(),dim=new Date(UI.y,UI.m,0).getDate();const rows=Math.ceil((first+dim)/7);
   const used=S.shiftTypes.filter(t=>c.counts[t.id]);const legRows=Math.max(1,Math.ceil(used.length/3));
-  const W=1080,P=36,cw=(W-P*2)/7,ch=150,top=190,gy=top+52,H=gy+rows*ch+36+legRows*58+70;
+  const O=S.shareOpt,TH=SHARE_TH[O.theme]||SHARE_TH.cream;const sumRows=(O.sum?1:0)+(O.income?1:0);
+  const W=1080,P=36,cw=(W-P*2)/7,ch=150,top=190,gy=top+52,H=gy+rows*ch+36+legRows*58+sumRows*64+(sumRows?20:0)+70;
   const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
   const css=getComputedStyle(document.documentElement);const col=n=>css.getPropertyValue('--c'+n).trim()||'#9aa7a3';
   try{await document.fonts.ready}catch(e){}
   const FB="'IBM Plex Sans Thai Looped','Mitr',sans-serif",FD="'Mitr','IBM Plex Sans Thai Looped',sans-serif";
-  const imgs={};await Promise.all(Object.keys(SHIMG).map(async k=>{imgs[k]=await loadImg(SHIMG[k])}));const logo=await loadImg(LOGO_SVG);
+  const imgs={};await Promise.all(Object.keys(SHIMG).map(async k=>{imgs[k]=await loadImg(SHIMG[k])}));const logo=await loadImg(LOGO_SVG);const av=O.avatar&&S.avatar?await loadImg(S.avatar):null;
   const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
   const ico=(id,ot,x,y,s)=>{const k=ot&&imgs[id+'_ot']?id+'_ot':id;const im=imgs[k];if(!im)return false;g.save();rr(x,y,s,s,s*.24);g.clip();g.drawImage(im,x,y,s,s);g.restore();return true};
-  g.fillStyle='#fbf7f0';g.fillRect(0,0,W,H);
-  if(logo)g.drawImage(logo,P,40,96,96);
-  g.fillStyle='#2f8f72';g.font=`500 50px ${FD}`;g.textBaseline='alphabetic';g.fillText(`ตารางเวร ${TH_M[UI.m-1]} ${UI.y+543}`,P+116,92);
-  g.fillStyle='#8a8178';g.font=`400 26px ${FB}`;g.fillText('ShiftTax · Your Shifts. Your Income. Your Balance.',P+118,130);
+  g.fillStyle=TH.bg;g.fillRect(0,0,W,H);
+  if(av){g.save();g.beginPath();g.arc(P+48,88,48,0,Math.PI*2);g.clip();g.drawImage(av,P,40,96,96);g.restore();g.lineWidth=4;g.strokeStyle=TH.cell;g.beginPath();g.arc(P+48,88,48,0,Math.PI*2);g.stroke()}
+  else if(logo){g.save();g.beginPath();g.arc(P+48,88,48,0,Math.PI*2);g.fillStyle='#fff';g.fill();g.clip();g.drawImage(logo,P,40,96,96);g.restore()}
+  const nm=O.name&&S.userName?S.userName:'';
+  g.fillStyle=TH.title;g.font=`500 50px ${FD}`;g.textBaseline='alphabetic';g.fillText(`ตารางเวร${nm?' · '+nm:''}`,P+116,86);
+  g.fillStyle=TH.mute;g.font=`400 28px ${FB}`;g.fillText(`${TH_M[UI.m-1]} ${UI.y+543}`,P+118,128);
+  if(av&&logo){g.save();g.beginPath();g.arc(W-P-32,84,32,0,Math.PI*2);g.fillStyle='#fff';g.fill();g.clip();g.drawImage(logo,W-P-64,52,64,64);g.restore()}
   g.textAlign='center';g.font=`500 26px ${FB}`;
-  TH_D.forEach((d,i)=>{g.fillStyle=i===0||i===6?'#d9607a':'#8a8178';g.fillText(d,P+cw*i+cw/2,top+34)});
+  TH_D.forEach((d,i)=>{g.fillStyle=i===0||i===6?TH.we:TH.mute;g.fillText(d,P+cw*i+cw/2,top+34)});
   const today=new Date();
   for(let d=1;d<=dim;d++){const idx=first+d-1,r=Math.floor(idx/7),cI=idx%7;const x=P+cI*cw+4,y=gy+r*ch+4,w=cw-8,h=ch-8;const dd=pad(d);
     const isT=today.getFullYear()===UI.y&&today.getMonth()+1===UI.m&&today.getDate()===d;
-    rr(x,y,w,h,18);g.fillStyle=mo.hol[dd]?'#fff4f6':'#ffffff';g.fill();g.lineWidth=isT?4:2;g.strokeStyle=isT?'#3fa383':'#ece3d7';g.stroke();
-    g.textAlign='left';g.font=`600 28px ${FB}`;g.fillStyle=cI===0||cI===6||mo.hol[dd]?'#d9607a':'#3d3a36';g.fillText(String(d),x+14,y+36);
-    const arr=mo.shifts[dd]||[];arr.slice(0,2).forEach((id,i)=>{const t=typeById(id);if(!t)return;const ot=t.work&&isOTs(mo,dd,id);const cy=y+48+i*46;
+    rr(x,y,w,h,18);g.fillStyle=mo.hol[dd]?TH.hol:TH.cell;g.fill();g.lineWidth=isT?4:2;g.strokeStyle=isT?TH.title:TH.line;g.stroke();
+    g.textAlign='left';g.font=`600 28px ${FB}`;g.fillStyle=cI===0||cI===6||mo.hol[dd]?TH.we:TH.ink;g.fillText(String(d),x+14,y+36);
+    const arr=mo.shifts[dd]||[];arr.slice(0,2).forEach((id,i)=>{const t=typeById(id);if(!t)return;const ot=O.ot&&t.work&&isOTs(mo,dd,id);const cy=y+48+i*46;
       rr(x+6,cy,w-12,40,12);g.fillStyle=col(t.color);g.globalAlpha=ot?.28:.16;g.fill();g.globalAlpha=1;g.lineWidth=2;g.strokeStyle=col(t.color);if(ot)g.setLineDash([6,4]);g.stroke();g.setLineDash([]);
-      const hasI=ico(id,ot,x+10,cy+4,32);g.fillStyle='#3d3a36';g.font=`600 ${t.code.length>2?20:24}px ${FB}`;g.textAlign='center';
+      const hasI=ico(id,ot,x+10,cy+4,32);g.fillStyle=TH.ink;g.font=`600 ${t.code.length>2?20:24}px ${FB}`;g.textAlign='center';
       g.fillText(t.code+(ot?' OT':''),x+(hasI?26:0)+w/2,cy+29)});
-    if(arr.length>2){g.textAlign='right';g.font=`500 20px ${FB}`;g.fillStyle='#8a8178';g.fillText('+'+(arr.length-2),x+w-10,y+36)}}
+    if(arr.length>2){g.textAlign='right';g.font=`500 20px ${FB}`;g.fillStyle=TH.mute;g.fillText('+'+(arr.length-2),x+w-10,y+36)}}
   let ly=gy+rows*ch+36;g.textAlign='left';
   used.forEach((t,i)=>{const lx=P+(i%3)*((W-P*2)/3),yy=ly+Math.floor(i/3)*58;const hasI=ico(t.id,false,lx,yy,42);
-    g.fillStyle='#3d3a36';g.font=`500 26px ${FB}`;g.fillText(`${t.name.replace(/\s*\(.*\)/,'')} ${c.counts[t.id]}`,lx+(hasI?54:0),yy+31)});
-  if(!used.length){g.fillStyle='#8a8178';g.font=`400 26px ${FB}`;g.fillText('ยังไม่มีเวรเดือนนี้',P,ly+30)}
-  g.textAlign='center';g.fillStyle='#b3a99d';g.font=`400 22px ${FB}`;g.fillText('สร้างด้วย ShiftTax ♡',W/2,H-28);
+    g.fillStyle=TH.ink;g.font=`500 26px ${FB}`;g.fillText(`${t.name.replace(/\s*\(.*\)/,'')} ${c.counts[t.id]}`,lx+(hasI?54:0),yy+31)});
+  if(!used.length){g.fillStyle=TH.mute;g.font=`400 26px ${FB}`;g.fillText('ยังไม่มีเวรเดือนนี้',P,ly+30)}
+  let sy=ly+legRows*58+14;const pill=(txt,clr)=>{rr(P,sy,W-P*2,52,16);g.fillStyle=TH.cell;g.fill();g.lineWidth=2;g.strokeStyle=TH.line;g.stroke();g.fillStyle=clr||TH.ink;g.font=`600 26px ${FB}`;g.textAlign='center';g.fillText(txt,W/2,sy+35);g.textAlign='left';sy+=64};
+  if(O.sum){const otN=O.ot?c.otShiftN:0;pill(`ทำงาน ${c.workDays} วัน · ${fmt(Math.round(c.hours))} ชม.${otN?` · OT ${otN} เวร`:''}${c.doubles?` · ควบ ${c.doubles} วัน`:''}`)}
+  if(O.income)pill(`ค่าเวร + OT เดือนนี้ ฿${fmt(c.shift)}`,TH.title);
+  g.textAlign='center';g.fillStyle=TH.mute;g.globalAlpha=.75;g.font=`400 22px ${FB}`;g.fillText('ShiftTax · Your Shifts. Your Income. Your Balance.',W/2,H-28);g.globalAlpha=1;
   return cv}
+const SHARE_TH={cream:{n:'ครีมพาสเทล',bg:'#fbf7f0',cell:'#ffffff',line:'#ece3d7',ink:'#3d3a36',mute:'#8a8178',title:'#2f8f72',we:'#d9607a',hol:'#fff4f6'},
+  mint:{n:'มินต์',bg:'#e9f6f0',cell:'#ffffff',line:'#cfe7dc',ink:'#24423a',mute:'#6c8a80',title:'#1f8a68',we:'#d06478',hol:'#fff1f3'},
+  pink:{n:'ชมพูซากุระ',bg:'#fdeef2',cell:'#ffffff',line:'#f5d5de',ink:'#4a3038',mute:'#9a7480',title:'#c4517a',we:'#d0476e',hol:'#fff6e8'},
+  sky:{n:'ฟ้า ShiftTax',bg:'#eaf2fb',cell:'#ffffff',line:'#d3e2f3',ink:'#1c2b45',mute:'#61748f',title:'#2f6fc0',we:'#d9607a',hol:'#fff4f6'},
+  night:{n:'กลางคืน',bg:'#1d2433',cell:'#283146',line:'#38435c',ink:'#eef2f8',mute:'#9aa6bd',title:'#7fd1b0',we:'#ff8fa6',hol:'#3a2f44'}};
 function shareSheet(){return `<div class="scrim" data-act="share-close"><div class="sheet tall" role="dialog" aria-modal="true" aria-label="แชร์ตารางเวร" data-stop="1">
   <div class="row" style="justify-content:space-between"><h2 class="h-ico"><img src="${IMG.export||IMG.calendar}" alt="">แชร์ตารางเวร</h2><button class="icon-btn" data-act="share-close" aria-label="ปิด">×</button></div>
-  <p class="small muted" style="margin:0">ตารางเวรเดือน${TH_M[UI.m-1]} ${UI.y+543} · รูปนี้มีแค่เวร ไม่มีข้อมูลรายได้</p>
   <div class="share-prev" id="share-prev"><span class="small muted">กำลังสร้างรูป...</span></div>
+  <div class="so-box"><div class="so-h">เลือกสิ่งที่จะแสดงในรูป</div>
+    <div class="so-grid">${[['name','ชื่อเล่น'],['avatar','รูปโปรไฟล์'],['ot','ป้าย OT'],['sum','สรุปจำนวนเวร / ชั่วโมง'],['income','รายได้ค่าเวร + OT']].map(([k,l])=>`<label class="so-t"><input type="checkbox" data-so="${k}" ${S.shareOpt[k]?'checked':''}><span>${l}</span></label>`).join('')}</div>
+    <p id="so-warn" class="small neg" style="margin:0" ${S.shareOpt.income?'':'hidden'}>⚠️ รูปจะแสดงรายได้ค่าเวรของเดือนนี้ ปิดก่อนแชร์ถ้าไม่อยากให้คนอื่นเห็น</p>
+    <label class="so-th">ธีมสี<select id="so-theme">${Object.entries(SHARE_TH).map(([k,v])=>`<option value="${k}" ${S.shareOpt.theme===k?'selected':''}>${v.n}</option>`).join('')}</select></label>
+    <p class="small muted" style="margin:0">เงินเดือน รายรับรายจ่าย หนี้ และภาษี จะไม่อยู่ในรูปเสมอ</p></div>
   <div class="grid2"><button class="btn primary big" data-act="share-img">บันทึก / ส่งรูป</button><button class="btn big" data-act="share-text">คัดลอกเป็นข้อความ</button></div>
   <textarea id="share-txt" class="share-txt" readonly hidden>${esc(shareText())}</textarea>
   <p class="small muted" style="margin:0">ส่งรูปหรือข้อความนี้ให้เพื่อนทาง LINE หรือแอปแชตได้เลย</p></div></div>`}
@@ -1449,6 +1479,7 @@ function renderTaxResults(){
 
 /* ---------- settings ---------- */
 function setSecs(){return [
+  ['profile','โปรไฟล์',`${S.userName?'คุณ'+S.userName:'ตั้งชื่อเล่น'} · ${S.avatar?'มีรูปโปรไฟล์':'เพิ่มรูปโปรไฟล์'}`,'profile'],
   ['pay','เงินเดือนและรายการหัก',`เงินเดือน ฿${fmt(S.salary)} · ${S.sso?'หักประกันสังคม':'ไม่หักประกันสังคม'}${S.deductions.length?' · หักอื่น '+S.deductions.length+' รายการ':''}${num(S.budget)?' · งบ ฿'+fmt(S.budget):''}`,'money'],
   ['combo','ปุ่มเวรควบ',(S.combos||[]).length?`${S.combos.length} ปุ่ม`:'ยังไม่มี · ตั้งปุ่มลัดลงหลายเวรในวันเดียว','ot'],
   ['types','ประเภทเวร เวลา และอัตราค่าเวร',`${S.shiftTypes.length} ประเภท · เวลาเริ่ม-เลิก ค่าเวร OT`,'calendar'],
@@ -1461,8 +1492,14 @@ function vSettings(){const secs=setSecs();const parts=settingsAll().split('<sect
 function settingsAll(){
   const colors=[1,2,3,4,5,6,7,8];
   return `<section class="card">
+    <h2 class="h-ico"><img src="${IMG.profile}" alt="">โปรไฟล์</h2>
+    <div class="prof">${avatarEl(88)}<div class="grow"><label>ชื่อเล่น<input id="set-name" value="${esc(S.userName||'')}" maxlength="30" placeholder="เช่น ฝน"></label>
+      <div class="row" style="gap:6px;margin-top:8px"><label class="btn sm" for="av-file">📷 ${S.avatar?'เปลี่ยนรูป':'เพิ่มรูปโปรไฟล์'}</label>${S.avatar?'<button class="btn sm danger" data-act="av-del">ลบรูป</button>':''}</div></div></div>
+    <input type="file" id="av-file" accept="image/*" hidden>
+    <p class="small muted" style="margin:0">ชื่อและรูปใช้ทักทาย และแสดงในรูปแชร์ตารางเวรเมื่อคุณเลือกเปิด · เก็บในเครื่องนี้เท่านั้น</p>
+  </section>
+  <section class="card">
     <h2 class="h-ico"><img src="${IMG.money}" alt="">เงินเดือนและรายการหัก</h2>
-    <label>ชื่อของคุณ<input id="set-name" value="${esc(S.userName||'')}" maxlength="30" placeholder="ชื่อเล่น"></label>
     <div class="grid2">
       <label>เงินเดือน (บาท/เดือน)<input class="num" data-set="salary" inputmode="decimal" value="${S.salary}"></label>
       <label>กบข. / กองทุนสำรองเลี้ยงชีพ (% ของเงินเดือน)<input class="num" data-set="pvdPct" inputmode="decimal" value="${S.pvdPct||''}" placeholder="0"></label>
@@ -1538,6 +1575,8 @@ document.addEventListener('click',async ev=>{
       else if(UI.onb===2){UI.setSec='types'}UI.onb++;render();window.scrollTo(0,0);break}
     case 'onb-back':UI.onb=Math.max(1,UI.onb-1);UI.setSec=UI.onb===2?'pay':null;render();break;
     case 'onb-done':S.onboarded=true;if(S.sample&&num(S.salary))S.sample=false;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();window.scrollTo(0,0);toast(`พร้อมแล้วค่ะ คุณ${S.userName||''} แตะวันที่ในปฏิทินเพื่อลงเวรได้เลย`);break;
+    case 'profile-open':UI.tab='settings';UI.setSec='profile';UI.sheet=null;UI.notif=false;render();window.scrollTo(0,0);break;
+    case 'av-del':S.avatar='';touch('settings');render();break;
     case 'mpick-open':UI.mpick=true;UI.mpy=UI.y;renderSheet();break;
     case 'mpick-close':UI.mpick=false;renderSheet();break;
     case 'mpy':UI.mpy+=+b.dataset.v;renderSheet();break;
@@ -1694,6 +1733,9 @@ document.addEventListener('change',ev=>{
   if(t.id==='m-sal'){const mo=getM(key,true);mo.salary=t.value.trim()===''?null:num(t.value);touch(key);return}
   if(t.dataset.set){S[t.dataset.set]=num(t.value);S.sample=false;touch('settings');return}
   if(t.dataset.setb){S[t.dataset.setb]=t.checked;S.sample=false;touch('settings');return}
+  if(t.id==='av-file'){const n=$('#onb-name');if(n&&UI.onb===1)S.userName=n.value.trim();setAvatarFile(t.files&&t.files[0]);return}
+  if(t.id==='so-theme'){S.shareOpt.theme=t.value;touch('settings');buildShare();return}
+  if(t.dataset.so){S.shareOpt[t.dataset.so]=t.checked;touch('settings');const w=$('#so-warn');if(w)w.hidden=!S.shareOpt.income;const tx=$('#share-txt');if(tx)tx.value=shareText();buildShare();return}
   if(t.id==='set-name'){S.userName=t.value.trim();touch('settings');return}
   if(t.id==='mp-ysel'){UI.mpy=+t.value;renderSheet();return}
   if(t.id==='cneu-exp'){S.cneu.exp=t.value;touch('settings');renderSheet();return}
