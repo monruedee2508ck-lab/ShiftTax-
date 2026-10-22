@@ -558,6 +558,12 @@ h1,h2,h3{font-weight:500}
 html.onb-open,html.onb-open body{overflow:hidden!important;overscroll-behavior:none;height:100%}
 .onb-wrap{overscroll-behavior:contain}.wl-card{overscroll-behavior:contain}
 .wl-card.tight .wl-body{gap:8px;padding:14px 18px 16px}.wl-card.tight .wl-in{padding:11px 14px!important}.wl-card.tight .wl-next{padding:12px 16px}.wl-card.tight h2{font-size:20px}
+html.fitpage{height:100%;overflow:hidden}html.fitpage body{margin:0;height:100vh;height:100dvh;box-sizing:border-box;display:flex;flex-direction:column;overflow-y:auto;padding-bottom:calc(var(--nav-h) + 14px + env(safe-area-inset-bottom,0px))}
+html.fitpage body>.wrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+html.fitpage #view{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+html.fitpage #view>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+html.fitpage #view .cal{flex:1 1 auto;min-height:0;grid-template-rows:auto repeat(var(--rows,5),minmax(42px,1fr))}
+html.fitpage #view .cal .day{min-height:0!important;height:auto;overflow:hidden}
 </style>
 
 <div class="wrap">
@@ -870,7 +876,7 @@ function vRoster(){
   </div>`:''}
     ${showPal?pal:''}
     ${showPal?`<p class="small muted" style="margin:0">${UI.paint?(UI.paint==='__x'?'แตะวันที่เพื่อลบเวรทั้งหมดของวันนั้น · แตะ ✕ อีกครั้งเพื่อกลับ':'แตะวันที่เพื่อใส่หรือเอาออกเวรที่เลือก ลงทีละหลายวันได้เร็ว · แตะเวรเดิมอีกครั้งเพื่อกลับ'):'แตะวันที่เพื่อลงเวรหรือเพิ่มงาน · หรือเลือกเวรด้านบนก่อน แล้วแตะหลายวันต่อเนื่อง'}</p>`:''}
-    <div class="cal">${cells}</div>
+    <div class="cal" style="--rows:${Math.ceil((first+dim)/7)}">${cells}</div>
     ${legend?(showSum?`<div class="legend">${legend}</div>`:''):`<div class="empty">ยังไม่มีเวรเดือนนี้ เลือกเวรด้านบนแล้วแตะวันที่ หรือ <button class="btn sm" data-act="sample">ใส่ตัวอย่างเดือนนี้</button></div>`}${showSum?vacCard:''}
     ${mo.sample?`<div class="row"><button class="btn sm danger" data-act="clear-month">ล้างข้อมูลตัวอย่างเดือนนี้</button></div>`:''}
   </section>`;
@@ -1208,7 +1214,7 @@ function fitOnb(){const w=document.querySelector('#onb .onb-wrap.wl');if(!w)retu
   if(over>1&&!card.classList.contains('tight')){card.classList.add('tight');fitOnb()}}
 window.addEventListener('resize',()=>{clearTimeout(fitOnb._t);fitOnb._t=setTimeout(fitOnb,80)});
 function onbPut(el,html){const k=(UI.lock?'L':'O')+String(UI.onb)+(UI.pin?UI.pin.mode:'');if(el.dataset.k===k&&el.firstElementChild)html=html.replace(/ pop"/g,'"');el.dataset.k=k;el.innerHTML=html;fitOnb();requestAnimationFrame(fitOnb);setTimeout(fitOnb,260);try{document.fonts.ready.then(fitOnb)}catch(e){}}
-function fitRoster(){const cal=document.querySelector('#view .cal');if(UI.tab!=='roster'||!cal)return;
+function fitRoster(){document.documentElement.classList.toggle('fitpage',UI.tab==='roster');return;const cal=document.querySelector('#view .cal');if(UI.tab!=='roster'||!cal)return;
   const days=cal.querySelectorAll('.day');const rows=Math.ceil(days.length/7);if(!rows)return;
   const gap=parseFloat(getComputedStyle(cal).rowGap)||6;const dow=cal.querySelector('.dow');const dowH=dow?dow.getBoundingClientRect().height:18;
   const set=h=>{cal.style.setProperty('--cellh',Math.max(40,Math.min(112,Math.floor(h)))+'px');cal.classList.add('fit')};
