@@ -4,6 +4,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ShiftTax</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#89D1C2">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ShiftTax">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&display=swap">
@@ -2013,6 +2021,7 @@ try{document.documentElement.style.setProperty('--wl-tile',`url(${WL_TILE})`)}ca
 try{$('#brandLogo').src=LOGO_SVG;$('#bellImg').src=IMG.bell}catch(e){}
 document.addEventListener('keydown',ev=>{if(UI.pin&&(UI.lock||UI.onb===4)&&!(ev.target&&ev.target.tagName==='INPUT')){if(/^[0-9]$/.test(ev.key)){ev.preventDefault();pinKey(ev.key);return}if(ev.key==='Backspace'){ev.preventDefault();pinKey('del');return}}
   if(ev.key==='Enter'&&ev.target&&ev.target.id==='onb-name'){ev.preventDefault();const b=document.querySelector('[data-act=onb-next]');if(b)b.click()}});
+try{if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 loadLocal();
   if(!S.onboarded){const w=cookieWho();if(w&&w.o){S.onboarded=true;if(w.n&&!S.userName)S.userName=w.n}}
   if(!S.onboarded){UI.onb='auth';UI.tab='settings'}else if(S.pin&&!unlockedNow()){UI.pin={mode:'unlock',stage:'enter',buf:''};UI.lock=true}render();
