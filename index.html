@@ -1149,7 +1149,7 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
   const hero=`<img class="wl-hero" src="${WL_HERO}" alt="ShiftTax · Smart Tax Solutions for Growth · Your Shifts. Your Income. Your Balance.">`;
   let body='',top='';
   if(st==='auth'||st===1){top=hero;const back=!!(S.setupDone&&S.email);
-    body=`<h2>${back?'ยินดีต้อนรับกลับค่ะ 💚':'ยินดีต้อนรับค่ะ 🎉'}</h2><p class="wl-p">${back?'ใส่ชื่อและ Gmail ที่สมัครไว้':'กรอกแค่ชื่อและ Gmail ก็เริ่มใช้ได้'}</p>
+    body=`<h2>${back?'ยินดีต้อนรับกลับค่ะ 💚':'ยินดีต้อนรับค่ะ 🎉'}</h2><p class="wl-p">${back?'ใส่ชื่อและ Gmail แล้วใส่ PIN เพื่อเข้าใช้':'กรอกแค่ชื่อและ Gmail ก็เริ่มใช้ได้'}</p>
     <div class="wl-uprow"><label for="av-file" class="wl-upl">${wlAvatar(72)}${S.avatar?'<span class="cam">📷</span>':''}<span class="t">${S.avatar?'เปลี่ยนรูปโปรไฟล์':'อัปโหลดรูปของคุณ'} <span aria-hidden="true">☁️</span></span></label><img class="wl-deco" src="${WL_DECO}" alt=""></div>
     <input type="file" id="av-file" accept="image/*" hidden>
     <label class="wl-lab">ชื่อของคุณ (ชื่อเล่นก็ได้)<input id="onb-name" class="wl-in" value="${nm}" maxlength="30" placeholder="เช่น ฝน" autocomplete="nickname"></label>
@@ -1252,6 +1252,7 @@ async function pinKey(k){const P=UI.pin;if(!P)return;if(UI.lockUntil&&Date.now()
     else P.err=`PIN ไม่ถูกต้อง (เหลืออีก ${5-UI.pinWrong} ครั้ง)`;renderOnb();return}
   UI.pinWrong=0;
   if(P.stage==='old'){P.stage='new';P.buf='';renderOnb();return}
+  if(UI.pendName||UI.pendEmail){if(UI.pendName)S.userName=UI.pendName;if(UI.pendEmail)S.email=UI.pendEmail;UI.pendName=UI.pendEmail=null;touch('settings')}
   markUnlocked();UI.lock=false;UI.pin=null;render();toast(`ยินดีต้อนรับกลับค่ะ${S.userName?' คุณ'+S.userName:''} 💚`)}
 async function prefillFromGoogle(){if(!fbUser)return;
   if(!S.userName&&fbUser.displayName)S.userName=fbUser.displayName.split(' ')[0].slice(0,30);
@@ -1802,7 +1803,7 @@ document.addEventListener('click',async ev=>{
   switch(act){
     case 'onb-google':UI.onbBusy=true;renderOnb();signIn().then(()=>{setTimeout(()=>{if(UI.onb==='auth'&&!fbUser){UI.onbBusy=false;renderOnb()}},1500)});break;
     case 'onb-local':UI.onb='auth';render();break;
-    case 'pin-forgot-email':{const em=($('#pf-email').value||'').trim().toLowerCase();if(!S.email||em!==S.email){toast('Gmail ไม่ตรงกับที่สมัครไว้');break}
+    case 'pin-forgot-email':{const em=($('#pf-email').value||'').trim().toLowerCase();if(!S.email||em!==String(S.email).trim().toLowerCase()){toast('Gmail ไม่ตรงกับที่สมัครไว้');break}
       UI.pin={mode:'set',stage:'new',buf:'',msg:'ยืนยันตัวตนแล้ว ตั้ง PIN ใหม่ได้เลย'};UI.pinForgot=false;renderOnb();break}
     case 'pin-key':pinKey(b.dataset.k);break;
     case 'pin-restart':UI.pin={mode:'set',stage:'new',buf:''};renderOnb();break;
@@ -1815,7 +1816,7 @@ document.addEventListener('click',async ev=>{
     case 'onb-next':{if(UI.onb==='auth'||UI.onb===1){const v=($('#onb-name').value||'').trim();const em=($('#onb-email').value||'').trim().toLowerCase();
         if(!v){toast('ใส่ชื่อก่อนนะคะ');$('#onb-name').focus();break}
         if(!EMAIL_RE.test(em)){toast('ใส่ Gmail ให้ถูกต้อง เช่น name@gmail.com');$('#onb-email').focus();break}
-        if(S.setupDone&&S.email&&S.email!==em){toast('Gmail ไม่ตรงกับบัญชีในเครื่องนี้');$('#onb-email').focus();break}
+        if(S.setupDone&&S.pin){UI.pendName=v;UI.pendEmail=em;S.onboarded=true;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();startLock('unlock');break}
         S.userName=v;S.email=em;touch('settings');
         if(S.setupDone||(!S.sample&&Object.keys(M).length)){S.setupDone=true;if(S.pin){S.onboarded=true;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();startLock('unlock');break}UI.onb=4;UI.pin=null;render();break}
         UI.onb=2;UI.tab='settings';UI.setSec='pay';render();window.scrollTo(0,0);break}
