@@ -376,7 +376,8 @@ h1,h2,h3{font-weight:500}
 .switcher{border-radius:16px;box-shadow:var(--shadow)}
 .switcher strong{font-weight:500}
 .mtitle{flex:1;border:0;background:transparent;font-family:var(--f-display);font-size:17px;font-weight:500;color:inherit;padding:6px;border-radius:12px}.mtitle .caret{font-size:11px;color:var(--muted)}.mtitle:active{background:var(--soft)}
-.mp-sheet{gap:12px}.mp-year select{flex:1;text-align:center;text-align-last:center;border:0;background:transparent;font-family:var(--f-display);font-size:17px}
+.mp-sheet{gap:12px}.mp-scrim{align-items:center;padding:16px}.mp-scrim .mp-sheet{border-radius:26px;max-width:440px;box-shadow:0 18px 50px rgba(0,0,0,.25);animation:sheetUp .22s ease;padding-bottom:18px}
+@media (min-width:640px){.scrim{align-items:center;padding:24px}.scrim>.sheet{border-radius:26px;max-height:88vh;box-shadow:0 18px 50px rgba(0,0,0,.25)}}.mp-year select{flex:1;text-align:center;text-align-last:center;border:0;background:transparent;font-family:var(--f-display);font-size:17px}
 .mpgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mpgrid button{position:relative;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px 0;font-size:15px;color:inherit}
 .mpgrid button.now{border-color:var(--accent);color:var(--accent);font-weight:600}.mpgrid button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink,#fff);font-weight:600}
 .mpgrid button i{position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--accent)}.mpgrid button.on i{background:#fff}
@@ -605,7 +606,16 @@ let store=null, uid=null, mode='local', firstSnap=true, hadLocal=false;
 const dirty=new Set(),inflight=new Set(); let saveTimer=null, saving=false, needRender=false;
 
 function loadLocal(){try{const raw=localStorage.getItem('nurse-roster-v1');if(!raw)return;const d=JSON.parse(raw);S=normSettings(d.settings);M={};for(const k in (d.months||{}))M[k]=normMonth(d.months[k]);hadLocal=true}catch(e){}}
-function saveLocal(){try{localStorage.setItem('nurse-roster-v1',JSON.stringify({settings:S,months:M}))}catch(e){}}
+function saveLocal(){const js=JSON.stringify({settings:S,months:M});try{localStorage.setItem('nurse-roster-v1',js)}catch(e){}
+  try{document.cookie='st_who='+encodeURIComponent(JSON.stringify({n:S.userName||'',o:!!S.onboarded}))+';max-age=63072000;path=/;SameSite=Lax'}catch(e){}
+  clearTimeout(saveLocal._t);saveLocal._t=setTimeout(()=>idbSet(js),400)}
+function idbOpen(){return new Promise((res,rej)=>{try{const r=indexedDB.open('shifttax',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
+async function idbSet(v){try{const db=await idbOpen();db.transaction('kv','readwrite').objectStore('kv').put(v,'data')}catch(e){}}
+async function idbGet(){try{const db=await idbOpen();return await new Promise(res=>{const q=db.transaction('kv').objectStore('kv').get('data');q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})}catch(e){return null}}
+function cookieWho(){try{const m=document.cookie.match(/(?:^|; )st_who=([^;]*)/);return m?JSON.parse(decodeURIComponent(m[1])):null}catch(e){return null}}
+async function restoreBackup(){if(hadLocal)return false;const raw=await idbGet();if(!raw)return false;
+  try{const d=JSON.parse(raw);if(!d||!d.settings)return false;S=normSettings(d.settings);M={};for(const k in (d.months||{}))M[k]=normMonth(d.months[k]);hadLocal=true;
+    try{localStorage.setItem('nurse-roster-v1',raw)}catch(e){}return true}catch(e){return false}}
 function getM(key,create){if(!M[key]){if(!create)return emptyMonth();M[key]=emptyMonth()}return M[key]}
 function taxP(y){return Object.assign({},TAX_DEFAULT,S.tax[y]||{})}
 function setTax(y,k,v){S.tax[y]=Object.assign({},TAX_DEFAULT,S.tax[y]||{},{[k]:v});touch('settings')}
@@ -784,7 +794,7 @@ function payForType(c,t){let s=0;for(const d in c.mo.shifts){if((c.mo.shifts[d]|
 function renderSheet(){const el=$('#sheet');const prev=el.querySelector('.sheet');const top=prev?prev.scrollTop:0;const pl=prev?prev.getAttribute('aria-label'):null;renderSheetInner();const sh=el.querySelector('.sheet');if(sh){if(prev&&pl===sh.getAttribute('aria-label'))sh.scrollTop=top;else sh.classList.add('anim')}}
 function mpickSheet(){const y=UI.mpy;const t=new Date();
   const has=m=>{const mo=M[mkey(y,m)];return mo&&((mo.entries||[]).length||Object.keys(mo.shifts||{}).some(d=>(mo.shifts[d]||[]).length))};
-  return `<div class="scrim" data-act="mpick-close"><div class="sheet mp-sheet" role="dialog" aria-modal="true" aria-label="เลือกเดือนและปี" data-stop="1">
+  return `<div class="scrim mp-scrim" data-act="mpick-close"><div class="sheet mp-sheet" role="dialog" aria-modal="true" aria-label="เลือกเดือนและปี" data-stop="1">
     <div class="row" style="justify-content:space-between"><h2>เลือกเดือนและปี</h2><button class="icon-btn" data-act="mpick-close" aria-label="ปิด">×</button></div>
     <div class="switcher mp-year"><button class="icon-btn" data-act="mpy" data-v="-1" aria-label="ปีก่อน">‹</button><select id="mp-ysel" aria-label="เลือกปี">${Array.from({length:21},(_,i)=>y-10+i).map(v=>`<option value="${v}" ${v===y?'selected':''}>พ.ศ. ${v+543}</option>`).join('')}</select><button class="icon-btn" data-act="mpy" data-v="1" aria-label="ปีถัดไป">›</button></div>
     <div class="mpgrid">${TH_MS.map((n,i)=>`<button class="${y===UI.y&&i+1===UI.m?'on':''} ${y===t.getFullYear()&&i===t.getMonth()?'now':''}" data-act="mpick" data-m="${i+1}">${n}${has(i+1)?'<i></i>':''}</button>`).join('')}</div>
@@ -1496,7 +1506,7 @@ document.addEventListener('click',async ev=>{
   if(b.classList.contains('scrim')&&ev.target.closest('[data-stop]'))return;
   const key=mkey(UI.y,UI.m);
   switch(act){
-    case 'onb-next':{if(UI.onb===1){const v=($('#onb-name').value||'').trim();if(!v){toast('ใส่ชื่อก่อนนะคะ');$('#onb-name').focus();break}S.userName=v;touch('settings');UI.tab='settings';UI.setSec='pay'}
+    case 'onb-next':{if(UI.onb===1){const v=($('#onb-name').value||'').trim();if(!v){toast('ใส่ชื่อก่อนนะคะ');$('#onb-name').focus();break}S.userName=v;S.onboarded=true;touch('settings');UI.tab='settings';UI.setSec='pay'}
       else if(UI.onb===2){UI.setSec='types'}UI.onb++;render();window.scrollTo(0,0);break}
     case 'onb-back':UI.onb=Math.max(1,UI.onb-1);UI.setSec=UI.onb===2?'pay':null;render();break;
     case 'onb-done':S.onboarded=true;if(S.sample&&num(S.salary))S.sample=false;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();window.scrollTo(0,0);toast(`พร้อมแล้วค่ะ คุณ${S.userName||''} แตะวันที่ในปฏิทินเพื่อลงเวรได้เลย`);break;
@@ -1698,6 +1708,11 @@ async function connect(){mode='local';setSync('','บันทึกในเค
 
 try{$('#brandLogo').src=LOGO_SVG;$('#bellImg').src=IMG.bell}catch(e){}
 document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target&&ev.target.id==='onb-name'){ev.preventDefault();const b=document.querySelector('[data-act=onb-next]');if(b)b.click()}});
-loadLocal();if(!S.onboarded){UI.onb=1;UI.tab='settings'}render();connect();setTimeout(devNotify,1500);setInterval(()=>{devNotify();updateBell()},30*60*1000);
+loadLocal();
+  if(!S.onboarded){const w=cookieWho();if(w&&w.o){S.onboarded=true;if(w.n&&!S.userName)S.userName=w.n}}
+  if(!S.onboarded){UI.onb=1;UI.tab='settings'}render();
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+  restoreBackup().then(ok=>{if(ok){if(S.onboarded){UI.onb=0;if(UI.tab==='settings'&&!UI.setSec)UI.tab='roster'}render();toast(`ยินดีต้อนรับกลับค่ะ${S.userName?' คุณ'+S.userName:''}`)}else if(S.onboarded)saveLocal()});
+  connect();setTimeout(devNotify,1500);setInterval(()=>{devNotify();updateBell()},30*60*1000);
 })();
 </script>
