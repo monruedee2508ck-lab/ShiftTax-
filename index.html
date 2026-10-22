@@ -317,7 +317,7 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .wl-in{background:#f6e7d2!important;border:1.5px solid #ecd6b8!important;border-radius:16px!important;padding:14px 16px!important;font-size:16px!important}
 .wl-in:focus{border-color:#8fc6ab!important;outline:none;box-shadow:0 0 0 3px rgba(143,198,171,.3)}
 .wl-next{border:0;background:#a9d7bf;color:#1f3b30;font-family:var(--f-display);font-weight:600;font-size:19px;border-radius:24px;padding:15px 18px;box-shadow:0 4px 0 #8cc2a6;position:relative;z-index:1}.wl-next:active{transform:translateY(2px);box-shadow:0 2px 0 #8cc2a6}
-.wl-uprow{display:flex;align-items:center;justify-content:space-between;gap:8px}.wl-deco{width:78px;height:auto;margin-right:-22px;pointer-events:none;flex:0 0 auto;mix-blend-mode:multiply}
+.wl-uprow{display:flex;align-items:center;justify-content:space-between;gap:8px}.wl-deco{width:78px;height:auto;margin-right:-22px;pointer-events:none;flex:0 0 auto;mix-blend-mode:multiply;-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)}
 .wl-google{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;border:1.5px solid #e4d7c3;background:#fff;color:#2b3b33;font-family:var(--f-display);font-weight:600;font-size:17px;border-radius:24px;padding:14px 16px;box-shadow:0 3px 0 #e8dcc8}.wl-google:disabled{opacity:.6}
 .wl-note{margin:0;text-align:center}.wl-warn{background:#fff3d6;border:1px solid #f1d58f;border-radius:14px;padding:9px 12px;color:#7a5a00}
 .pin-box{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff8ec;border-radius:22px;padding:14px 10px}
@@ -845,15 +845,15 @@ function mpickSheet(){const y=UI.mpy;const t=new Date();
 function logoutSheet(){const em=fbUser?esc(fbUser.email||'บัญชี Google'):'';
   return `<div class="scrim mp-scrim" data-act="logout-close"><div class="sheet mp-sheet lo-sheet" role="dialog" aria-modal="true" aria-label="ออกจากระบบ" data-stop="1">
     <div class="row" style="justify-content:space-between"><h2>ออกจากระบบ</h2><button class="icon-btn" data-act="logout-close" aria-label="ปิด">×</button></div>
-    <div class="lo-who">${avatarEl(48)}<div><b>${esc(S.userName?'คุณ'+S.userName:'ผู้ใช้เครื่องนี้')}</b><small>${fbUser?em:'ยังไม่ได้เข้าสู่ระบบ Google'}</small></div></div>
+    <div class="lo-who">${avatarEl(48)}<div><b>${esc(S.userName?'คุณ'+S.userName:'ผู้ใช้เครื่องนี้')}</b><small>${fbUser?em:esc(S.email||'บัญชีในเครื่องนี้')}</small></div></div>
     ${fbUser?`<p class="small muted" style="margin:0">ข้อมูลทั้งหมดซิงก์อยู่ในบัญชีแล้ว เข้าสู่ระบบด้วย Google อีกครั้งเมื่อไหร่ก็ได้ข้อมูลกลับมาครบ</p>
       <button class="btn primary big" data-act="logout-do" data-v="clear">ออกจากระบบ</button>
       <button class="btn" data-act="logout-do" data-v="keep">ออกจากระบบ แต่เก็บสำเนาไว้ในเครื่องนี้</button>`
-    :`<p class="small muted" style="margin:0">ข้อมูลตอนนี้อยู่ในเครื่องนี้เท่านั้น ออกจากระบบแล้วข้อมูลยังอยู่ กรอกชื่อเดิมเพื่อเข้าใช้ต่อได้เลย</p>
+    :`<p class="small muted" style="margin:0">ข้อมูลอยู่ในเครื่องนี้ ออกจากระบบแล้วข้อมูลยังอยู่ กรอกชื่อและ Gmail เดิม แล้วใส่ PIN เพื่อเข้าใช้ต่อได้เลย</p>
       <button class="btn primary big" data-act="logout-do" data-v="keep">ออกจากระบบ</button>
       ${UI.logoutWipe?`<div class="lo-warn"><span class="small">ลบเวร รายการ และการตั้งค่าทั้งหมดในเครื่องนี้? กู้คืนไม่ได้</span><div class="row" style="gap:6px"><button class="btn danger grow" data-act="logout-do" data-v="clear">ยืนยัน ลบและออกจากระบบ</button><button class="btn" data-act="logout-wipe" data-v="0">ยกเลิก</button></div></div>`
         :`<button class="btn danger" data-act="logout-wipe" data-v="1">ออกจากระบบและลบข้อมูลในเครื่องนี้</button>`}
-      <button class="onb-skip" data-act="sign-in">เข้าสู่ระบบ Google เพื่อสำรองข้อมูลก่อน</button>`}
+      ${CLOUD_ON?'<button class="onb-skip" data-act="sign-in">เข้าสู่ระบบ Google เพื่อสำรองข้อมูลก่อน</button>':''}`}
   </div></div>`}
 async function doLogout(mode){const wasFb=!!fbUser;
   try{clearTimeout(saveTimer)}catch(e){}try{dirty.clear()}catch(e){}
@@ -1060,20 +1060,17 @@ function pinPad(){const P=UI.pin||{};const n=(P.buf||'').length;
     <div class="pin-pad">${['1','2','3','4','5','6','7','8','9','','0','del'].map(k=>k===''?'<span></span>':`<button class="pk ${k==='del'?'del':''}" data-act="pin-key" data-k="${k}" aria-label="${k==='del'?'ลบ':k}" ${UI.lockUntil&&Date.now()<UI.lockUntil?'disabled':''}>${k==='del'?'⌫':k}</button>`).join('')}</div>`}
 function pinTitle(){const P=UI.pin||{};return P.stage==='old'?'ใส่ PIN เดิม':P.stage==='new'?'ตั้ง PIN 4 หลัก':P.stage==='confirm'?'ใส่ PIN อีกครั้งเพื่อยืนยัน':'ใส่ PIN 4 หลักเพื่อเข้าใช้งาน'}
 function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
-  const dots=typeof st==='number'?`<div class="onb-dots">${[1,2,3,4].map(i=>`<i class="${i===st?'on':i<st?'done':''}"></i>`).join('')}</div>`:'';
+  const sn=st==='auth'?1:st;const dots=`<div class="onb-dots">${[1,2,3,4].map(i=>`<i class="${i===sn?'on':i<sn?'done':''}"></i>`).join('')}</div>`;
   const hero=`<img class="wl-hero" src="${WL_HERO}" alt="ShiftTax · Smart Tax Solutions for Growth · Your Shifts. Your Income. Your Balance.">`;
   let body='',top='';
-  if(st==='auth'){top=hero;const busy=UI.onbBusy;
-    body=`<h2>ยินดีต้อนรับค่ะ 🎉</h2><p class="wl-p">ShiftTax ช่วยลงตารางเวร คิดค่าเวร OT รายรับรายจ่าย และวางแผนภาษีให้อัตโนมัติ</p>
-    <button class="wl-google" data-act="onb-google" ${busy?'disabled':''}>${GLOGO}<span>${busy?'กำลังเชื่อมต่อบัญชี…':'สมัคร / เข้าสู่ระบบด้วย Gmail'}</span></button>
-    <p class="small muted wl-note">ใช้บัญชี Gmail เดียวกันเข้าได้ทุกเครื่อง ข้อมูลของคุณเห็นได้เฉพาะคุณ</p>
-    ${UI.fbFail?`<div class="wl-warn small">${/\bLine\/|FBAN|FBAV|Instagram/i.test(navigator.userAgent)?'เบราว์เซอร์ในแอปแชตเปิดล็อกอิน Google ไม่ได้ กด ⋯ แล้วเลือก "เปิดใน Safari/Chrome"':'ตอนนี้เชื่อมต่อระบบสมาชิกไม่ได้'}</div><button class="onb-skip" data-act="onb-local">ใช้งานแบบไม่สมัครก่อน (เก็บข้อมูลในเครื่องนี้)</button>`:''}`}
-  if(st===1){top=hero;
-    body=`<h2>${fbUser?'สมัครเรียบร้อยค่ะ 🎉':'ยินดีต้อนรับค่ะ 🎉'}</h2><p class="wl-p">${fbUser?`เชื่อมกับ ${esc(fbUser.email||'บัญชี Google')} แล้ว · `:''}ตั้งชื่อและรูปโปรไฟล์ของคุณ</p>
-    <div class="wl-uprow"><label for="av-file" class="wl-upl">${wlAvatar(72)}<span class="cam">📷</span><span class="t">${S.avatar?'เปลี่ยนรูปโปรไฟล์':'อัปโหลดรูปของคุณ'} <span aria-hidden="true">☁️</span></span></label><img class="wl-deco" src="${WL_DECO}" alt=""></div>
+  if(st==='auth'||st===1){top=hero;const back=!!(S.setupDone&&S.email);
+    body=`<h2>${back?'ยินดีต้อนรับกลับค่ะ 💚':'ยินดีต้อนรับค่ะ 🎉'}</h2><p class="wl-p">${back?'ใส่ชื่อและ Gmail ที่สมัครไว้เพื่อเข้าใช้งาน':'สมัครใช้งานง่าย ๆ แค่กรอกชื่อและ Gmail ShiftTax ช่วยลงตารางเวร คิดค่าเวร OT รายรับรายจ่าย และวางแผนภาษีให้อัตโนมัติ'}</p>
+    <div class="wl-uprow"><label for="av-file" class="wl-upl">${wlAvatar(72)}${S.avatar?'<span class="cam">📷</span>':''}<span class="t">${S.avatar?'เปลี่ยนรูปโปรไฟล์':'อัปโหลดรูปของคุณ'} <span aria-hidden="true">☁️</span></span></label><img class="wl-deco" src="${WL_DECO}" alt=""></div>
     <input type="file" id="av-file" accept="image/*" hidden>
     <label class="wl-lab">ชื่อของคุณ (ชื่อเล่นก็ได้)<input id="onb-name" class="wl-in" value="${nm}" maxlength="30" placeholder="เช่น ฝน" autocomplete="nickname"></label>
-    <button class="wl-next" data-act="onb-next">ถัดไป ›</button>`}
+    <label class="wl-lab">Gmail<input id="onb-email" class="wl-in" type="email" inputmode="email" value="${esc(S.email||'')}" maxlength="80" placeholder="name@gmail.com" autocomplete="email" autocapitalize="off" spellcheck="false"></label>
+    <button class="wl-next" data-act="onb-next">${back?'เข้าสู่ระบบ ›':'สมัครใช้งาน ›'}</button>
+    <p class="small muted wl-note">ตอนนี้ข้อมูลเก็บในเครื่องนี้ · Gmail ใช้เป็นชื่อบัญชีและใช้ยืนยันตัวตนเมื่อลืม PIN</p>`}
   if(st===2)body=`<h2>สวัสดีค่ะ คุณ${nm||'พยาบาล'} 💚</h2><p class="muted">ขั้นที่ 2/4 · ใส่รายได้ประจำต่อเดือน เพื่อคำนวณเงินได้และภาษี</p>
     <label>เงินเดือน (บาท/เดือน)<input class="num" data-set="salary" inputmode="decimal" value="${S.sample?'':S.salary||''}" placeholder="เช่น 25000"></label>
     <label class="inline"><input type="checkbox" data-setb="sso" ${S.sso?'checked':''}> หักประกันสังคม 5%</label>
@@ -1106,13 +1103,18 @@ function lockHtml(){const P=UI.pin||{};const forgot=UI.pinForgot;
     ${P.mode==='change'?'<button class="icon-btn lock-x" data-act="pin-cancel" aria-label="ยกเลิก">×</button>':''}
     ${wlAvatar(76)}
     <h2 style="margin:4px 0 0">${P.mode==='change'?'เปลี่ยน PIN':'สวัสดีค่ะ'+(S.userName?' คุณ'+esc(S.userName):'')}</h2>
-    <b class="pin-title">${pinTitle()}</b>${pinPad()}
-    ${P.mode==='unlock'?(forgot?`<div class="wl-warn small" style="text-align:left">${fbAvail()?'ยืนยันตัวตนด้วยบัญชี Gmail ที่สมัครไว้ แล้วตั้ง PIN ใหม่ ข้อมูลไม่หาย':'บัญชีนี้ไม่ได้เชื่อม Gmail จึงรีเซ็ต PIN ได้ด้วยการล้างข้อมูลในเครื่องนี้แล้วเริ่มใหม่เท่านั้น'}</div>
+    <b class="pin-title">${forgot?'ลืม PIN':pinTitle()}</b>${forgot?'':pinPad()}
+    ${P.mode==='unlock'&&forgot&&!fbAvail()?`<div class="wl-warn small" style="text-align:left">${S.email?'ใส่ Gmail ที่ใช้สมัคร เพื่อยืนยันตัวตนแล้วตั้ง PIN ใหม่ ข้อมูลไม่หาย':'บัญชีนี้ยังไม่ได้ใส่ Gmail จึงรีเซ็ต PIN ได้ด้วยการล้างข้อมูลในเครื่องนี้แล้วเริ่มใหม่เท่านั้น'}</div>
+      ${S.email?`<input id="pf-email" class="wl-in" type="email" inputmode="email" placeholder="name@gmail.com" autocapitalize="off" style="width:100%"><button class="wl-next" style="width:100%" data-act="pin-forgot-email">ยืนยัน</button>`:`<button class="btn danger" data-act="logout-do" data-v="clear">ล้างข้อมูลและเริ่มใหม่</button>`}
+      <button class="onb-skip" data-act="pin-forgot" data-v="0">ยกเลิก</button>`
+    :P.mode==='unlock'?(forgot?`<div class="wl-warn small" style="text-align:left">${fbAvail()?'ยืนยันตัวตนด้วยบัญชี Gmail ที่สมัครไว้ แล้วตั้ง PIN ใหม่ ข้อมูลไม่หาย':'บัญชีนี้ไม่ได้เชื่อม Gmail จึงรีเซ็ต PIN ได้ด้วยการล้างข้อมูลในเครื่องนี้แล้วเริ่มใหม่เท่านั้น'}</div>
       ${fbAvail()?`<button class="wl-google" data-act="pin-forgot-google">${GLOGO}<span>ยืนยันด้วย Gmail</span></button>`:`<button class="btn danger" data-act="logout-do" data-v="clear">ล้างข้อมูลและเริ่มใหม่</button>`}
       <button class="onb-skip" data-act="pin-forgot" data-v="0">ยกเลิก</button>`
       :`<button class="onb-skip" data-act="pin-forgot" data-v="1">ลืม PIN?</button>`):''}
     </div></div></div>`}
-function fbAvail(){return !!(fbAuth&&(fbUser||S.fbLinked))}
+const CLOUD_ON=false; // เปิดเป็น true เมื่อพร้อมซิงก์กับบัญชี Google จริง
+const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function fbAvail(){return CLOUD_ON&&!!(fbAuth&&(fbUser||S.fbLinked))}
 function renderOnb(){const el=$('#onb');if(!el)return;
   if(UI.lock){el.innerHTML=lockHtml();return}
   if(!UI.onb){el.innerHTML='';return}el.innerHTML=onbHtml();
@@ -1595,7 +1597,7 @@ function setSecs(){return [
   ['combo','ปุ่มเวรควบ',(S.combos||[]).length?`${S.combos.length} ปุ่ม`:'ยังไม่มี · ตั้งปุ่มลัดลงหลายเวรในวันเดียว','ot'],
   ['types','ประเภทเวร เวลา และอัตราค่าเวร',`${S.shiftTypes.length} ประเภท · เวลาเริ่ม-เลิก ค่าเวร OT`,'calendar'],
   ['cats','หมวดหมู่รายรับ-รายจ่าย',S.catsCustom.length?`เพิ่มเอง ${S.catsCustom.length} หมวด`:'ดูหรือลบหมวดหมู่','summary'],
-  ['data','บัญชีและข้อมูล',fbUser?`ซิงก์กับ ${fbUser.email||'บัญชี Google'}`:'เข้าสู่ระบบ Google เพื่อสำรองและใช้หลายเครื่อง · ล้างข้อมูล','export']]}
+  ['data','บัญชีและข้อมูล',!CLOUD_ON?(S.email||'บัญชีในเครื่องนี้')+' · ออกจากระบบ · ล้างข้อมูล':fbUser?`ซิงก์กับ ${fbUser.email||'บัญชี Google'}`:'เข้าสู่ระบบ Google เพื่อสำรองและใช้หลายเครื่อง · ล้างข้อมูล','export']]}
 function vSettings(){const secs=setSecs();const parts=settingsAll().split('<section class="card">').slice(1).map(x=>'<section class="card">'+x);
   const i=secs.findIndex(x=>x[0]===UI.setSec);
   if(i>=0&&parts[i])return `<div class="setback"><button class="btn sm" data-act="setsec" data-v="">‹ ตั้งค่าทั้งหมด</button></div>${parts[i]}`;
@@ -1604,7 +1606,7 @@ function settingsAll(){
   const colors=[1,2,3,4,5,6,7,8];
   return `<section class="card">
     <h2 class="h-ico"><img src="${IMG.profile}" alt="">โปรไฟล์</h2>
-    <div class="prof">${avatarEl(88)}<div class="grow"><label>ชื่อเล่น<input id="set-name" value="${esc(S.userName||'')}" maxlength="30" placeholder="เช่น ฝน"></label>
+    <div class="prof">${avatarEl(88)}<div class="grow"><label>ชื่อเล่น<input id="set-name" value="${esc(S.userName||'')}" maxlength="30" placeholder="เช่น ฝน"></label><label style="margin-top:6px">Gmail<input id="set-email" type="email" inputmode="email" value="${esc(S.email||'')}" maxlength="80" placeholder="name@gmail.com" autocapitalize="off"></label>
       <div class="row" style="gap:6px;margin-top:8px"><label class="btn sm" for="av-file">📷 ${S.avatar?'เปลี่ยนรูป':'เพิ่มรูปโปรไฟล์'}</label>${S.avatar?'<button class="btn sm danger" data-act="av-del">ลบรูป</button>':''}</div></div></div>
     <input type="file" id="av-file" accept="image/*" hidden>
     <p class="small muted" style="margin:0">ชื่อและรูปใช้ทักทาย และแสดงในรูปแชร์ตารางเวรเมื่อคุณเลือกเปิด${fbUser?' · ซิงก์กับบัญชี '+esc(fbUser.email||''):' · เก็บในเครื่องนี้'}</p>
@@ -1684,7 +1686,9 @@ document.addEventListener('click',async ev=>{
   const key=mkey(UI.y,UI.m);
   switch(act){
     case 'onb-google':UI.onbBusy=true;renderOnb();signIn().then(()=>{setTimeout(()=>{if(UI.onb==='auth'&&!fbUser){UI.onbBusy=false;renderOnb()}},1500)});break;
-    case 'onb-local':UI.onb=1;UI.tab='settings';render();break;
+    case 'onb-local':UI.onb='auth';render();break;
+    case 'pin-forgot-email':{const em=($('#pf-email').value||'').trim().toLowerCase();if(!S.email||em!==S.email){toast('Gmail ไม่ตรงกับที่สมัครไว้');break}
+      UI.pin={mode:'set',stage:'new',buf:'',msg:'ยืนยันตัวตนแล้ว ตั้ง PIN ใหม่ได้เลย'};UI.pinForgot=false;renderOnb();break}
     case 'pin-key':pinKey(b.dataset.k);break;
     case 'pin-restart':UI.pin={mode:'set',stage:'new',buf:''};renderOnb();break;
     case 'pin-cancel':UI.lock=false;UI.pin=null;renderOnb();break;
@@ -1693,11 +1697,15 @@ document.addEventListener('click',async ev=>{
     case 'pin-forgot-google':{try{await fbLoad();const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:'select_account'});
         if(fbAuth.currentUser)await fbAuth.currentUser.reauthenticateWithPopup(pr);else await fbAuth.signInWithPopup(pr);
         UI.pin={mode:'set',stage:'new',buf:'',msg:'ยืนยันตัวตนแล้ว ตั้ง PIN ใหม่ได้เลย'};UI.pinForgot=false;renderOnb()}catch(e){authErr(e)}break}
-    case 'onb-next':{if(UI.onb===1){const v=($('#onb-name').value||'').trim();if(!v){toast('ใส่ชื่อก่อนนะคะ');$('#onb-name').focus();break}S.userName=v;touch('settings');
+    case 'onb-next':{if(UI.onb==='auth'||UI.onb===1){const v=($('#onb-name').value||'').trim();const em=($('#onb-email').value||'').trim().toLowerCase();
+        if(!v){toast('ใส่ชื่อก่อนนะคะ');$('#onb-name').focus();break}
+        if(!EMAIL_RE.test(em)){toast('ใส่ Gmail ให้ถูกต้อง เช่น name@gmail.com');$('#onb-email').focus();break}
+        if(S.setupDone&&S.email&&S.email!==em){toast('Gmail ไม่ตรงกับบัญชีในเครื่องนี้');$('#onb-email').focus();break}
+        S.userName=v;S.email=em;touch('settings');
         if(S.setupDone||(!S.sample&&Object.keys(M).length)){S.setupDone=true;if(S.pin){S.onboarded=true;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();startLock('unlock');break}UI.onb=4;UI.pin=null;render();break}
-        UI.tab='settings';UI.setSec='pay'}
+        UI.onb=2;UI.tab='settings';UI.setSec='pay';render();window.scrollTo(0,0);break}
       else if(UI.onb===2){UI.setSec='types'}UI.onb++;render();window.scrollTo(0,0);break}
-    case 'onb-back':UI.pin=null;UI.onb=Math.max(1,UI.onb-1);UI.setSec=UI.onb===2?'pay':null;render();break;
+    case 'onb-back':UI.pin=null;UI.onb=UI.onb<=2?'auth':UI.onb-1;UI.setSec=UI.onb===2?'pay':null;render();break;
     case 'onb-done':if(S.sample&&num(S.salary))S.sample=false;touch('settings');if(S.pin){finishSetup();toast(`พร้อมแล้วค่ะ คุณ${S.userName||''}`);break}UI.onb=4;UI.pin=null;UI.setSec=null;render();window.scrollTo(0,0);break;
     case 'profile-open':UI.tab='settings';UI.setSec='profile';UI.sheet=null;UI.notif=false;render();window.scrollTo(0,0);break;
     case 'av-del':S.avatar='';touch('settings');render();break;
@@ -1865,6 +1873,7 @@ document.addEventListener('change',ev=>{
   if(t.id==='av-file'){const n=$('#onb-name');if(n&&UI.onb===1)S.userName=n.value.trim();setAvatarFile(t.files&&t.files[0]);return}
   if(t.id==='so-theme'){S.shareOpt.theme=t.value;touch('settings');buildShare();return}
   if(t.dataset.so){S.shareOpt[t.dataset.so]=t.checked;touch('settings');const w=$('#so-warn');if(w)w.hidden=!S.shareOpt.income;const tx=$('#share-txt');if(tx)tx.value=shareText();buildShare();return}
+  if(t.id==='set-email'){const em=t.value.trim().toLowerCase();if(em&&!EMAIL_RE.test(em)){toast('รูปแบบ Gmail ไม่ถูกต้อง');t.value=S.email||'';return}S.email=em;touch('settings');return}
   if(t.id==='set-name'){S.userName=t.value.trim();touch('settings');return}
   if(t.id==='mp-ysel'){UI.mpy=+t.value;renderSheet();return}
   if(t.id==='cneu-exp'){S.cneu.exp=t.value;touch('settings');renderSheet();return}
@@ -1950,12 +1959,14 @@ async function signIn(){
   try{await fbAuth.signInWithPopup(pr)}
   catch(e){if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment')){try{await fbAuth.signInWithRedirect(pr)}catch(e2){authErr(e2)}}else authErr(e)}}
 async function signOut(){try{await fbAuth.signOut();toast('ออกจากระบบแล้ว · ข้อมูลยังอยู่ในเครื่องนี้')}catch(e){toast('ออกจากระบบไม่สำเร็จ')}}
-async function connect(){mode='local';setSync('','บันทึกในเครื่องนี้');
+async function connect(){mode='local';setSync('','บันทึกในเครื่องนี้');if(!CLOUD_ON)return;
   if(/\bLine\/|FBAN|FBAV|Instagram/i.test(navigator.userAgent))UI.fbFail=true;
   try{await fbLoad()}catch(e){UI.fbFail=true;renderOnb();return}
   fbAuth.getRedirectResult().catch(authErr);
   fbAuth.onAuthStateChanged(u=>{fbUser=u||null;if(u)startSync(u);else stopSync();if(!isEditing())render()})}
 function acctHtml(){
+  if(!CLOUD_ON)return `<div class="acct">${avatarEl(40)}<div class="grow"><b>${esc(S.userName||'ผู้ใช้เครื่องนี้')}</b><small>${esc(S.email||'ยังไม่ได้ใส่ Gmail')}</small></div><button class="btn sm" data-act="logout-ask">ออกจากระบบ</button></div>
+    <p class="small muted" style="margin:0">ข้อมูลเก็บในเบราว์เซอร์ของเครื่องนี้ · การซิงก์ข้อมูลกับบัญชี Gmail จะเปิดให้ใช้เร็ว ๆ นี้</p>`;
   if(fbUser)return `<div class="acct">${fbUser.photoURL?`<img src="${esc(fbUser.photoURL)}" alt="" referrerpolicy="no-referrer">`:''}<div class="grow"><b>${esc(fbUser.displayName||'บัญชี Google')}</b><small>${esc(fbUser.email||'')}</small></div><button class="btn sm" data-act="sign-out">ออกจากระบบ</button></div>
     <p class="small muted" style="margin:0">ข้อมูลซิงก์กับบัญชีนี้อัตโนมัติ เปิดจากมือถือ แท็บเล็ต หรือคอมก็เห็นข้อมูลเดียวกัน</p>`;
   return `<button class="btn primary big" data-act="sign-in">เข้าสู่ระบบด้วย Google</button>
