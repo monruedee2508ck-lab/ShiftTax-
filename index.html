@@ -305,6 +305,8 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .so-box{border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}.so-h{font-weight:600;font-size:13.5px}
 .so-grid{display:flex;flex-wrap:wrap;gap:6px}.so-t{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px;cursor:pointer;border:1px solid var(--line);border-radius:99px;padding:5px 11px;font-size:12.5px;background:var(--surface)}.so-t input{width:16px!important;height:16px;margin:0;flex:0 0 auto;padding:0;accent-color:var(--accent)}
 .so-t:has(input:checked){background:var(--soft);border-color:var(--accent);color:var(--accent)}.so-th{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;font-size:13px}.so-th select{flex:1}
+.lo-who{display:flex;align-items:center;gap:12px}.lo-who div{display:flex;flex-direction:column}.lo-who small{color:var(--muted);font-size:12.5px}
+.lo-warn{display:flex;flex-direction:column;gap:8px;border:1px solid #f6b8bf;background:#ffeef0;border-radius:14px;padding:10px}.lo-btn{color:var(--bad);border-color:#f6b8bf;align-self:flex-start}
 .onb-skip{border:0;background:transparent;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:4px}
 [hidden]{display:none!important}
 .catpick-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--accent);background:var(--soft);border-radius:16px;padding:10px 12px;color:inherit}.catpick-btn.empty{border-style:dashed}.catpick-btn .grow{display:flex;flex-direction:column;min-width:0}.catpick-btn small{font-size:11.5px;color:var(--muted)}.catpick-btn b{color:var(--accent)}.catpick-btn .ico{flex:0 0 auto}
@@ -820,8 +822,29 @@ function mpickSheet(){const y=UI.mpy;const t=new Date();
     <div class="mpgrid">${TH_MS.map((n,i)=>`<button class="${y===UI.y&&i+1===UI.m?'on':''} ${y===t.getFullYear()&&i===t.getMonth()?'now':''}" data-act="mpick" data-m="${i+1}">${n}${has(i+1)?'<i></i>':''}</button>`).join('')}</div>
     <button class="btn" data-act="mpick-today">กลับไปเดือนปัจจุบัน</button>
     <p class="small muted" style="margin:0;text-align:center">จุดใต้เดือน = มีเวรหรือรายการที่บันทึกไว้</p></div></div>`}
+function logoutSheet(){const em=fbUser?esc(fbUser.email||'บัญชี Google'):'';
+  return `<div class="scrim mp-scrim" data-act="logout-close"><div class="sheet mp-sheet lo-sheet" role="dialog" aria-modal="true" aria-label="ออกจากระบบ" data-stop="1">
+    <div class="row" style="justify-content:space-between"><h2>ออกจากระบบ</h2><button class="icon-btn" data-act="logout-close" aria-label="ปิด">×</button></div>
+    <div class="lo-who">${avatarEl(48)}<div><b>${esc(S.userName?'คุณ'+S.userName:'ผู้ใช้เครื่องนี้')}</b><small>${fbUser?em:'ยังไม่ได้เข้าสู่ระบบ Google'}</small></div></div>
+    ${fbUser?`<p class="small muted" style="margin:0">ข้อมูลทั้งหมดซิงก์อยู่ในบัญชีแล้ว เข้าสู่ระบบด้วย Google อีกครั้งเมื่อไหร่ก็ได้ข้อมูลกลับมาครบ</p>
+      <button class="btn primary big" data-act="logout-do" data-v="clear">ออกจากระบบ</button>
+      <button class="btn" data-act="logout-do" data-v="keep">ออกจากระบบ แต่เก็บสำเนาไว้ในเครื่องนี้</button>`
+    :`<p class="small muted" style="margin:0">ข้อมูลตอนนี้อยู่ในเครื่องนี้เท่านั้น ออกจากระบบแล้วข้อมูลยังอยู่ กรอกชื่อเดิมเพื่อเข้าใช้ต่อได้เลย</p>
+      <button class="btn primary big" data-act="logout-do" data-v="keep">ออกจากระบบ</button>
+      ${UI.logoutWipe?`<div class="lo-warn"><span class="small">ลบเวร รายการ และการตั้งค่าทั้งหมดในเครื่องนี้? กู้คืนไม่ได้</span><div class="row" style="gap:6px"><button class="btn danger grow" data-act="logout-do" data-v="clear">ยืนยัน ลบและออกจากระบบ</button><button class="btn" data-act="logout-wipe" data-v="0">ยกเลิก</button></div></div>`
+        :`<button class="btn danger" data-act="logout-wipe" data-v="1">ออกจากระบบและลบข้อมูลในเครื่องนี้</button>`}
+      <button class="onb-skip" data-act="sign-in">เข้าสู่ระบบ Google เพื่อสำรองข้อมูลก่อน</button>`}
+  </div></div>`}
+async function doLogout(mode){const wasFb=!!fbUser;
+  try{clearTimeout(saveTimer)}catch(e){}try{dirty.clear()}catch(e){}
+  if(wasFb){try{if(fbUnsub)fbUnsub();fbUnsub=null;await fbAuth.signOut()}catch(e){toast('ออกจากระบบไม่สำเร็จ');return}stopSync()}
+  UI.logout=false;UI.logoutWipe=false;UI.sheet=null;UI.esheet=null;UI.dsheet=null;UI.share=false;UI.notif=false;UI.cneu=false;UI.setSec=null;
+  if(mode==='clear'){try{localStorage.removeItem('nurse-roster-v1')}catch(e){}try{indexedDB.deleteDatabase('shifttax')}catch(e){}
+    try{document.cookie='st_who=;max-age=0;path=/'}catch(e){}S=normSettings(null);M={};hadLocal=false}
+  else{S.onboarded=false;saveLocal()}
+  UI.onb=1;UI.tab='settings';render();window.scrollTo(0,0);toast(mode==='clear'?'ออกจากระบบแล้ว · ล้างข้อมูลในเครื่องนี้แล้ว':'ออกจากระบบแล้ว · ข้อมูลยังอยู่ในเครื่องนี้')}
 function renderSheetInner(){
-  const el=$('#sheet');if(UI.mpick){el.innerHTML=mpickSheet();return}if(UI.notif){el.innerHTML=notifSheet();return}if(UI.cneu){el.innerHTML=cneuSheet();return}if(UI.esheet&&!UI.esheet.inline&&UI.tab==='money'){el.innerHTML=entrySheet();paintIcons();return}
+  const el=$('#sheet');if(UI.logout){el.innerHTML=logoutSheet();return}if(UI.mpick){el.innerHTML=mpickSheet();return}if(UI.notif){el.innerHTML=notifSheet();return}if(UI.cneu){el.innerHTML=cneuSheet();return}if(UI.esheet&&!UI.esheet.inline&&UI.tab==='money'){el.innerHTML=entrySheet();paintIcons();return}
   if(UI.dsheet&&UI.tab==='money'){el.innerHTML=detailSheet();paintIcons();return}
   if(UI.share&&UI.tab==='roster'){if(!el.querySelector('#share-prev')){el.innerHTML=shareSheet();buildShare()}return}
   if(!UI.sheet||UI.tab!=='roster'){el.innerHTML='';return}
@@ -1498,7 +1521,8 @@ function settingsAll(){
     <div class="prof">${avatarEl(88)}<div class="grow"><label>ชื่อเล่น<input id="set-name" value="${esc(S.userName||'')}" maxlength="30" placeholder="เช่น ฝน"></label>
       <div class="row" style="gap:6px;margin-top:8px"><label class="btn sm" for="av-file">📷 ${S.avatar?'เปลี่ยนรูป':'เพิ่มรูปโปรไฟล์'}</label>${S.avatar?'<button class="btn sm danger" data-act="av-del">ลบรูป</button>':''}</div></div></div>
     <input type="file" id="av-file" accept="image/*" hidden>
-    <p class="small muted" style="margin:0">ชื่อและรูปใช้ทักทาย และแสดงในรูปแชร์ตารางเวรเมื่อคุณเลือกเปิด · เก็บในเครื่องนี้เท่านั้น</p>
+    <p class="small muted" style="margin:0">ชื่อและรูปใช้ทักทาย และแสดงในรูปแชร์ตารางเวรเมื่อคุณเลือกเปิด${fbUser?' · ซิงก์กับบัญชี '+esc(fbUser.email||''):' · เก็บในเครื่องนี้'}</p>
+    <button class="btn lo-btn" data-act="logout-ask">⎋ ออกจากระบบ</button>
   </section>
   <section class="card">
     <h2 class="h-ico"><img src="${IMG.money}" alt="">เงินเดือนและรายการหัก</h2>
@@ -1566,17 +1590,19 @@ function toast(msg,undo){const el=$('#toast');el.innerHTML=`<div class="toast" r
 
 /* ---------- events ---------- */
 document.addEventListener('click',async ev=>{
-  const tabB=ev.target.closest('[data-tab]');if(tabB){UI.tab=tabB.dataset.tab;UI.sheet=null;UI.notif=false;UI.mpick=false;UI.cneu=false;UI.esheet=null;UI.dsheet=null;UI.share=false;UI.setSec=null;UI.taxSec=null;UI.resetAsk=false;render();window.scrollTo(0,0);return}
+  const tabB=ev.target.closest('[data-tab]');if(tabB){UI.tab=tabB.dataset.tab;UI.sheet=null;UI.notif=false;UI.logout=false;UI.mpick=false;UI.cneu=false;UI.esheet=null;UI.dsheet=null;UI.share=false;UI.setSec=null;UI.taxSec=null;UI.resetAsk=false;render();window.scrollTo(0,0);return}
   const sm=ev.target.closest('summary[data-sec]');if(sm){UI.sec[sm.dataset.sec]=!sm.parentElement.open;return}
   if(ev.target.id==='autonext'){UI.autoNext=ev.target.checked;try{localStorage.setItem('nr-autonext',UI.autoNext?'1':'0')}catch(e){}return}
   const b=ev.target.closest('[data-act]');if(!b)return;const act=b.dataset.act;
   if(b.classList.contains('scrim')&&ev.target.closest('[data-stop]'))return;
   const key=mkey(UI.y,UI.m);
   switch(act){
-    case 'onb-next':{if(UI.onb===1){const v=($('#onb-name').value||'').trim();if(!v){toast('ใส่ชื่อก่อนนะคะ');$('#onb-name').focus();break}S.userName=v;S.onboarded=true;touch('settings');UI.tab='settings';UI.setSec='pay'}
+    case 'onb-next':{if(UI.onb===1){const v=($('#onb-name').value||'').trim();if(!v){toast('ใส่ชื่อก่อนนะคะ');$('#onb-name').focus();break}S.userName=v;S.onboarded=true;touch('settings');
+        if(S.setupDone||(!S.sample&&Object.keys(M).length)){S.setupDone=true;UI.onb=0;UI.setSec=null;UI.tab='roster';render();window.scrollTo(0,0);toast(`ยินดีต้อนรับกลับค่ะ คุณ${v}`);break}
+        UI.tab='settings';UI.setSec='pay'}
       else if(UI.onb===2){UI.setSec='types'}UI.onb++;render();window.scrollTo(0,0);break}
     case 'onb-back':UI.onb=Math.max(1,UI.onb-1);UI.setSec=UI.onb===2?'pay':null;render();break;
-    case 'onb-done':S.onboarded=true;if(S.sample&&num(S.salary))S.sample=false;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();window.scrollTo(0,0);toast(`พร้อมแล้วค่ะ คุณ${S.userName||''} แตะวันที่ในปฏิทินเพื่อลงเวรได้เลย`);break;
+    case 'onb-done':S.onboarded=true;S.setupDone=true;if(S.sample&&num(S.salary))S.sample=false;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();window.scrollTo(0,0);toast(`พร้อมแล้วค่ะ คุณ${S.userName||''} แตะวันที่ในปฏิทินเพื่อลงเวรได้เลย`);break;
     case 'profile-open':UI.tab='settings';UI.setSec='profile';UI.sheet=null;UI.notif=false;render();window.scrollTo(0,0);break;
     case 'av-del':S.avatar='';touch('settings');render();break;
     case 'mpick-open':UI.mpick=true;UI.mpy=UI.y;renderSheet();break;
@@ -1709,8 +1735,11 @@ document.addEventListener('click',async ev=>{
     case 'del-nw':{const k=b.dataset.k;S.nw[k]=S.nw[k].filter(x=>x.id!==b.dataset.id);touch('settings');renderSheet();break}
     case 'add-allow':S.allowances.push({id:uidGen(),name:'เงินเพิ่ม',amount:0});S.sample=false;touch('settings');render();break;
     case 'add-ded':{const nm=b.dataset.name==='รายการหักอื่น'?'':(b.dataset.name||'');S.deductions.push({id:uidGen(),name:nm,amount:0});S.sample=false;touch('settings');render();const ins=document.querySelectorAll(nm?'[data-ded="amount"]':'[data-ded="name"]');if(ins.length)ins[ins.length-1].focus();break}
-    case 'sign-in':signIn();break;
-    case 'sign-out':signOut();break;
+    case 'sign-in':UI.logout=false;renderSheet();signIn();break;
+    case 'sign-out':case 'logout-ask':UI.logout=true;UI.logoutWipe=false;renderSheet();break;
+    case 'logout-close':UI.logout=false;UI.logoutWipe=false;renderSheet();break;
+    case 'logout-wipe':UI.logoutWipe=b.dataset.v==='1';renderSheet();break;
+    case 'logout-do':doLogout(b.dataset.v);break;
     case 'del-ded':S.deductions=S.deductions.filter(x=>x.id!==b.dataset.id);S.sample=false;touch('settings');render();break;
     case 'del-allow':S.allowances=S.allowances.filter(a=>a.id!==b.dataset.id);S.sample=false;touch('settings');render();break;
     case 'add-st':{const used=S.shiftTypes.map(t=>+t.color);const col=[1,2,3,4,5,6,7,8].find(c=>!used.includes(c))||7;
