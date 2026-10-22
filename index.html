@@ -309,7 +309,13 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .lo-warn{display:flex;flex-direction:column;gap:8px;border:1px solid #f6b8bf;background:#ffeef0;border-radius:14px;padding:10px}.lo-btn{color:var(--bad);border-color:#f6b8bf;align-self:flex-start}
 .onb-wrap.wl{background:#eef0ea var(--wl-tile) repeat;background-size:220px 220px}
 .wl-card{background:#fbf4e4;border-radius:30px;padding:0;overflow:hidden auto;box-shadow:0 20px 60px rgba(60,70,50,.22);max-width:480px;gap:0;position:relative}
-.wl-hero{display:block;width:100%;height:auto}.wl-body{display:flex;flex-direction:column;gap:12px;padding:18px 22px 22px;position:relative}.has-hero .wl-body{padding-top:6px}
+.onb-wrap.wl{flex-direction:column;justify-content:center;gap:0;overflow:hidden}
+.wl-top{width:100%;max-width:480px;display:flex;justify-content:center;flex:0 0 auto;margin-bottom:-14px;position:relative;z-index:0}
+.wl-hero{display:block;width:100%;height:min(27vh,250px);object-fit:contain;-webkit-mask-image:radial-gradient(ellipse 58% 62% at 50% 46%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 58% 62% at 50% 46%,#000 62%,transparent 100%)}
+.wl-top.sm .wl-hero{height:min(19vh,170px)}
+.wl-card.pop{position:relative;z-index:1;animation:wlPop .38s cubic-bezier(.2,.9,.3,1.25);max-height:calc(100dvh - min(27vh,250px) - 20px)}
+.wl-top.sm+.wl-card.pop{max-height:calc(100dvh - min(19vh,170px) - 20px)}
+@keyframes wlPop{from{transform:translateY(26px) scale(.92);opacity:0}to{transform:none;opacity:1}}.wl-body{display:flex;flex-direction:column;gap:12px;padding:18px 22px 22px;position:relative}.wl-card .wl-body{padding-top:20px}
 .wl-card h2{font-family:var(--f-display);font-size:23px;font-weight:600;color:#2b3b33;margin:0}.wl-p{margin:0;color:#3e4a43;font-size:15px;line-height:1.55}
 .wl-upl{display:flex!important;flex-direction:row!important;align-items:center;gap:14px;position:relative;cursor:pointer;width:max-content;font-size:16px;color:#2b3b33}
 .wl-av{border-radius:50%;object-fit:cover;border:3px solid #b8dcc8;background:#fff;flex:0 0 auto}.wl-upl .cam{position:absolute;left:50px;top:48px;background:#fff;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-size:14px;box-shadow:0 1px 5px rgba(0,0,0,.2)}
@@ -1064,13 +1070,13 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
   const hero=`<img class="wl-hero" src="${WL_HERO}" alt="ShiftTax · Smart Tax Solutions for Growth · Your Shifts. Your Income. Your Balance.">`;
   let body='',top='';
   if(st==='auth'||st===1){top=hero;const back=!!(S.setupDone&&S.email);
-    body=`<h2>${back?'ยินดีต้อนรับกลับค่ะ 💚':'ยินดีต้อนรับค่ะ 🎉'}</h2><p class="wl-p">${back?'ใส่ชื่อและ Gmail ที่สมัครไว้เพื่อเข้าใช้งาน':'สมัครใช้งานง่าย ๆ แค่กรอกชื่อและ Gmail ShiftTax ช่วยลงตารางเวร คิดค่าเวร OT รายรับรายจ่าย และวางแผนภาษีให้อัตโนมัติ'}</p>
+    body=`<h2>${back?'ยินดีต้อนรับกลับค่ะ 💚':'ยินดีต้อนรับค่ะ 🎉'}</h2><p class="wl-p">${back?'ใส่ชื่อและ Gmail ที่สมัครไว้เพื่อเข้าใช้งาน':'สมัครใช้งานง่าย ๆ แค่กรอกชื่อและ Gmail'}</p>
     <div class="wl-uprow"><label for="av-file" class="wl-upl">${wlAvatar(72)}${S.avatar?'<span class="cam">📷</span>':''}<span class="t">${S.avatar?'เปลี่ยนรูปโปรไฟล์':'อัปโหลดรูปของคุณ'} <span aria-hidden="true">☁️</span></span></label><img class="wl-deco" src="${WL_DECO}" alt=""></div>
     <input type="file" id="av-file" accept="image/*" hidden>
     <label class="wl-lab">ชื่อของคุณ (ชื่อเล่นก็ได้)<input id="onb-name" class="wl-in" value="${nm}" maxlength="30" placeholder="เช่น ฝน" autocomplete="nickname"></label>
     <label class="wl-lab">Gmail<input id="onb-email" class="wl-in" type="email" inputmode="email" value="${esc(S.email||'')}" maxlength="80" placeholder="name@gmail.com" autocomplete="email" autocapitalize="off" spellcheck="false"></label>
     <button class="wl-next" data-act="onb-next">${back?'เข้าสู่ระบบ ›':'สมัครใช้งาน ›'}</button>
-    <p class="small muted wl-note">ตอนนี้ข้อมูลเก็บในเครื่องนี้ · Gmail ใช้เป็นชื่อบัญชีและใช้ยืนยันตัวตนเมื่อลืม PIN</p>`}
+    <p class="small muted wl-note">ข้อมูลเก็บในเครื่องนี้ · Gmail ใช้ยืนยันตัวตนเมื่อลืม PIN</p>`}
   if(st===2)body=`<h2>สวัสดีค่ะ คุณ${nm||'พยาบาล'} 💚</h2><p class="muted">ขั้นที่ 2/4 · ใส่รายได้ประจำต่อเดือน เพื่อคำนวณเงินได้และภาษี</p>
     <label>เงินเดือน (บาท/เดือน)<input class="num" data-set="salary" inputmode="decimal" value="${S.sample?'':S.salary||''}" placeholder="เช่น 25000"></label>
     <label class="inline"><input type="checkbox" data-setb="sso" ${S.sso?'checked':''}> หักประกันสังคม 5%</label>
@@ -1096,9 +1102,9 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     <div class="pin-box"><b class="pin-title">${pinTitle()}</b>${pinPad()}</div>
     ${UI.pin.stage==='confirm'?'<button class="onb-skip" data-act="pin-restart">ตั้ง PIN ใหม่</button>':'<button class="onb-skip" data-act="onb-back">‹ ย้อนกลับ</button>'}`}
   const skip=(st===2||st===3)?'<button class="onb-skip" data-act="onb-done">ข้ามไปก่อน ตั้งค่าทีหลัง</button>':'';
-  return `<div class="onb-wrap wl" role="dialog" aria-modal="true" aria-label="เริ่มใช้งาน ShiftTax"><div class="onb-card wl-card ${top?'has-hero':''}">${top}<div class="wl-body">${dots}${body}${skip}</div></div></div>`}
+  return `<div class="onb-wrap wl" role="dialog" aria-modal="true" aria-label="เริ่มใช้งาน ShiftTax"><div class="wl-top ${top?'':'sm'}">${hero}</div><div class="onb-card wl-card pop">${''}<div class="wl-body">${dots}${body}${skip}</div></div></div>`}
 function lockHtml(){const P=UI.pin||{};const forgot=UI.pinForgot;
-  return `<div class="onb-wrap wl" role="dialog" aria-modal="true" aria-label="ใส่ PIN"><div class="onb-card wl-card lock-card">
+  return `<div class="onb-wrap wl" role="dialog" aria-modal="true" aria-label="ใส่ PIN"><div class="wl-top sm"><img class="wl-hero" src="${WL_HERO}" alt="ShiftTax"></div><div class="onb-card wl-card lock-card pop">
     <div class="wl-body" style="align-items:center;text-align:center">
     ${P.mode==='change'?'<button class="icon-btn lock-x" data-act="pin-cancel" aria-label="ยกเลิก">×</button>':''}
     ${wlAvatar(76)}
