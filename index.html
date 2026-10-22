@@ -594,6 +594,23 @@ html.fitpage #view .cal .day{min-height:0!important;height:auto;overflow:hidden}
 .nwpop{background:var(--bg);border-radius:22px;padding:14px;width:min(430px,100%);max-height:84vh;overflow:auto;box-shadow:0 18px 50px rgba(0,0,0,.22);animation:wlPop .2s ease-out}.nwpop .h3{font-family:var(--f-display);font-size:17px}
 .nwpg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.nwpg h4{grid-column:1/-1;margin:8px 2px 0;font-size:13px;font-weight:600;color:var(--muted)}
 .nwpg button{border:1px solid var(--line);background:var(--field);border-radius:14px;padding:9px 4px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;color:var(--ink);line-height:1.25;cursor:pointer;text-align:center}
+
+.gsheet{display:flex;flex-direction:column;gap:10px}.gsheet .h-ico svg{width:26px;height:26px;color:var(--accent)}.gmon{font-family:var(--f-display);font-size:14px;min-width:54px;text-align:center}
+.gwho{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.gwho::-webkit-scrollbar{display:none}
+.gwho button{flex:none;border:1px solid var(--line);background:var(--field);border-radius:999px;padding:6px 12px;font-size:13px;display:flex;align-items:center;gap:6px;color:var(--ink);cursor:pointer}.gwho button.on{background:var(--primary);border-color:var(--primary);color:var(--primary-ink);font-weight:600}
+.gwho em,.gr em,.gp em{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+.gcal{border:1px solid var(--line);border-radius:16px;background:var(--field);padding:6px}.gh{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));text-align:center;font-size:11px;color:var(--muted);padding-bottom:4px}.gh .we{color:var(--bad)}
+.gg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.gc{min-height:52px;border:0;border-radius:10px;background:var(--surface);padding:3px 2px;display:flex;flex-direction:column;align-items:stretch;gap:1px;cursor:pointer;color:var(--ink);overflow:hidden;min-width:0}.gc.pad{background:none}
+.gc .d{font-size:11px;font-weight:600;text-align:left;padding-left:2px}.gc.we .d{color:var(--bad)}.gc.today{box-shadow:inset 0 0 0 2px var(--primary)}.gc.sel{background:var(--soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.gc .chip{font-size:9.5px;padding:1px 2px;border-radius:4px;max-width:100%;overflow:hidden}.gr{display:flex;align-items:center;gap:2px;min-width:0}.gr em{width:6px;height:6px}.gm{font-size:9px;color:var(--muted)}
+.gdet{background:var(--surface);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;font-size:13px}.glist{display:flex;flex-direction:column;gap:4px}.gp{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.gp small{color:var(--muted)}
+.gfree{border-top:1px dashed var(--line);padding-top:6px}
+.gempty{background:var(--surface);border-radius:14px;padding:10px 12px;font-size:13px}.gempty ol{margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
+.gsheet .btn svg{width:18px;height:18px;vertical-align:-3px;margin-right:4px}
+.gi-scrim{align-items:center;padding:16px}.sheet.gi{border-radius:24px;max-width:380px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:stretch;animation:wlPop .22s ease-out}
+.gi-ic{width:64px;height:64px;border-radius:50%;background:var(--soft);display:grid;place-items:center;margin:0 auto;color:var(--accent)}.gi-ic svg{width:32px;height:32px}.sheet.gi h2{margin:0;font-family:var(--f-display);font-size:19px}
+.tbtn .num{background:var(--coral);color:#fff;border-radius:999px;padding:0 5px;font-size:10px;margin-left:2px}
 </style>
 
 <div class="wrap">
@@ -899,7 +916,7 @@ function vRoster(){
   return `${sampleBanner()}${monthSwitch()}
   <section class="card">
     <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 class="h-ico"><img src="${IMG.calendar}" alt="">ตารางเวร</h2>
-      <div class="rtools"><button class="tbtn" data-act="share-open" aria-label="แชร์ตารางเวร">แชร์</button><button class="tbtn ${showSum?'on':''}" data-act="rtog" data-k="rsum" aria-expanded="${showSum}">สรุป ${showSum?'▴':'▾'}</button><button class="tbtn ${showPal?'on':''}" data-act="rtog" data-k="rpal" aria-expanded="${showPal}">ลงหลายวัน ${showPal?'▴':'▾'}</button></div></div>${(()=>{const cc=cneuCalc();const pc=Math.min(100,Math.round(cc.got/cc.req*100));return `<button class="cneu-bar ${cc.lvl}" data-act="cneu-open"><span>🎓 CNEU</span><span class="pbar"><i style="width:${pc}%"></i></span><b class="num">${fmt(cc.got)}/${cc.req}</b><small>${cc.got>=cc.req?'ครบแล้ว':cc.exp&&cc.mLeft>0?'อีก '+cc.mLeft+' เดือน':'หน่วย'}</small><span class="chev">›</span></button>`})()}
+      <div class="rtools"><button class="tbtn" data-act="g-open" aria-label="เวรเพื่อน">กลุ่ม${Object.keys(S.friends||{}).length?` <b class="num">${Object.keys(S.friends).length}</b>`:''}</button><button class="tbtn" data-act="share-open" aria-label="แชร์ตารางเวร">แชร์</button><button class="tbtn ${showSum?'on':''}" data-act="rtog" data-k="rsum" aria-expanded="${showSum}">สรุป ${showSum?'▴':'▾'}</button><button class="tbtn ${showPal?'on':''}" data-act="rtog" data-k="rpal" aria-expanded="${showPal}">ลงหลายวัน ${showPal?'▴':'▾'}</button></div></div>${(()=>{const cc=cneuCalc();const pc=Math.min(100,Math.round(cc.got/cc.req*100));return `<button class="cneu-bar ${cc.lvl}" data-act="cneu-open"><span>🎓 CNEU</span><span class="pbar"><i style="width:${pc}%"></i></span><b class="num">${fmt(cc.got)}/${cc.req}</b><small>${cc.got>=cc.req?'ครบแล้ว':cc.exp&&cc.mLeft>0?'อีก '+cc.mLeft+' เดือน':'หน่วย'}</small><span class="chev">›</span></button>`})()}
     ${showSum?`<div class="stats stats4">
     <div class="stat t-mint"><span class="si"><img src="${IMG.income}" alt="">ค่าเวร</span><b>${baht(c.earn.shift-c.earn.ot)}</b>${payLag('shift')?`<small class="muted">ได้รับเดือน${mShort(keyShift(key,-payLag('shift')))}</small>`:''}</div>
     <div class="stat t-yel"><span class="si"><img src="${IMG.ot}" alt="">OT / งานนอก</span><b>${baht(c.earn.ot)}</b>${payLag('ot')?`<small class="muted">ได้รับเดือน${mShort(keyShift(key,-payLag('ot')))}</small>`:''}</div>
@@ -979,8 +996,72 @@ async function saveDonateQR(){const name='shifttax-promptpay-qr.png';let blob;tr
   let dl=null;try{dl=await claude.use('downloads')}catch(e){}
   if(dl){try{await dl.save({filename:name,data:blob});toast('บันทึกรูป QR แล้ว')}catch(e){}return}
   try{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();toast('บันทึกรูป QR แล้ว')}catch(e){toast('กดค้างที่รูป QR เพื่อบันทึกได้ค่ะ')}}
+
+/* ---- group roster sharing (link based, no backend) ---- */
+const APP_URL='https://monruedee2508ck-lab.github.io/ShiftTax-/';
+const PCOL=['#E0705F','#7a5fc4','#D9A13A','#4a8fd0','#c4517a','#6b8f3a','#9a6b4f','#2f9fb0'];
+function devId(){if(!S.devId){S.devId=uidGen();touch('settings')}return S.devId}
+function b64e(o){const by=new TextEncoder().encode(JSON.stringify(o));let bin='';by.forEach(c=>bin+=String.fromCharCode(c));return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function b64d(t){t=String(t).replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const bin=atob(t);const by=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)by[i]=bin.charCodeAt(i);return JSON.parse(new TextDecoder().decode(by))}
+function myGroupPayload(key){const mo=getM(key,false);const used=[];const idx={};const days=[];const dim=new Date(+key.slice(0,4),+key.slice(5),0).getDate();
+  for(let d=1;d<=dim;d++){const arr=(mo.shifts[pad(d)]||[]).filter(id=>typeById(id));days.push(arr.map(id=>{if(!(id in idx)){const t=typeById(id);idx[id]=used.length;used.push([String(t.code).slice(0,6),String(t.name).slice(0,24),t.color|0,t.work?1:0,id==='O'?1:0])}return String.fromCharCode(97+idx[id])}).join(''))}
+  return {v:1,n:String(S.userName||'เพื่อน').slice(0,24),i:devId(),k:key,t:used,s:days.join('.')}}
+function groupLink(key){return APP_URL+'#g='+b64e(myGroupPayload(key))}
+function parseGroup(raw){try{let t=String(raw||'').trim();const m=t.match(/[#&?]g=([A-Za-z0-9_-]+)/);if(m)t=m[1];if(!/^[A-Za-z0-9_-]{10,}$/.test(t))return null;const o=b64d(t);
+  if(!o||o.v!==1||typeof o.n!=='string'||!/^\d{4}-\d{2}$/.test(o.k)||!Array.isArray(o.t)||typeof o.s!=='string'||o.t.length>40||o.s.length>800)return null;
+  o.t=o.t.map(x=>[String(x[0]||'?').slice(0,6),String(x[1]||'').slice(0,24),Math.max(1,Math.min(8,x[2]|0)),x[3]?1:0,x[4]?1:0]);o.n=o.n.slice(0,24)||'เพื่อน';o.i=String(o.i||o.n).slice(0,24);return o}catch(e){return null}}
+function importGroup(o){S.friends=S.friends||{};const f=S.friends[o.i]||(S.friends[o.i]={c:Object.keys(S.friends).length%PCOL.length,m:{}});f.n=o.n;f.m[o.k]={t:o.t,s:o.s};f.u=Date.now();
+  const ks=Object.keys(f.m).sort();while(ks.length>6)delete f.m[ks.shift()];touch('settings')}
+function gPeople(key){const out=[];const me=getM(key,false);const dim=new Date(+key.slice(0,4),+key.slice(5),0).getDate();
+  const mine={};for(let d=1;d<=dim;d++){mine[d]=(me.shifts[pad(d)]||[]).map(id=>{const t=typeById(id);return t?{c:t.code,n:t.name,k:t.color,w:!!t.work,off:id==='O'}:null}).filter(Boolean)}
+  out.push({id:'me',n:S.userName?S.userName+' (ฉัน)':'ฉัน',col:'#3F9684',days:mine,has:true});
+  for(const [id,f] of Object.entries(S.friends||{})){const r=f.m&&f.m[key];const days={};
+    if(r){r.s.split('.').forEach((cs,i)=>{days[i+1]=[...cs].map(ch=>{const t=r.t[ch.charCodeAt(0)-97];return t?{c:t[0],n:t[1],k:t[2],w:!!t[3],off:!!t[4]}:null}).filter(Boolean)})}
+    out.push({id,n:f.n,col:PCOL[(f.c|0)%PCOL.length],days,has:!!r,u:f.u})}
+  return out}
+const gFree=a=>!a||!a.length||a.every(x=>x.off);
+function groupSheet(){const key=mkey(UI.y,UI.m);const P=gPeople(key);const who=UI.gWho||'all';const fr=P.slice(1);
+  const show=who==='all'?P:P.filter(p=>p.id===who);const dim=new Date(UI.y,UI.m,0).getDate();const first=new Date(UI.y,UI.m-1,1).getDay();
+  const td=new Date();const isCur=td.getFullYear()===UI.y&&td.getMonth()+1===UI.m;let cells='';
+  for(let i=0;i<first;i++)cells+='<span class="gc pad"></span>';
+  for(let d=1;d<=dim;d++){const wd=(first+d-1)%7;const rows=show.filter(p=>p.has).map(p=>{const a=p.days[d]||[];if(!a.length)return '';
+      return who==='all'?`<span class="gr"><em style="background:${p.col}"></em>${a.map(x=>`<span class="chip k${x.k}">${esc(x.c)}</span>`).join('')}</span>`:a.map(x=>`<span class="chip k${x.k}">${esc(x.c)}</span>`).join('')}).filter(Boolean);
+    const more=rows.length>4?`<span class="gm">+${rows.length-3}</span>`:'';
+    cells+=`<button class="gc ${wd===0||wd===6?'we':''} ${UI.gDay===d?'sel':''} ${isCur&&td.getDate()===d?'today':''}" data-act="g-day" data-d="${d}"><span class="d">${d}</span>${(rows.length>4?rows.slice(0,3):rows).join('')}${more}</button>`}
+  let det='';if(UI.gDay&&UI.gDay<=dim){const d=UI.gDay;const dt=new Date(UI.y,UI.m-1,d);const busy=[],free=[];
+    for(const p of P){if(!p.has){continue}const a=p.days[d]||[];if(gFree(a))free.push(p);else busy.push(p)}
+    det=`<div class="gdet"><b>วัน${TH_DL[dt.getDay()]} ${d} ${TH_MS[UI.m-1]}</b>
+      <div class="glist">${busy.map(p=>`<span class="gp"><em style="background:${p.col}"></em>${esc(p.n)} ${(p.days[d]||[]).map(x=>`<span class="chip k${x.k}">${esc(x.c)}</span> <small>${esc(x.n)}</small>`).join(' ')}</span>`).join('')||'<span class="small muted">ไม่มีใครขึ้นเวร</span>'}</div>
+      <div class="gfree">ว่าง แลกเวรได้: ${free.length?free.map(p=>`<b style="color:${p.col}">${esc(p.n)}</b>`).join(', '):'<span class="muted">ไม่มี</span>'}</div></div>`}
+  const noData=fr.filter(p=>!p.has);
+  const chips=`<div class="gwho"><button class="${who==='all'?'on':''}" data-act="g-who" data-v="all">ทั้งหมด</button>${P.map(p=>`<button class="${who===p.id?'on':''}" data-act="g-who" data-v="${esc(p.id)}"><em style="background:${p.col}"></em>${esc(p.n)}</button>`).join('')}</div>`;
+  const sel=who!=='all'&&who!=='me'?P.find(p=>p.id===who):null;
+  return `<div class="scrim" data-act="g-close"><div class="sheet tall gsheet" role="dialog" aria-modal="true" aria-label="เวรเพื่อน" data-stop="1">
+  <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 class="h-ico"><i data-lucide="users-round"></i>เวรเพื่อน</h2>
+    <div class="row" style="gap:4px;flex-wrap:nowrap"><button class="icon-btn" data-act="g-mon" data-v="-1" aria-label="เดือนก่อน">‹</button><b class="gmon">${TH_MS[UI.m-1]} ${String(UI.y+543).slice(2)}</b><button class="icon-btn" data-act="g-mon" data-v="1" aria-label="เดือนถัดไป">›</button><button class="icon-btn" data-act="g-close" aria-label="ปิด">×</button></div></div>
+  ${fr.length?chips:`<div class="gempty"><b>ยังไม่มีเวรเพื่อน</b><ol><li>กด <b>ส่งเวรฉันเข้ากลุ่ม</b> แล้วส่งลิงก์ใน LINE กลุ่ม</li><li>เพื่อนกดลิงก์ของกันและกัน เวรจะมาอยู่หน้านี้</li><li>แก้เวรแล้ว ส่งลิงก์ใหม่อีกครั้ง</li></ol></div>`}
+  ${noData.length&&who==='all'?`<p class="small muted" style="margin:0">ยังไม่มีเวรเดือนนี้: ${noData.map(p=>esc(p.n)).join(', ')}</p>`:''}
+  <div class="gcal"><div class="gh">${TH_D.map((x,i)=>`<span class="${i===0||i===6?'we':''}">${x}</span>`).join('')}</div><div class="gg">${cells}</div></div>
+  ${det||(fr.length?'<p class="small muted" style="margin:0">แตะวันที่ เพื่อดูว่าใครขึ้นเวร ใครว่าง</p>':'')}
+  ${sel?`<div class="row small" style="justify-content:space-between"><span class="muted">${sel.u?'อัปเดต '+new Date(sel.u).toLocaleDateString('th-TH',{day:'numeric',month:'short'}):''}</span><button class="btn sm danger" data-act="g-del" data-id="${esc(sel.id)}">ลบ ${esc(sel.n)} ออก</button></div>`:''}
+  <div class="grid2"><button class="btn primary big" data-act="g-send"><i data-lucide="share-2"></i>ส่งเวรฉันเข้ากลุ่ม</button><button class="btn big" data-act="g-paste"><i data-lucide="clipboard-paste"></i>วางลิงก์เพื่อน</button></div>
+  ${UI.gPaste?`<div class="row" style="flex-wrap:nowrap"><input id="g-in" class="grow" placeholder="วางลิงก์ที่เพื่อนส่งมา" autocomplete="off"><button class="btn sm primary" data-act="g-paste-go">เพิ่ม</button></div>`:''}
+  <p class="small muted" style="margin:0">ส่งเฉพาะชื่อเล่นและเวร ไม่มีข้อมูลเงิน</p></div></div>`}
+function gImportPop(){const o=UI.gImport;const self=o.i===S.devId;const [y,m]=o.k.split('-').map(Number);const n=o.s.split('.').filter(Boolean).length;
+  return `<div class="scrim gi-scrim" data-act="gi-no"><div class="sheet gi" role="dialog" aria-modal="true" aria-label="เพิ่มเวรเพื่อน" data-stop="1">
+  <div class="gi-ic"><i data-lucide="users-round"></i></div>
+  <h2>${self?'นี่คือลิงก์เวรของคุณเอง':`เพิ่มเวรของ ${esc(o.n)}`}</h2>
+  <p class="muted" style="margin:0">เดือน${TH_M[m-1]} ${y+543} · ${n} วัน</p>
+  <div class="grid2">${self?`<button class="btn primary big" data-act="gi-no">ตกลง</button>`:`<button class="btn big" data-act="gi-no">ไม่ใช่</button><button class="btn primary big" data-act="gi-yes">เพิ่มเข้ากลุ่ม</button>`}</div></div></div>`}
+async function gSend(){const key=mkey(UI.y,UI.m);const mo=getM(key,false);if(!Object.values(mo.shifts||{}).some(a=>(a||[]).length)){toast('เดือนนี้ยังไม่มีเวร');return}
+  const url=groupLink(key);const text=`เวรของ ${S.userName||'ฉัน'} เดือน${TH_M[UI.m-1]} ${UI.y+543} 🩺\nกดลิงก์เพื่อเพิ่มใน "เวรเพื่อน" ของ ShiftTax`;
+  try{if(navigator.share){await navigator.share({title:'เวรของ '+(S.userName||'ฉัน'),text,url});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(text+'\n'+url);toast('คัดลอกลิงก์แล้ว วางใน LINE กลุ่มได้เลย')}catch(e){UI.gLink=url;toast('คัดลอกไม่ได้ ลองกดค้างที่ลิงก์');}}
+function gCheckHash(){try{if(!/[#&]g=/.test(location.hash))return;const o=parseGroup(location.hash);history.replaceState(null,'',location.pathname+location.search);
+  if(o){UI.gImport=o;render()}else toast('ลิงก์เวรไม่ถูกต้อง')}catch(e){}}
+window.addEventListener('hashchange',gCheckHash);
 function renderSheetInner(){
-  const el=$('#sheet');if(UI.donate){el.innerHTML=donateSheet();return}if(UI.logout){el.innerHTML=logoutSheet();return}if(UI.mpick){el.innerHTML=mpickSheet();return}if(UI.notif){el.innerHTML=notifSheet();return}if(UI.cneu){el.innerHTML=cneuSheet();return}if(UI.esheet&&!UI.esheet.inline&&UI.tab==='money'){el.innerHTML=entrySheet();paintIcons();return}
+  const el=$('#sheet');if(UI.gImport&&!UI.lock&&!UI.onb){el.innerHTML=gImportPop();paintIcons();return}if(UI.group){el.innerHTML=groupSheet();paintIcons();return}if(UI.donate){el.innerHTML=donateSheet();return}if(UI.logout){el.innerHTML=logoutSheet();return}if(UI.mpick){el.innerHTML=mpickSheet();return}if(UI.notif){el.innerHTML=notifSheet();return}if(UI.cneu){el.innerHTML=cneuSheet();return}if(UI.esheet&&!UI.esheet.inline&&UI.tab==='money'){el.innerHTML=entrySheet();paintIcons();return}
   if(UI.dsheet&&UI.tab==='money'){el.innerHTML=detailSheet();paintIcons();return}
   if(UI.share&&UI.tab==='roster'){if(!el.querySelector('#share-prev')){el.innerHTML=shareSheet();buildShare()}return}
   if(!UI.sheet||UI.tab!=='roster'){el.innerHTML='';return}
@@ -1989,6 +2070,17 @@ document.addEventListener('click',async ev=>{
     case 'dsheet':UI.dsheet=b.dataset.v;renderSheet();break;
     case 'taxsec':UI.taxSec=b.dataset.v||null;render();window.scrollTo(0,0);break;
     case 'setsec':UI.setSec=b.dataset.v||null;UI.resetAsk=false;render();window.scrollTo(0,0);break;
+    case 'g-open':UI.group=true;UI.sheet=null;UI.gDay=null;renderSheet();break;
+    case 'g-close':UI.group=false;UI.gPaste=false;renderSheet();break;
+    case 'g-who':UI.gWho=b.dataset.v;renderSheet();break;
+    case 'g-day':{const d=+b.dataset.d;UI.gDay=UI.gDay===d?null:d;renderSheet();break}
+    case 'g-mon':{let m=UI.m+(+b.dataset.v),y=UI.y;if(m<1){m=12;y--}if(m>12){m=1;y++}UI.m=m;UI.y=y;UI.gDay=null;render();break}
+    case 'g-send':await gSend();break;
+    case 'g-paste':{UI.gPaste=!UI.gPaste;renderSheet();if(UI.gPaste){const e=$('#g-in');if(e){e.focus();try{const t=await navigator.clipboard.readText();if(t&&/g=/.test(t))e.value=t}catch(_){}}}break}
+    case 'g-paste-go':{const e=$('#g-in');const o=parseGroup(e&&e.value);if(!o){toast('ลิงก์ไม่ถูกต้อง');break}UI.gPaste=false;UI.gImport=o;renderSheet();break}
+    case 'gi-yes':{const o=UI.gImport;UI.gImport=null;importGroup(o);const [y,m]=o.k.split('-').map(Number);UI.y=y;UI.m=m;UI.tab='roster';UI.group=true;UI.gWho='all';UI.gDay=null;render();toast('เพิ่มเวรของ '+o.n+' แล้ว');break}
+    case 'gi-no':UI.gImport=null;render();break;
+    case 'g-del':{const id=b.dataset.id;const f=(S.friends||{})[id];if(f){delete S.friends[id];UI.gWho='all';touch('settings');render();toast('ลบ '+f.n+' แล้ว')}break}
     case 'share-open':UI.share=true;UI.sheet=null;renderSheet();break;
     case 'share-close':UI.share=false;UI.shareBlob=null;$('#sheet').innerHTML='';render();break;
     case 'share-img':shareImage();break;
@@ -2217,6 +2309,6 @@ loadLocal();
   if(!S.onboarded){UI.onb='auth';UI.tab='settings'}else if(S.pin&&!unlockedNow()){UI.pin={mode:'unlock',stage:'enter',buf:''};UI.lock=true}render();
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   restoreBackup().then(ok=>{if(ok){if(S.onboarded){UI.onb=0;if(UI.tab==='settings'&&!UI.setSec)UI.tab='roster';if(S.pin&&!unlockedNow()){UI.pin={mode:'unlock',stage:'enter',buf:''};UI.lock=true}}render();toast(`ยินดีต้อนรับกลับค่ะ${S.userName?' คุณ'+S.userName:''}`)}else if(S.onboarded)saveLocal()});
-  connect();setTimeout(devNotify,1500);setInterval(()=>{devNotify();updateBell()},30*60*1000);
+  gCheckHash();connect();setTimeout(devNotify,1500);setInterval(()=>{devNotify();updateBell()},30*60*1000);
 })();
 </script>
