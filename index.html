@@ -297,7 +297,8 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .ded-quick{display:flex;flex-wrap:wrap;gap:6px}
 .grid2.ded-row{grid-template-columns:minmax(0,1fr) 120px auto}
 .onb-rates{display:flex;flex-direction:column;gap:6px}.onb-rates .hd,.onb-rates .rr{display:grid;grid-template-columns:56px repeat(3,minmax(0,1fr));gap:6px;align-items:center}.onb-rates .hd{font-size:11.5px;color:var(--muted);text-align:center}.onb-rates .rr input{min-width:0;text-align:center}.onb-rates .chip{justify-self:start}
-.onb-nav{gap:8px;margin-top:4px}.onb-skip{border:0;background:transparent;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:4px}
+.onb-nav{gap:8px;margin-top:4px}.slogan{margin:2px 0 0;text-align:center;font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.2px;line-height:1.5}.slogan .s1{color:#2f6fc0}.slogan .s2{color:#3fa34d}.slogan .s3{color:#1c2b45}.onb-card .slogan{margin:-4px 0 2px}.setlogo+.slogan{margin:6px 0 4px}
+.onb-skip{border:0;background:transparent;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:4px}
 [hidden]{display:none!important}
 .catpick-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--accent);background:var(--soft);border-radius:16px;padding:10px 12px;color:inherit}.catpick-btn.empty{border-style:dashed}.catpick-btn .grow{display:flex;flex-direction:column;min-width:0}.catpick-btn small{font-size:11.5px;color:var(--muted)}.catpick-btn b{color:var(--accent)}.catpick-btn .ico{flex:0 0 auto}
 .cp-scrim{z-index:60}.cp-sheet{max-height:82vh;overflow:hidden;gap:10px}
@@ -999,7 +1000,7 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
   const dots=`<div class="onb-dots">${[1,2,3].map(i=>`<i class="${i===st?'on':i<st?'done':''}"></i>`).join('')}</div>`;
   let body='';
   if(st===1)body=`<img class="onb-logo" src="${LOGO_FULL}" alt="ShiftTax">
-    <h2>ยินดีต้อนรับค่ะ 👋</h2><p class="muted">ShiftTax ช่วยลงตารางเวร คิดค่าเวร OT รายรับรายจ่าย และวางแผนภาษีให้อัตโนมัติ</p>
+    <p class="slogan"><span class="s1">Your Shifts.</span> <span class="s2">Your Income.</span> <span class="s3">Your Balance.</span></p><h2>ยินดีต้อนรับค่ะ 👋</h2><p class="muted">ShiftTax ช่วยลงตารางเวร คิดค่าเวร OT รายรับรายจ่าย และวางแผนภาษีให้อัตโนมัติ</p>
     <label>ชื่อของคุณ (ชื่อเล่นก็ได้)<input id="onb-name" value="${nm}" maxlength="30" placeholder="เช่น ฝน" autocomplete="nickname"></label>
     <button class="btn primary big" data-act="onb-next">ถัดไป ›</button>`;
   if(st===2)body=`<h2>สวัสดีค่ะ คุณ${nm||'พยาบาล'} 💚</h2><p class="muted">ขั้นที่ 2/3 · ใส่รายได้ประจำต่อเดือน เพื่อคำนวณเงินได้และภาษี</p>
@@ -1203,7 +1204,7 @@ async function rosterCanvas(){
   g.fillStyle='#fbf7f0';g.fillRect(0,0,W,H);
   if(logo)g.drawImage(logo,P,40,96,96);
   g.fillStyle='#2f8f72';g.font=`500 50px ${FD}`;g.textBaseline='alphabetic';g.fillText(`ตารางเวร ${TH_M[UI.m-1]} ${UI.y+543}`,P+116,92);
-  g.fillStyle='#8a8178';g.font=`400 26px ${FB}`;g.fillText('ShiftTax · Smart Tax Solutions for Growth',P+118,130);
+  g.fillStyle='#8a8178';g.font=`400 26px ${FB}`;g.fillText('ShiftTax · Your Shifts. Your Income. Your Balance.',P+118,130);
   g.textAlign='center';g.font=`500 26px ${FB}`;
   TH_D.forEach((d,i)=>{g.fillStyle=i===0||i===6?'#d9607a':'#8a8178';g.fillText(d,P+cw*i+cw/2,top+34)});
   const today=new Date();
@@ -1456,7 +1457,7 @@ function setSecs(){return [
 function vSettings(){const secs=setSecs();const parts=settingsAll().split('<section class="card">').slice(1).map(x=>'<section class="card">'+x);
   const i=secs.findIndex(x=>x[0]===UI.setSec);
   if(i>=0&&parts[i])return `<div class="setback"><button class="btn sm" data-act="setsec" data-v="">‹ ตั้งค่าทั้งหมด</button></div>${parts[i]}`;
-  return `<div class="setlogo"><img src="${LOGO_FULL}" alt="ShiftTax · ตารางเวร รายรับรายจ่าย วางแผนภาษี"></div><h2 class="h-ico" style="margin:4px 2px 0">ตั้งค่า</h2><div class="sumbars">${secs.map(([k,t,d,ic])=>`<button class="sumbar" data-act="setsec" data-v="${k}"><img src="${IMG[ic]||IMG.calendar}" alt=""><span class="grow"><b>${t}</b><small>${esc(d)}</small></span><span class="chev">›</span></button>`).join('')}</div>`}
+  return `<div class="setlogo"><img src="${LOGO_FULL}" alt="ShiftTax · ตารางเวร รายรับรายจ่าย วางแผนภาษี"></div><p class="slogan"><span class="s1">Your Shifts.</span> <span class="s2">Your Income.</span> <span class="s3">Your Balance.</span></p><h2 class="h-ico" style="margin:4px 2px 0">ตั้งค่า</h2><div class="sumbars">${secs.map(([k,t,d,ic])=>`<button class="sumbar" data-act="setsec" data-v="${k}"><img src="${IMG[ic]||IMG.calendar}" alt=""><span class="grow"><b>${t}</b><small>${esc(d)}</small></span><span class="chev">›</span></button>`).join('')}</div>`}
 function settingsAll(){
   const colors=[1,2,3,4,5,6,7,8];
   return `<section class="card">
