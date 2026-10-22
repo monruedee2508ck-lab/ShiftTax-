@@ -299,7 +299,7 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .ded-quick{display:flex;flex-wrap:wrap;gap:6px}
 .acct{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}.acct img{width:40px;height:40px;border-radius:50%;object-fit:cover}.acct b{display:block;font-size:14.5px}.acct small{display:block;color:var(--muted);font-size:12px;word-break:break-all}
 .grid2.ded-row{grid-template-columns:minmax(0,1fr) 120px auto}
-.onb-rates{display:flex;flex-direction:column;gap:6px}.onb-rates .hd,.onb-rates .rr{display:grid;grid-template-columns:56px repeat(3,minmax(0,1fr));gap:6px;align-items:center}.onb-rates .hd{font-size:11.5px;color:var(--muted);text-align:center}.onb-rates .rr input{min-width:0;text-align:center}.onb-rates .chip{justify-self:start}
+.onb-rates{display:flex;flex-direction:column;gap:6px}.onb-rates.r2 .hd,.onb-rates.r2 .rr{grid-template-columns:56px repeat(2,minmax(0,1fr))!important}.onb-rates .hd,.onb-rates .rr{display:grid;grid-template-columns:56px repeat(3,minmax(0,1fr));gap:6px;align-items:center}.onb-rates .hd{font-size:11.5px;color:var(--muted);text-align:center}.onb-rates .rr input{min-width:0;text-align:center}.onb-rates .chip{justify-self:start}
 .onb-nav{gap:8px;margin-top:4px}.slogan{margin:2px 0 0;text-align:center;font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.2px;line-height:1.5}.slogan .s1{color:#2f6fc0}.slogan .s2{color:#3fa34d}.slogan .s3{color:#1c2b45}.onb-card .slogan{margin:-4px 0 2px}.setlogo+.slogan{margin:6px 0 4px}
 .avatar{border-radius:50%;object-fit:cover;display:inline-grid;place-items:center;flex:0 0 auto;background:#e6f1fb;color:#2f6fc0;font-family:var(--f-display);font-weight:600;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .prof{display:flex;align-items:center;gap:14px}.prof .grow{flex:1;min-width:0}.onb-prof{gap:10px}.avbtn{position:relative;cursor:pointer}.avplus{position:absolute;right:-4px;bottom:-2px;font-size:16px;background:#fff;border-radius:50%;padding:2px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
@@ -334,6 +334,7 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .pin-msg{min-height:18px;margin:0;font-size:13px;color:var(--muted);text-align:center}
 .pin-pad{display:grid;grid-template-columns:repeat(3,72px);gap:12px 22px;justify-content:center;margin-top:4px}.pk{width:72px;height:72px;border-radius:50%;border:0;background:#f1e6d4;color:#2b3b33;font-family:var(--f-num);font-size:26px;font-weight:600;box-shadow:0 3px 0 #e2d2b8}.pk:active{background:#a9d7bf;transform:translateY(2px);box-shadow:0 1px 0 #8cc2a6}.pk.del{background:transparent;box-shadow:none;font-size:24px}.pk:disabled{opacity:.4}
 .lock-card{max-width:400px}.lock-logo{width:44px;height:44px;border-radius:50%;align-self:flex-start;position:absolute;left:18px;top:16px}.lock-x{position:absolute;right:14px;top:12px}
+.pvd-calc{display:block;color:var(--accent);font-weight:500;margin-top:2px}.pvd-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.pvd-chips .tbtn{padding:5px 12px}
 .onb-skip{border:0;background:transparent;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:4px}
 [hidden]{display:none!important}
 .catpick-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--accent);background:var(--soft);border-radius:16px;padding:10px 12px;color:inherit}.catpick-btn.empty{border-style:dashed}.catpick-btn .grow{display:flex;flex-direction:column;min-width:0}.catpick-btn small{font-size:11.5px;color:var(--muted)}.catpick-btn b{color:var(--accent)}.catpick-btn .ico{flex:0 0 auto}
@@ -710,6 +711,8 @@ function catById(t,id){return S.catsCustom.find(c=>c.t===t&&c.id===id)||DEFAULT_
 function ico(c,cls){const n=c?c.name:'?';const ch=(n.match(/[ก-ฮA-Za-z0-9]/)||['•'])[0];return `<span class="ico ${cls||''}"><i data-lucide="${c&&c.icon||'tag'}"></i><span class="ini">${esc(ch)}</span></span>`}
 function paintIcons(){try{if(window.lucide)window.lucide.createIcons({attrs:{'stroke-width':1.6}})}catch(e){}}
 const isOTs=(mo,d,id)=>((mo.otShifts||{})[d]||[]).includes(id);
+function pvdText(pct,sal){pct=pct==null?num(S.pvdPct):num(pct);sal=sal==null?num(S.salary):num(sal);return pct>0&&sal>0?`หักเข้ากองทุนเดือนละ ฿${fmt(Math.round(sal*pct/100))} (${pct}% ของ ฿${fmt(sal)}) · ปีละ ฿${fmt(Math.round(sal*pct/100)*12)}`:pct>0?'ใส่เงินเดือนก่อน แล้วจะคำนวณยอดหักให้':'ไม่ได้หักเข้ากองทุน ใส่ 0 หรือเว้นว่างไว้'}
+function pvdRefresh(pct,sal){document.querySelectorAll('.pvd-calc').forEach(e=>e.textContent=pvdText(pct,sal));document.querySelectorAll('[data-act=pvd-pick]').forEach(b=>b.classList.toggle('on',num(b.dataset.v)===num(pct==null?S.pvdPct:pct)))}
 function defRate(t,hol,ot){return ot&&t.otr!=null&&t.otr!==''?num(t.otr):num(hol?t.hd:t.wd)}
 function shiftRate(mo,d,t,hol){const o=(mo.pay||{})[d];return o&&o[t.id]!=null&&o[t.id]!==''?num(o[t.id]):defRate(t,hol,isOTs(mo,d,t.id))}
 function isHol(y,m,d,mo){const wd=new Date(y,m-1,d).getDay();return wd===0||wd===6||!!(mo.hol||{})[pad(d)]}
@@ -1101,7 +1104,8 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     ${S.allowances.map(a=>`<div class="onb-allow"><input data-allow="name" data-id="${a.id}" value="${esc(a.name)}" aria-label="ชื่อเงินเพิ่ม"><input class="num" data-allow="amount" data-id="${a.id}" inputmode="decimal" value="${a.amount||''}" placeholder="0" aria-label="จำนวนเงิน"><button class="icon-btn" data-act="del-allow" data-id="${a.id}" aria-label="ลบ">×</button></div>`).join('')}
     <button class="btn sm" data-act="add-allow" style="align-self:flex-start">+ เพิ่มเงินเพิ่ม</button>
     <div class="onb-sub">รายการหักจากเงินเดือน <span class="muted small">ดูจากสลิปเงินเดือน</span></div>
-    <div class="onb-g2"><label>หักสะสม / กองทุนสำรองฯ / กบข. (% ของเงินเดือน)<input class="num" data-set="pvdPct" inputmode="decimal" value="${S.pvdPct||''}" placeholder="เช่น 3 หรือ 10"></label>
+    <div class="onb-g2"><div><label>กองทุนสำรองเลี้ยงชีพ / กบข. (% ของเงินเดือน)<input class="num" data-set="pvdPct" inputmode="decimal" value="${S.pvdPct||''}" placeholder="เช่น 3 หรือ 10"><span class="pvd-calc small">${pvdText()}</span></label>
+    <div class="pvd-chips">${[2,3,5,10,15].map(v=>`<button class="tbtn ${num(S.pvdPct)===v?'on':''}" data-act="pvd-pick" data-v="${v}">${v}%</button>`).join('')}</div></div>
     <label>ภาษีหัก ณ ที่จ่าย (บาท/เดือน)<input class="num" data-set="whDefault" inputmode="decimal" value="${S.whDefault||''}" placeholder="0"></label></div>
     ${typeof dedRows==='function'?dedRows('onb-allow'):''}
     ${typeof dedQuick==='function'?dedQuick():''}
@@ -1109,10 +1113,10 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     <div class="row onb-nav"><button class="btn" data-act="onb-back">‹ ย้อนกลับ</button><button class="wl-next grow" data-act="onb-next">ถัดไป ›</button></div>`;
   if(st===3){const W=S.shiftTypes.filter(t=>t.work);
     body=`<h2>ค่าเวรและ OT ⏰</h2><p class="muted">ขั้นที่ 3/4 · ใส่อัตราต่อเวร แอปจะคิดเงินให้ทุกครั้งที่ลงตารางเวร</p>
-    <div class="onb-rates"><div class="hd"><span>เวร</span><span>วันธรรมดา</span><span>วันหยุด</span><span>OT</span></div>
-    ${W.map(t=>`<div class="rr"><span class="chip k${t.color}">${esc(t.code)}</span><input class="num" data-st="wd" data-id="${t.id}" inputmode="decimal" value="${t.wd||''}" placeholder="0" aria-label="${esc(t.name)} วันธรรมดา"><input class="num" data-st="hd" data-id="${t.id}" inputmode="decimal" value="${t.hd||''}" placeholder="0" aria-label="${esc(t.name)} วันหยุด"><input class="num" data-st="otr" data-id="${t.id}" inputmode="decimal" value="${t.otr===''||t.otr==null?'':t.otr}" placeholder="เท่าปกติ" aria-label="${esc(t.name)} OT"></div>`).join('')}</div>
+    <div class="onb-rates r2"><div class="hd"><span>เวร</span><span>ค่าเวร (บาท)</span><span>OT (บาท)</span></div>
+    ${W.map(t=>`<div class="rr"><span class="chip k${t.color}">${esc(t.code)}</span><input class="num" data-st="wd" data-sync="hd" data-id="${t.id}" inputmode="decimal" value="${t.wd||''}" placeholder="0" aria-label="${esc(t.name)} ค่าเวร"><input class="num" data-st="otr" data-id="${t.id}" inputmode="decimal" value="${t.otr===''||t.otr==null?'':t.otr}" placeholder="เท่าปกติ" aria-label="${esc(t.name)} OT"></div>`).join('')}</div>
     <label>OT / งานนอกแบบรายชั่วโมง (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
-    <p class="small muted" style="margin:0">ช่อง OT ว่างไว้ = ใช้อัตราเดียวกับเวรปกติ · แก้ทีหลังได้ที่ ตั้งค่า › ประเภทเวร เวลา และอัตราค่าเวร</p>
+    <p class="small muted" style="margin:0">ช่อง OT ว่างไว้ = ใช้อัตราเดียวกับค่าเวร · วันหยุดคิดอัตราเดียวกัน ถ้าโรงพยาบาลจ่ายวันหยุดต่างกัน ตั้งเพิ่มได้ที่ ตั้งค่า › ประเภทเวร เวลา และอัตราค่าเวร</p>
     <div class="row onb-nav"><button class="btn" data-act="onb-back">‹ ย้อนกลับ</button><button class="wl-next grow" data-act="onb-done">ถัดไป ›</button></div>`}
   if(st===4){if(!UI.pin||UI.pin.mode!=='set')UI.pin={mode:'set',stage:'new',buf:''};
     body=`<h2>ตั้ง PIN เข้าแอป 🔒</h2><p class="muted">ขั้นที่ 4/4 · ครั้งต่อไปเปิดแอปแค่ใส่ PIN 4 หลัก ไม่ต้องล็อกอินใหม่</p>
@@ -1645,7 +1649,8 @@ function settingsAll(){
     <h2 class="h-ico"><img src="${IMG.money}" alt="">เงินเดือนและรายการหัก</h2>
     <div class="grid2">
       <label>เงินเดือน (บาท/เดือน)<input class="num" data-set="salary" inputmode="decimal" value="${S.salary}"></label>
-      <label>กบข. / กองทุนสำรองเลี้ยงชีพ (% ของเงินเดือน)<input class="num" data-set="pvdPct" inputmode="decimal" value="${S.pvdPct||''}" placeholder="0"></label>
+      <div><label>กองทุนสำรองเลี้ยงชีพ / กบข. (% ของเงินเดือน)<input class="num" data-set="pvdPct" inputmode="decimal" value="${S.pvdPct||''}" placeholder="เช่น 3 หรือ 10"><span class="pvd-calc small">${pvdText()}</span></label>
+    <div class="pvd-chips">${[2,3,5,10,15].map(v=>`<button class="tbtn ${num(S.pvdPct)===v?'on':''}" data-act="pvd-pick" data-v="${v}">${v}%</button>`).join('')}</div></div>
     </div>
     <label>อัตรา OT / งานนอกรายชั่วโมงเริ่มต้น (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
     <label>งบรายจ่ายต่อเดือน (บาท) ว่างไว้ = ไม่ตั้งงบ<input class="num" data-set="budget" inputmode="decimal" value="${S.budget||''}" placeholder="เช่น 15000"></label>
@@ -1735,9 +1740,10 @@ document.addEventListener('click',async ev=>{
         UI.onb=2;UI.tab='settings';UI.setSec='pay';render();window.scrollTo(0,0);break}
       else if(UI.onb===2){UI.setSec='types'}UI.onb++;render();window.scrollTo(0,0);break}
     case 'onb-back':UI.pin=null;UI.onb=UI.onb<=2?'auth':UI.onb-1;UI.setSec=UI.onb===2?'pay':null;render();break;
-    case 'onb-done':if(S.sample&&num(S.salary))S.sample=false;touch('settings');if(S.pin){finishSetup();toast(`พร้อมแล้วค่ะ คุณ${S.userName||''}`);break}UI.onb=4;UI.pin=null;UI.setSec=null;render();window.scrollTo(0,0);break;
+    case 'onb-done':if(UI.onb===3){for(const t of S.shiftTypes)if(t.work)t.hd=num(t.wd)}if(S.sample&&num(S.salary))S.sample=false;touch('settings');if(S.pin){finishSetup();toast(`พร้อมแล้วค่ะ คุณ${S.userName||''}`);break}UI.onb=4;UI.pin=null;UI.setSec=null;render();window.scrollTo(0,0);break;
     case 'profile-open':UI.tab='settings';UI.setSec='profile';UI.sheet=null;UI.notif=false;render();window.scrollTo(0,0);break;
     case 'av-del':S.avatar='';touch('settings');render();break;
+    case 'pvd-pick':S.pvdPct=num(b.dataset.v);S.sample=false;touch('settings');document.querySelectorAll('[data-set=pvdPct]').forEach(i=>i.value=S.pvdPct);pvdRefresh();break;
     case 'mpick-open':UI.mpick=true;UI.mpy=UI.y;renderSheet();break;
     case 'mpick-close':UI.mpick=false;renderSheet();break;
     case 'mpy':UI.mpy+=+b.dataset.v;renderSheet();break;
@@ -1911,6 +1917,7 @@ document.addEventListener('change',ev=>{
   if(t.dataset.nw){const x=(S.nw[t.dataset.k]||[]).find(x=>x.id===t.dataset.id);if(x){const f=t.dataset.nw;x[f]=['amt','rate','pay','due'].includes(f)?num(t.value):t.value;if(f==='cat')x.type=['card','install'].includes(t.value)?'short':'long';if(f==='amt'&&t.dataset.k==='debts'&&!(num(x.orig)>=x.amt))x.orig=x.amt;touch('settings');nwRefresh()}return}
   if(t.dataset.ded){const x=S.deductions.find(x=>x.id===t.dataset.id);if(x){x[t.dataset.ded]=t.dataset.ded==='amount'?num(t.value):t.value;S.sample=false;touch('settings')}return}
   if(t.dataset.allow){const a=S.allowances.find(a=>a.id===t.dataset.id);if(a){a[t.dataset.allow]=t.dataset.allow==='amount'?num(t.value):t.value;S.sample=false;touch('settings')}return}
+  if(t.dataset.st&&t.dataset.sync){const x=S.shiftTypes.find(x=>x.id===t.dataset.id);if(x)x[t.dataset.sync]=num(t.value)}
   if(t.dataset.st){const s=S.shiftTypes.find(x=>x.id===t.dataset.id);if(!s)return;const f=t.dataset.st;
     s[f]=['hours','wd','hd','color'].includes(f)?num(t.value):f==='otr'?(t.value.trim()===''?'':num(t.value)):t.value;if(f==='start'||f==='end'){const h=hoursFrom(s.start,s.end);if(h!=null){s.hours=h;const hi=t.closest('.st-row').querySelector('[data-st="hours"]');if(hi)hi.value=h}}S.sample=false;touch('settings');if(f==='color'||f==='code'){const ch=t.closest('.st-row').querySelector('.chip');ch.className='chip k'+s.color;ch.textContent=s.code}return}
   if(t.dataset.stb){const s=S.shiftTypes.find(x=>x.id===t.dataset.id);if(s){s.work=t.checked;S.sample=false;touch('settings')}return}
@@ -1918,6 +1925,7 @@ document.addEventListener('change',ev=>{
 });
 document.addEventListener('input',ev=>{
   const t=ev.target;
+  if(t.dataset&&(t.dataset.set==='pvdPct'||t.dataset.set==='salary')){const R=t.closest('.onb-card,.card,section')||document;const pi=R.querySelector('[data-set=pvdPct]')||document.querySelector('[data-set=pvdPct]'),si=R.querySelector('[data-set=salary]')||document.querySelector('[data-set=salary]');pvdRefresh(pi?pi.value:null,si?si.value:null)}
   if(t.id==='debt-extra'){S.nw.extra=num(t.value);touch('settings');const el=$('#debt-sim');if(el)el.innerHTML=debtSimHtml();return}
   if(t.dataset.nw==='amt'){const x=(S.nw[t.dataset.k]||[]).find(x=>x.id===t.dataset.id);if(x){x.amt=num(t.value);touch('settings');nwRefresh()}return}
   if(t.dataset.tax){setTax(UI.ty,t.dataset.tax,num(t.value));renderTaxResults();return}
