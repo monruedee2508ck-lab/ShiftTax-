@@ -940,9 +940,8 @@ function donateSheet(){return `<div class="scrim mp-scrim" data-act="donate-clos
     <div class="row" style="justify-content:space-between"><h2>สนับสนุน ShiftTax 💚</h2><button class="icon-btn" data-act="donate-close" aria-label="ปิด">×</button></div>
     <p style="margin:0">ShiftTax ใช้ฟรีสำหรับพยาบาลทุกคน ถ้าแอปช่วยให้การจัดเวร การเงิน และภาษีง่ายขึ้น ร่วมสนับสนุนค่าพัฒนาและดูแลระบบได้ตามใจค่ะ</p>
     <div class="dn-qr"><img src="${DONATE_QR}" alt="QR พร้อมเพย์ สำหรับสนับสนุน ShiftTax"></div>
-    <div class="dn-info"><div><span>พร้อมเพย์</span><b>xxx-xxx-4677</b></div><div><span>จำนวนเงิน</span><b>ผู้โอนระบุเอง</b></div></div>
     <button class="btn primary big" data-act="donate-save">⬇️ บันทึกรูป QR</button>
-    <p class="small muted" style="margin:0">สแกนจากเครื่องอื่นได้เลย หรือบันทึกรูป แล้วเปิดแอปธนาคาร › สแกน › เลือกรูปจากอัลบั้ม · ขอบคุณที่ช่วยให้ ShiftTax ได้พัฒนาต่อค่ะ ☕</p>
+    <p class="small muted" style="margin:0;text-align:center">สแกนด้วยแอปธนาคาร · ขอบคุณค่ะ ☕</p>
   </div></div>`}
 async function saveDonateQR(){const name='shifttax-promptpay-qr.png';let blob;try{blob=await (await fetch(DONATE_QR)).blob()}catch(e){toast('บันทึกไม่สำเร็จ');return}
   try{const f=new File([blob],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'QR สนับสนุน ShiftTax'});return}}catch(e){if(e&&e.name==='AbortError')return}
