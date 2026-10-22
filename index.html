@@ -739,7 +739,7 @@ const LUCIDE={"award":"<path d=\"m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.
 /* icons from Lucide (ISC licence), bundled so they work offline */
 function paintIcons(){try{document.querySelectorAll('i[data-lucide]').forEach(el=>{const n=el.getAttribute('data-lucide');const d=LUCIDE[n];if(!d)return;const t=document.createElement('template');t.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${n}" aria-hidden="true">${d}</svg>`;el.replaceWith(t.content.firstChild)})}catch(e){}}
 const isOTs=(mo,d,id)=>((mo.otShifts||{})[d]||[]).includes(id);
-function pvdText(pct,sal){pct=pct==null?num(S.pvdPct):num(pct);sal=sal==null?num(S.salary):num(sal);return pct>0&&sal>0?`หักเข้ากองทุนเดือนละ ฿${fmt(Math.round(sal*pct/100))} (${pct}% ของ ฿${fmt(sal)}) · ปีละ ฿${fmt(Math.round(sal*pct/100)*12)}`:pct>0?'ใส่เงินเดือนก่อน แล้วจะคำนวณยอดหักให้':'ไม่ได้หักเข้ากองทุน ใส่ 0 หรือเว้นว่างไว้'}
+function pvdText(pct,sal){pct=pct==null?num(S.pvdPct):num(pct);sal=sal==null?num(S.salary):num(sal);return pct>0&&sal>0?`หักเดือนละ ฿${fmt(Math.round(sal*pct/100))} · ปีละ ฿${fmt(Math.round(sal*pct/100)*12)}`:pct>0?'ใส่เงินเดือนก่อน':'ไม่หักกองทุน'}
 function pvdRefresh(pct,sal){document.querySelectorAll('.pvd-calc').forEach(e=>e.textContent=pvdText(pct,sal));document.querySelectorAll('[data-act=pvd-pick]').forEach(b=>b.classList.toggle('on',num(b.dataset.v)===num(pct==null?S.pvdPct:pct)))}
 function defRate(t,hol,ot){return ot&&t.otr!=null&&t.otr!==''?num(t.otr):num(hol?t.hd:t.wd)}
 function shiftRate(mo,d,t,hol){const o=(mo.pay||{})[d];return o&&o[t.id]!=null&&o[t.id]!==''?num(o[t.id]):defRate(t,hol,isOTs(mo,d,t.id))}
@@ -768,8 +768,8 @@ function earnCalc(key){
   return {fixDed,key,y,m,mo,otShiftN,salary,allow,s401,s402,shift,ot,otIn,otOut,otHrs,hours,workDays,doubles,counts,x401,x402,xNone,whE,withheld,exp,byCat,byGroup,inGroup,ded,sso,pvd,gross,net,left:net-exp,
     hasShift:Object.keys(mo.shifts).some(d=>(mo.shifts[d]||[]).length)};
 }
-const PAY_ITEMS=[['salary','เงินเดือน'],['allow','เงินเพิ่มประจำ (พ.ต.ส. / ค่าใบประกอบวิชาชีพ ฯลฯ)'],['shift','ค่าเวร'],['ot','OT / งานนอก']];
-const LAG_LAB=['เดือนเดียวกับที่ทำงาน','เดือนถัดไป','อีก 2 เดือน'];
+const PAY_ITEMS=[['salary','เงินเดือน'],['allow','เงินเพิ่ม (พ.ต.ส./ใบประกอบ)'],['shift','ค่าเวร'],['ot','OT / งานนอก']];
+const LAG_LAB=['เดือนเดียวกัน','เดือนถัดไป','อีก 2 เดือน'];
 function lagPreset(){const L=PAY_ITEMS.map(([k])=>payLag(k));if(L.every(x=>x===0))return '0';if(L.every(x=>x===1))return 'all';if(!L[0]&&!L[1]&&L[2]===1&&L[3]===1)return 'shift';return ''}
 function payLag(k){return Math.max(0,Math.min(2,Math.round(num((S.payLag||{})[k]))))}
 function anyLag(){return PAY_ITEMS.some(([k])=>payLag(k))}
@@ -832,7 +832,7 @@ const ICONS={
 const TABS=[['roster','ตารางเวร'],['money','การเงิน'],['slip','สรุปเดือน'],['tax','ภาษี'],['settings','ตั้งค่า']];
 function renderNav(){$('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" class="${UI.tab===k?'on':''}" aria-current="${UI.tab===k?'page':'false'}">${ICONS[k]}<span>${l}</span></button>`).join('')}
 function monthSwitch(){return `<div class="switcher"><button class="icon-btn" data-act="mprev" aria-label="เดือนก่อน">‹</button><button class="mtitle" data-act="mpick-open" aria-label="เลือกเดือนและปี">${TH_M[UI.m-1]} ${UI.y+543} <span class="caret">▾</span></button><button class="icon-btn" data-act="mnext" aria-label="เดือนถัดไป">›</button></div>`}
-function sampleBanner(){return S.sample?`<div class="banner"><span>เงินเดือนและอัตราค่าเวรตอนนี้เป็น<b>ค่าตัวอย่าง</b> แก้ให้ตรงกับโรงพยาบาลของคุณได้ที่หน้าตั้งค่า</span><button class="btn sm" data-tab="settings">ไปตั้งค่า</button></div>`:''}
+function sampleBanner(){return S.sample?`<div class="banner"><span>ตอนนี้เป็น<b>ค่าตัวอย่าง</b> แก้ให้ตรงกับโรงพยาบาลได้ในตั้งค่า</span><button class="btn sm" data-tab="settings">ไปตั้งค่า</button></div>`:''}
 function renderFab(){const el=$('#fab');if(!el)return;const t=UI.tab==='roster'?'เพิ่มเวร':'';
   el.innerHTML=t?`<button class="fab" data-act="fab" aria-label="${t}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>`:''}
 function render(){
@@ -876,9 +876,9 @@ function vRoster(){
     <div class="stat t-pink"><span class="si"><img src="${IMG.calendar}" alt="">วันควบเวร</span><b>${c.doubles} วัน</b></div>
   </div>`:''}
     ${showPal?pal:''}
-    ${showPal?`<p class="small muted" style="margin:0">${UI.paint?(UI.paint==='__x'?'แตะวันที่เพื่อลบเวรทั้งหมดของวันนั้น · แตะ ✕ อีกครั้งเพื่อกลับ':'แตะวันที่เพื่อใส่หรือเอาออกเวรที่เลือก ลงทีละหลายวันได้เร็ว · แตะเวรเดิมอีกครั้งเพื่อกลับ'):'แตะวันที่เพื่อลงเวรหรือเพิ่มงาน · หรือเลือกเวรด้านบนก่อน แล้วแตะหลายวันต่อเนื่อง'}</p>`:''}
+    ${showPal?`<p class="small muted" style="margin:0">${UI.paint?(UI.paint==='__x'?'แตะวันที่เพื่อลบเวร · แตะ ✕ อีกครั้งเพื่อจบ':'แตะวันที่เพื่อใส่/เอาออก · แตะเวรเดิมอีกครั้งเพื่อจบ'):'แตะวันที่เพื่อลงเวร · หรือเลือกเวรก่อนแล้วแตะหลายวัน'}</p>`:''}
     <div class="cal" style="--rows:${Math.ceil((first+dim)/7)}">${cells}</div>
-    ${legend?(showSum?`<div class="legend">${legend}</div>`:''):`<div class="empty">ยังไม่มีเวรเดือนนี้ เลือกเวรด้านบนแล้วแตะวันที่ หรือ <button class="btn sm" data-act="sample">ใส่ตัวอย่างเดือนนี้</button></div>`}${showSum?vacCard:''}
+    ${legend?(showSum?`<div class="legend">${legend}</div>`:''):`<div class="empty">ยังไม่มีเวร · แตะวันที่เพื่อลงเวร หรือ <button class="btn sm" data-act="sample">ใส่ตัวอย่างเดือนนี้</button></div>`}${showSum?vacCard:''}
     ${mo.sample?`<div class="row"><button class="btn sm danger" data-act="clear-month">ล้างข้อมูลตัวอย่างเดือนนี้</button></div>`:''}
   </section>`;
 }
@@ -922,7 +922,7 @@ function logoutSheet(){const em=fbUser?esc(fbUser.email||'บัญชี Google
     ${fbUser?`<p class="small muted" style="margin:0">ข้อมูลทั้งหมดซิงก์อยู่ในบัญชีแล้ว เข้าสู่ระบบด้วย Google อีกครั้งเมื่อไหร่ก็ได้ข้อมูลกลับมาครบ</p>
       <button class="btn primary big" data-act="logout-do" data-v="clear">ออกจากระบบ</button>
       <button class="btn" data-act="logout-do" data-v="keep">ออกจากระบบ แต่เก็บสำเนาไว้ในเครื่องนี้</button>`
-    :`<p class="small muted" style="margin:0">ข้อมูลอยู่ในเครื่องนี้ ออกจากระบบแล้วข้อมูลยังอยู่ กรอกชื่อและ Gmail เดิม แล้วใส่ PIN เพื่อเข้าใช้ต่อได้เลย</p>
+    :`<p class="small muted" style="margin:0">ข้อมูลยังอยู่ในเครื่อง · กลับมาใส่ชื่อ Gmail และ PIN เดิมได้เลย</p>
       <button class="btn primary big" data-act="logout-do" data-v="keep">ออกจากระบบ</button>
       ${UI.logoutWipe?`<div class="lo-warn"><span class="small">ลบเวร รายการ และการตั้งค่าทั้งหมดในเครื่องนี้? กู้คืนไม่ได้</span><div class="row" style="gap:6px"><button class="btn danger grow" data-act="logout-do" data-v="clear">ยืนยัน ลบและออกจากระบบ</button><button class="btn" data-act="logout-wipe" data-v="0">ยกเลิก</button></div></div>`
         :`<button class="btn danger" data-act="logout-wipe" data-v="1">ออกจากระบบและลบข้อมูลในเครื่องนี้</button>`}
@@ -938,7 +938,7 @@ async function doLogout(mode){const wasFb=!!fbUser;
   try{sessionStorage.removeItem('st_unlocked')}catch(e){}UI.lock=false;UI.pin=null;UI.onbBusy=false;UI.onb='auth';UI.tab='settings';render();window.scrollTo(0,0);toast(mode==='clear'?'ออกจากระบบแล้ว · ล้างข้อมูลในเครื่องนี้แล้ว':'ออกจากระบบแล้ว · ข้อมูลยังอยู่ในเครื่องนี้')}
 function donateSheet(){return `<div class="scrim mp-scrim" data-act="donate-close"><div class="sheet mp-sheet dn-sheet" role="dialog" aria-modal="true" aria-label="สนับสนุนการพัฒนาแอป" data-stop="1">
     <div class="row" style="justify-content:space-between"><h2>สนับสนุน ShiftTax 💚</h2><button class="icon-btn" data-act="donate-close" aria-label="ปิด">×</button></div>
-    <p style="margin:0">ShiftTax ใช้ฟรีสำหรับพยาบาลทุกคน ถ้าแอปช่วยให้การจัดเวร การเงิน และภาษีง่ายขึ้น ร่วมสนับสนุนค่าพัฒนาและดูแลระบบได้ตามใจค่ะ</p>
+    <p style="margin:0">ShiftTax ใช้ฟรี ถ้าชอบ ร่วมสนับสนุนการพัฒนาได้ตามใจค่ะ</p>
     <div class="dn-qr"><img src="${DONATE_QR}" alt="QR พร้อมเพย์ สำหรับสนับสนุน ShiftTax"></div>
     <button class="btn primary big" data-act="donate-save">⬇️ บันทึกรูป QR</button>
     <p class="small muted" style="margin:0;text-align:center">สแกนด้วยแอปธนาคาร · ขอบคุณค่ะ ☕</p>
@@ -983,7 +983,7 @@ function renderSheetInner(){
       <div class="lines">
       ${workSel.map(t=>{const o=(mo.pay[d]||{})[t.id];const def=defRate(t,hol,ots.includes(t.id));return `<div class="line"><span class="l"><span class="chip k${t.color} ${ots.includes(t.id)?'otc':''}">${esc(t.code)}${ots.includes(t.id)?' OT':''}</span> ${esc(t.name)}${ots.includes(t.id)?' (OT)':''}</span><input class="num payin" data-pay="${t.id}" inputmode="decimal" value="${o!=null&&o!==''?o:def}" aria-label="ค่าเวร ${esc(t.name)}"></div>`}).join('')||'<p class="small muted" style="margin:0">ยังไม่ได้เลือกเวรทำงาน</p>'}
       </div>
-      <p class="small muted" style="margin:0 0 8px">แก้ตัวเลขได้ถ้าวันนี้ได้ไม่เท่าอัตราปกติ</p>
+      <p class="small muted" style="margin:0 0 8px">แก้ได้ ถ้าวันนี้ได้ไม่เท่าปกติ</p>
     ${otList(mo,d).map(x=>`<div class="otbox">
       <div class="row" style="justify-content:space-between">
         <div class="seg sm"><button class="${x.mode!=='hr'?'on':''}" data-act="ot-mode" data-id="${x.id}" data-v="amt">เหมาจ่าย</button><button class="${x.mode==='hr'?'on':''}" data-act="ot-mode" data-id="${x.id}" data-v="hr">รายชั่วโมง</button></div>
@@ -1028,7 +1028,7 @@ function entryRow(e){const c=catById(e.t,e.cat);const name=c?c.name:'หมว�
 function budgetCard(c){
   const budget=num(S.budget);
   const head=x=>`<div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h3 class="h-ico"><img src="${IMG.stats}" alt="">งบประมาณเดือนนี้</h3>${x}</div>`;
-  if(UI.bedit)return `<section class="card budget">${head('')}<div class="row" style="flex-wrap:nowrap"><span>฿</span><input id="b-in" class="num grow" inputmode="decimal" value="${budget||''}" placeholder="เช่น 15000" aria-label="งบประมาณต่อเดือน"><button class="btn sm primary" data-act="budget-save">บันทึก</button><button class="btn sm" data-act="budget-cancel">ยกเลิก</button></div><p class="small muted" style="margin:0">ว่างไว้ = ไม่ตั้งงบ · จะเตือนเมื่อใช้ถึง 80% และ 100%</p></section>`;
+  if(UI.bedit)return `<section class="card budget">${head('')}<div class="row" style="flex-wrap:nowrap"><span>฿</span><input id="b-in" class="num grow" inputmode="decimal" value="${budget||''}" placeholder="เช่น 15000" aria-label="งบประมาณต่อเดือน"><button class="btn sm primary" data-act="budget-save">บันทึก</button><button class="btn sm" data-act="budget-cancel">ยกเลิก</button></div><p class="small muted" style="margin:0">ว่าง = ไม่ตั้งงบ · เตือนที่ 80% และ 100%</p></section>`;
   if(!budget)return `<section class="card budget">${head('<button class="btn sm" data-act="budget-edit">+ ตั้งงบประมาณ</button>')}</section>`;
   const pct=Math.round(c.exp/budget*100);const over=c.exp>budget;
   const today=new Date();const ym=UI.y*12+UI.m,tym=today.getFullYear()*12+today.getMonth()+1;
@@ -1091,17 +1091,17 @@ function healthDetail(c){
   const pc=r=>r?r.v.toFixed(1)+'%':'ข้อมูลไม่เพียงพอ';
   const sec=(t,body)=>`<div class="hsec"><div class="hsh">${t} <span>→</span></div>${body}</div>`;
   const bt=v=>(v<0?'−':'')+'฿'+fmt(Math.abs(v));const tx=r=>r?r.v.toFixed(2)+' เท่า':'ข้อมูลไม่เพียงพอ';
-  return sec('ความมั่งคั่งในปัจจุบัน',row('','ความมั่งคั่งสุทธิ',h.nw?bt(h.nw.v):'ข้อมูลไม่เพียงพอ','เกณฑ์มาตรฐาน: ควรเป็นบวก (สินทรัพย์มากกว่าหนี้สิน)',h.nw?(h.nw.ok?'ok':'bad'):'na')
-     +row('','กระแสเงินสดสุทธิ',bt(h.cash.v),'เกณฑ์มาตรฐาน: ควรเป็นบวก (รายรับมากกว่ารายจ่าย)',h.inc?(h.cash.ok?'ok':'bad'):'na')
-     +row('','อัตราส่วนความอยู่รอด',tx(h.surv),'เกณฑ์มาตรฐาน: รายได้รวม ≥ 1 เท่าของรายจ่ายรวม',h.surv?(h.surv.ok?'ok':'bad'):'na')
-     +row('','อัตราส่วนความมั่งคั่ง',tx(h.wealth),'เกณฑ์มาตรฐาน: รายได้จากสินทรัพย์ ≥ 1 เท่าของรายจ่ายรวม',h.wealth?(h.wealth.ok?'ok':h.wealth.mid?'warn':'bad'):'na'))
-   +sec('สภาพคล่อง',row('','อัตราส่วนสภาพคล่องพื้นฐาน',h.liq?h.liq.v.toFixed(1)+' เดือน':'ข้อมูลไม่เพียงพอ','เกณฑ์มาตรฐาน: เงินฝากสะสม ≥ 3–6 เท่าของรายจ่ายต่อเดือน',h.liq?(h.liq.ok?'ok':h.liq.mid?'warn':'bad'):'na')
+  return sec('ความมั่งคั่งในปัจจุบัน',row('','ความมั่งคั่งสุทธิ',h.nw?bt(h.nw.v):'ข้อมูลไม่เพียงพอ','เกณฑ์: สินทรัพย์ > หนี้สิน',h.nw?(h.nw.ok?'ok':'bad'):'na')
+     +row('','กระแสเงินสดสุทธิ',bt(h.cash.v),'เกณฑ์: รายรับ > รายจ่าย',h.inc?(h.cash.ok?'ok':'bad'):'na')
+     +row('','อัตราส่วนความอยู่รอด',tx(h.surv),'เกณฑ์: รายได้รวม ≥ 1 เท่าของรายจ่ายรวม',h.surv?(h.surv.ok?'ok':'bad'):'na')
+     +row('','อัตราส่วนความมั่งคั่ง',tx(h.wealth),'เกณฑ์: รายได้จากสินทรัพย์ ≥ 1 เท่าของรายจ่ายรวม',h.wealth?(h.wealth.ok?'ok':h.wealth.mid?'warn':'bad'):'na'))
+   +sec('สภาพคล่อง',row('','อัตราส่วนสภาพคล่องพื้นฐาน',h.liq?h.liq.v.toFixed(1)+' เดือน':'ข้อมูลไม่เพียงพอ','เกณฑ์: เงินฝากสะสม ≥ 3–6 เท่าของรายจ่ายต่อเดือน',h.liq?(h.liq.ok?'ok':h.liq.mid?'warn':'bad'):'na')
      +`<div class="small muted" style="padding:0 2px 6px">${S.nw.assets.some(x=>x.type==='cash')?'เงินสด/เงินฝากในหน้าสินทรัพย์':'เงินฝากสะสมที่บันทึกไว้'} ฿${fmt(h.liquid)} · รายจ่ายใช้ชีวิต ฿${fmt(h.living)}/เดือน</div>`)
-   +sec('หนี้สินและความสามารถในการชำระหนี้',row('','อัตราส่วนการชำระหนี้สินจากรายได้',h.debtR?pc(h.debtR):'ข้อมูลไม่เพียงพอ','เกณฑ์มาตรฐาน: น้อยกว่า 35%–45% ของรายได้รวม',h.debtR?(h.debtR.ok?'ok':h.debtR.mid?'warn':'bad'):'na')
-     +row('','อัตราส่วนหนี้สินต่อสินทรัพย์',h.dta?h.dta.v.toFixed(1)+'%':'ข้อมูลไม่เพียงพอ','เกณฑ์มาตรฐาน: น้อยกว่า 50% ของสินทรัพย์รวม',h.dta?(h.dta.ok?'ok':'bad'):'na'))
-   +sec('โอกาสในการสร้างความมั่งคั่ง',row('','อัตราส่วนการออม',pc(h.save),'เกณฑ์มาตรฐาน: มากกว่า 10% ของรายได้รวม',h.save?(h.save.ok?'ok':'warn'):'na')
-     +row('','อัตราส่วนการลงทุน',pc(h.invest),'เกณฑ์มาตรฐาน: มากกว่า 10% ของรายได้รวม',h.invest?(h.invest.ok?'ok':'warn'):'na'))
-   +`<button class="btn" style="width:100%;margin-top:10px" data-act="dsheet" data-v="nw">${h.nw?'แก้ไขสินทรัพย์และหนี้สิน':'+ บันทึกสินทรัพย์และหนี้สิน'}</button><p class="small muted" style="margin:6px 2px 0">สัดส่วนรายเดือนคำนวณจากรายการในเดือนนี้ · ความมั่งคั่งสุทธิและหนี้สินต่อสินทรัพย์ใช้ยอดล่าสุดในหน้าสินทรัพย์และหนี้สิน</p>`}
+   +sec('หนี้สินและความสามารถในการชำระหนี้',row('','อัตราส่วนการชำระหนี้สินจากรายได้',h.debtR?pc(h.debtR):'ข้อมูลไม่เพียงพอ','เกณฑ์: น้อยกว่า 35%–45% ของรายได้รวม',h.debtR?(h.debtR.ok?'ok':h.debtR.mid?'warn':'bad'):'na')
+     +row('','อัตราส่วนหนี้สินต่อสินทรัพย์',h.dta?h.dta.v.toFixed(1)+'%':'ข้อมูลไม่เพียงพอ','เกณฑ์: น้อยกว่า 50% ของสินทรัพย์รวม',h.dta?(h.dta.ok?'ok':'bad'):'na'))
+   +sec('โอกาสในการสร้างความมั่งคั่ง',row('','อัตราส่วนการออม',pc(h.save),'เกณฑ์: มากกว่า 10% ของรายได้รวม',h.save?(h.save.ok?'ok':'warn'):'na')
+     +row('','อัตราส่วนการลงทุน',pc(h.invest),'เกณฑ์: มากกว่า 10% ของรายได้รวม',h.invest?(h.invest.ok?'ok':'warn'):'na'))
+   +`<button class="btn" style="width:100%;margin-top:10px" data-act="dsheet" data-v="nw">${h.nw?'แก้ไขสินทรัพย์และหนี้สิน':'+ บันทึกสินทรัพย์และหนี้สิน'}</button><p class="small muted" style="margin:6px 2px 0">คิดจากรายการเดือนนี้ · ความมั่งคั่งและหนี้ใช้ยอดล่าสุดจากหน้าสินทรัพย์</p>`}
 const ASSET_T=[['cash','เงินสด / เงินฝาก'],['invest','เงินลงทุน'],['welfare','กองทุนสวัสดิการ'],['personal','บ้าน / รถ / ของมีค่า']];
 const DEBT_T=[['short','หนี้ระยะสั้น'],['long','หนี้ระยะยาว']];
 const NW_HINT={assets:'เช่น บัญชีออมทรัพย์ กองทุนรวม กบข. บ้าน รถ ทอง',debts:'ระยะสั้น: บัตรเครดิต ผ่อนสินค้า · ระยะยาว: บ้าน รถ กยศ. สหกรณ์'};
@@ -1117,7 +1117,7 @@ function nwDetail(){const t=nwTotals();
       <div class="stat t-lav"><span>มั่งคั่งสุทธิ</span><b id="nw-n" class="${t.n<0?'neg':''}">${t.n<0?'−':''}${fmt(Math.abs(t.n))}</b></div></div>
     ${list('assets',ASSET_T,'สินทรัพย์')}${list('debts',DEBT_T,'หนี้สิน (ยอดคงค้าง)')}
     ${S.nw.debts.length?`<button class="btn" style="width:100%;margin-top:12px" data-act="dsheet" data-v="debt">🎯 ดูเป้าหมายปลดหนี้</button>`:''}
-    <p class="small muted" style="margin:8px 2px 0">ใส่ยอดล่าสุด แก้ไขเมื่อยอดเปลี่ยน ข้อมูลเก็บในเครื่องนี้เท่านั้น</p>`}
+    <p class="small muted" style="margin:8px 2px 0">ใส่ยอดล่าสุด แก้ได้เมื่อยอดเปลี่ยน</p>`}
 const DEBT_CATS=[['card','บัตรเครดิต / สินเชื่อ'],['install','ผ่อนสินค้า'],['loan','ผ่อนรถ'],['home','ผ่อนบ้าน / ที่ดิน'],['edu','กยศ.'],['coop','หนี้สหกรณ์']];
 function debtCat(x){return x.cat||(x.type==='long'?'home':'card')}
 function debtRow(x){const f=(n,v,ph,lab)=>`<label class="dfl"><span>${lab}</span><input class="num" data-nw="${n}" data-k="debts" data-id="${x.id}" inputmode="decimal" value="${v?v:''}" placeholder="${ph}"></label>`;
@@ -1149,14 +1149,14 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
   const hero=`<img class="wl-hero" src="${WL_HERO}" alt="ShiftTax · Smart Tax Solutions for Growth · Your Shifts. Your Income. Your Balance.">`;
   let body='',top='';
   if(st==='auth'||st===1){top=hero;const back=!!(S.setupDone&&S.email);
-    body=`<h2>${back?'ยินดีต้อนรับกลับค่ะ 💚':'ยินดีต้อนรับค่ะ 🎉'}</h2><p class="wl-p">${back?'ใส่ชื่อและ Gmail ที่สมัครไว้เพื่อเข้าใช้งาน':'สมัครใช้งานง่าย ๆ แค่กรอกชื่อและ Gmail'}</p>
+    body=`<h2>${back?'ยินดีต้อนรับกลับค่ะ 💚':'ยินดีต้อนรับค่ะ 🎉'}</h2><p class="wl-p">${back?'ใส่ชื่อและ Gmail ที่สมัครไว้':'กรอกแค่ชื่อและ Gmail ก็เริ่มใช้ได้'}</p>
     <div class="wl-uprow"><label for="av-file" class="wl-upl">${wlAvatar(72)}${S.avatar?'<span class="cam">📷</span>':''}<span class="t">${S.avatar?'เปลี่ยนรูปโปรไฟล์':'อัปโหลดรูปของคุณ'} <span aria-hidden="true">☁️</span></span></label><img class="wl-deco" src="${WL_DECO}" alt=""></div>
     <input type="file" id="av-file" accept="image/*" hidden>
     <label class="wl-lab">ชื่อของคุณ (ชื่อเล่นก็ได้)<input id="onb-name" class="wl-in" value="${nm}" maxlength="30" placeholder="เช่น ฝน" autocomplete="nickname"></label>
     <label class="wl-lab">Gmail<input id="onb-email" class="wl-in" type="email" inputmode="email" value="${esc(S.email||'')}" maxlength="80" placeholder="name@gmail.com" autocomplete="email" autocapitalize="off" spellcheck="false"></label>
     <button class="wl-next" data-act="onb-next">${back?'เข้าสู่ระบบ ›':'สมัครใช้งาน ›'}</button>
-    <p class="small muted wl-note">ข้อมูลเก็บในเครื่องนี้ · Gmail ใช้ยืนยันตัวตนเมื่อลืม PIN</p>`}
-  if(st===2)body=`<h2>สวัสดีค่ะ คุณ${nm||'พยาบาล'} 💚</h2><p class="muted">ขั้นที่ 2/4 · ใส่รายได้ประจำต่อเดือน เพื่อคำนวณเงินได้และภาษี</p>
+    <p class="small muted wl-note">ข้อมูลเก็บในเครื่อง · Gmail ใช้ตอนลืม PIN</p>`}
+  if(st===2)body=`<h2>สวัสดีค่ะ คุณ${nm||'พยาบาล'} 💚</h2><p class="muted">ขั้นที่ 2/4 · รายได้ประจำต่อเดือน</p>
     <label>เงินเดือน (บาท/เดือน)<input class="num" data-set="salary" inputmode="decimal" value="${S.sample?'':S.salary||''}" placeholder="เช่น 25000"></label>
     <label class="inline"><input type="checkbox" data-setb="sso" ${S.sso?'checked':''}> หักประกันสังคม 5%</label>
     <div class="onb-sub">เงินเพิ่มประจำ <span class="muted small">เช่น พ.ต.ส. ค่าตอบแทนวิชาชีพ ค่าครองชีพ</span></div>
@@ -1168,20 +1168,20 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     <label>ภาษีหัก ณ ที่จ่าย (บาท/เดือน)<input class="num" data-set="whDefault" inputmode="decimal" value="${S.whDefault||''}" placeholder="0"></label></div>
     ${typeof dedRows==='function'?dedRows('onb-allow'):''}
     ${typeof dedQuick==='function'?dedQuick():''}
-    <p class="small muted" style="margin:0">กองทุนใส่เป็น % เพื่อนำไปลดหย่อนภาษี · ภาษีที่ถูกหักนำไปคิดคืนภาษีปลายปี · ประกันสังคมคิดให้อัตโนมัติ</p>
+    <p class="small muted" style="margin:0">กองทุนและภาษีที่ถูกหัก นำไปคิดภาษีปลายปีให้ · ประกันสังคมคิดอัตโนมัติ</p>
     <div class="row onb-nav"><button class="btn" data-act="onb-back">‹ ย้อนกลับ</button><button class="wl-next grow" data-act="onb-next">ถัดไป ›</button></div>`;
   if(st===3){const W=S.shiftTypes.filter(t=>t.work);
-    body=`<h2>ค่าเวรและ OT ⏰</h2><p class="muted">ขั้นที่ 3/4 · ใส่อัตราต่อเวร แอปจะคิดเงินให้ทุกครั้งที่ลงตารางเวร</p>
+    body=`<h2>ค่าเวรและ OT ⏰</h2><p class="muted">ขั้นที่ 3/4 · แอปคิดค่าเวรให้ทุกครั้งที่ลงเวร</p>
     <div class="onb-rates r2"><div class="hd"><span>เวร</span><span>ค่าเวร (บาท)</span><span>OT (บาท)</span></div>
     ${W.map(t=>`<div class="rr"><span class="chip k${t.color}">${esc(t.code)}</span><input class="num" data-st="wd" data-sync="hd" data-id="${t.id}" inputmode="decimal" value="${t.wd||''}" placeholder="0" aria-label="${esc(t.name)} ค่าเวร"><input class="num" data-st="otr" data-id="${t.id}" inputmode="decimal" value="${t.otr===''||t.otr==null?'':t.otr}" placeholder="เท่าปกติ" aria-label="${esc(t.name)} OT"></div>`).join('')}</div>
  <div class="lagbox"><div class="lag-h">โรงพยาบาลโอนเงินให้เดือนไหน?</div>
-    <div class="lag-pre">${[['0','จ่ายเดือนเดียวกับที่ทำงาน'],['shift','ค่าเวร + OT ได้เดือนถัดไป'],['all','ทุกอย่างได้เดือนถัดไป']].map(([v,l])=>`<button class="tbtn ${lagPreset()===v?'on':''}" data-act="lag-preset" data-v="${v}">${l}</button>`).join('')}</div>
-    <p class="small muted" style="margin:0">ทุกอย่าง = เงินเดือน พ.ต.ส. ค่าใบประกอบฯ ค่าเวร และ OT · ตั้งแยกทีละรายการได้ที่ ตั้งค่า › เงินเดือนและรายการหัก</p></div>
-    <label>OT / งานนอกแบบรายชั่วโมง (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
-    <p class="small muted" style="margin:0">ช่อง OT ว่างไว้ = ใช้อัตราเดียวกับค่าเวร · วันหยุดคิดอัตราเดียวกัน ถ้าโรงพยาบาลจ่ายวันหยุดต่างกัน ตั้งเพิ่มได้ที่ ตั้งค่า › ประเภทเวร เวลา และอัตราค่าเวร</p>
+    <div class="lag-pre">${[['0','เดือนเดียวกัน'],['shift','ค่าเวร/OT เดือนถัดไป'],['all','ทุกอย่างเดือนถัดไป']].map(([v,l])=>`<button class="tbtn ${lagPreset()===v?'on':''}" data-act="lag-preset" data-v="${v}">${l}</button>`).join('')}</div>
+    <p class="small muted" style="margin:0">ทุกอย่าง = เงินเดือน พ.ต.ส. ค่าใบประกอบ ค่าเวร OT · ตั้งแยกได้ในตั้งค่า</p></div>
+    <label>OT / งานนอก รายชั่วโมง (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
+    <p class="small muted" style="margin:0">OT ว่าง = เท่าค่าเวร · วันหยุดคิดเท่าวันปกติ (แก้ได้ในตั้งค่า)</p>
     <div class="row onb-nav"><button class="btn" data-act="onb-back">‹ ย้อนกลับ</button><button class="wl-next grow" data-act="onb-done">ถัดไป ›</button></div>`}
   if(st===4){if(!UI.pin||UI.pin.mode!=='set')UI.pin={mode:'set',stage:'new',buf:''};
-    body=`<h2>ตั้ง PIN เข้าแอป 🔒</h2><p class="muted">ขั้นที่ 4/4 · ครั้งต่อไปเปิดแอปแค่ใส่ PIN 4 หลัก ไม่ต้องล็อกอินใหม่</p>
+    body=`<h2>ตั้ง PIN เข้าแอป 🔒</h2><p class="muted">ขั้นที่ 4/4 · ครั้งหน้าใส่แค่ PIN</p>
     <div class="pin-box"><b class="pin-title">${pinTitle()}</b>${pinPad()}</div>
     ${UI.pin.stage==='confirm'?'<button class="onb-skip" data-act="pin-restart">ตั้ง PIN ใหม่</button>':'<button class="onb-skip" data-act="onb-back">‹ ย้อนกลับ</button>'}`}
   const skip=(st===2||st===3)?'<button class="onb-skip" data-act="onb-done">ข้ามไปก่อน ตั้งค่าทีหลัง</button>':'';
@@ -1193,10 +1193,10 @@ function lockHtml(){const P=UI.pin||{};const forgot=UI.pinForgot;
     ${wlAvatar(76)}
     <h2 style="margin:4px 0 0">${P.mode==='change'?'เปลี่ยน PIN':'สวัสดีค่ะ'+(S.userName?' คุณ'+esc(S.userName):'')}</h2>
     <b class="pin-title">${forgot?'ลืม PIN':pinTitle()}</b>${forgot?'':pinPad()}
-    ${P.mode==='unlock'&&forgot&&!fbAvail()?`<div class="wl-warn small" style="text-align:left">${S.email?'ใส่ Gmail ที่ใช้สมัคร เพื่อยืนยันตัวตนแล้วตั้ง PIN ใหม่ ข้อมูลไม่หาย':'บัญชีนี้ยังไม่ได้ใส่ Gmail จึงรีเซ็ต PIN ได้ด้วยการล้างข้อมูลในเครื่องนี้แล้วเริ่มใหม่เท่านั้น'}</div>
+    ${P.mode==='unlock'&&forgot&&!fbAvail()?`<div class="wl-warn small" style="text-align:left">${S.email?'ใส่ Gmail ที่สมัครไว้ แล้วตั้ง PIN ใหม่ ข้อมูลไม่หาย':'ยังไม่ได้ใส่ Gmail · รีเซ็ต PIN ได้โดยล้างข้อมูลแล้วเริ่มใหม่'}</div>
       ${S.email?`<input id="pf-email" class="wl-in" type="email" inputmode="email" placeholder="name@gmail.com" autocapitalize="off" style="width:100%"><button class="wl-next" style="width:100%" data-act="pin-forgot-email">ยืนยัน</button>`:`<button class="btn danger" data-act="logout-do" data-v="clear">ล้างข้อมูลและเริ่มใหม่</button>`}
       <button class="onb-skip" data-act="pin-forgot" data-v="0">ยกเลิก</button>`
-    :P.mode==='unlock'?(forgot?`<div class="wl-warn small" style="text-align:left">${fbAvail()?'ยืนยันตัวตนด้วยบัญชี Gmail ที่สมัครไว้ แล้วตั้ง PIN ใหม่ ข้อมูลไม่หาย':'บัญชีนี้ไม่ได้เชื่อม Gmail จึงรีเซ็ต PIN ได้ด้วยการล้างข้อมูลในเครื่องนี้แล้วเริ่มใหม่เท่านั้น'}</div>
+    :P.mode==='unlock'?(forgot?`<div class="wl-warn small" style="text-align:left">${fbAvail()?'ยืนยันด้วย Gmail ที่สมัคร แล้วตั้ง PIN ใหม่ ข้อมูลไม่หาย':'ยังไม่ได้เชื่อม Gmail · รีเซ็ต PIN ได้โดยล้างข้อมูลแล้วเริ่มใหม่'}</div>
       ${fbAvail()?`<button class="wl-google" data-act="pin-forgot-google">${GLOGO}<span>ยืนยันด้วย Gmail</span></button>`:`<button class="btn danger" data-act="logout-do" data-v="clear">ล้างข้อมูลและเริ่มใหม่</button>`}
       <button class="onb-skip" data-act="pin-forgot" data-v="0">ยกเลิก</button>`
       :`<button class="onb-skip" data-act="pin-forgot" data-v="1">ลืม PIN?</button>`):''}
@@ -1274,7 +1274,7 @@ function cneuCalc(){const C=S.cneu,req=num(C.req)||50,now=new Date();now.setHour
   const lvl=got>=req?'ok':exp&&mLeft<=6?'bad':exp&&mLeft<=18&&remain>perYr?'warn':'';
   return {req,got,remain,exp,mLeft,perYr,yr,yrT:Math.ceil(req/5),lvl}}
 function cneuSheet(){const c=cneuCalc(),C=S.cneu;const pc=Math.min(100,Math.round(c.got/c.req*100));
-  const msg=c.got>=c.req?'เก็บหน่วยกิตครบเกณฑ์ต่ออายุแล้ว 🎉':!c.exp?`ยังขาดอีก ${fmt(c.remain)} หน่วย · ใส่วันหมดอายุใบอนุญาตเพื่อดูเวลาที่เหลือ`:c.mLeft<=0?`ใบอนุญาตหมดอายุแล้ว ยังขาด ${fmt(c.remain)} หน่วย`:`ใบอนุญาตหมดอายุ ${thDate(C.exp)} (อีก ${c.mLeft} เดือน) ยังขาด ${fmt(c.remain)} หน่วย · ควรเก็บปีละ ~${c.perYr} หน่วย`;
+  const msg=c.got>=c.req?'เก็บหน่วยกิตครบเกณฑ์ต่ออายุแล้ว 🎉':!c.exp?`ยังขาดอีก ${fmt(c.remain)} หน่วย · ใส่วันหมดอายุใบอนุญาตด้วย`:c.mLeft<=0?`ใบอนุญาตหมดอายุแล้ว ยังขาด ${fmt(c.remain)} หน่วย`:`ใบอนุญาตหมดอายุ ${thDate(C.exp)} (อีก ${c.mLeft} เดือน) ยังขาด ${fmt(c.remain)} หน่วย · ควรเก็บปีละ ~${c.perYr} หน่วย`;
   const yp=Math.min(100,Math.round(c.yr/c.yrT*100));
   const byY={};for(const x of C.list.slice().sort((a,b)=>b.d<a.d?-1:1))(byY[(x.d||'').slice(0,4)]=byY[(x.d||'').slice(0,4)]||[]).push(x);
   return `<div class="scrim" data-act="cneu-close"><div class="sheet tall" role="dialog" aria-modal="true" aria-label="หน่วยกิต CNEU" data-stop="1">
@@ -1286,8 +1286,8 @@ function cneuSheet(){const c=cneuCalc(),C=S.cneu;const pc=Math.min(100,Math.roun
       <div class="cform"><input id="cn-t" placeholder="หัวข้อ เช่น การพยาบาลผู้ป่วยวิกฤต" aria-label="หัวข้อ"><div class="grid2"><label>วันที่<input type="date" id="cn-d" value="${UI.cneuDate||isoD(new Date())}"></label><label>หน่วยกิต CNEU<input class="num" id="cn-c" inputmode="decimal" placeholder="0"></label></div>
       <input id="cn-o" placeholder="ผู้จัด / สถานที่ (ไม่บังคับ)" aria-label="ผู้จัด"><button class="btn primary" data-act="cneu-add">+ บันทึก</button></div></div>
     <div class="hsec"><div class="hsh">ประวัติ <span class="num">${C.list.length} รายการ</span></div>
-      ${Object.keys(byY).sort().reverse().map(y=>`<div class="dayhead"><span>ปี ${+y+543}</span><span class="small num">${fmt(sum(byY[y].map(x=>num(x.cr))))} หน่วย</span></div>${byY[y].map(x=>`<div class="crow"><div class="grow"><b>${esc(x.t)}</b><small>${thDate(x.d)}${x.o?' · '+esc(x.o):''}</small></div><b class="num">${fmt(num(x.cr))}</b><button class="icon-btn" data-act="cneu-del" data-id="${x.id}" aria-label="ลบ">×</button></div>`).join('')}`).join('')||'<p class="small muted">ยังไม่มีรายการ บันทึกได้จากฟอร์มด้านบน หรือจากวันที่ลง อบ/ปช ในตารางเวร</p>'}</div>
-    <p class="small muted" style="margin:8px 2px 0">เกณฑ์สภาการพยาบาล: ต้องมีหน่วยคะแนน CNEU ไม่น้อยกว่า 50 หน่วยในรอบ 5 ปีของใบอนุญาต ตรวจยอดจริงได้ที่ระบบ CNEU ของสภาการพยาบาล</p></div></div>`}
+      ${Object.keys(byY).sort().reverse().map(y=>`<div class="dayhead"><span>ปี ${+y+543}</span><span class="small num">${fmt(sum(byY[y].map(x=>num(x.cr))))} หน่วย</span></div>${byY[y].map(x=>`<div class="crow"><div class="grow"><b>${esc(x.t)}</b><small>${thDate(x.d)}${x.o?' · '+esc(x.o):''}</small></div><b class="num">${fmt(num(x.cr))}</b><button class="icon-btn" data-act="cneu-del" data-id="${x.id}" aria-label="ลบ">×</button></div>`).join('')}`).join('')||'<p class="small muted">ยังไม่มีรายการ · บันทึกด้านบน หรือจากวัน อบ/ปช ในตารางเวร</p>'}</div>
+    <p class="small muted" style="margin:8px 2px 0">เกณฑ์สภาการพยาบาล: 50 หน่วย ต่อรอบใบอนุญาต 5 ปี</p></div></div>`}
 /* ---------- alerts ---------- */
 function shiftsOn(dt){const mo=M[mkey(dt.getFullYear(),dt.getMonth()+1)];return mo&&mo.shifts?(mo.shifts[pad(dt.getDate())]||[]):[]}
 const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
@@ -1319,8 +1319,8 @@ function notifSheet(){const A=computeAlerts();const can='Notification' in window
     ${A.length?A.map(a=>`<button class="nrow ${a.lvl}" data-act="notif-go" data-v="${a.go||''}" data-d="${a.d||''}"><span class="nic">${a.ic}</span><span class="grow"><b>${esc(a.t)}</b>${a.sub?`<small>${esc(a.sub)}</small>`:''}</span><span class="chev">›</span></button>`).join(''):'<p class="small muted" style="padding:10px 2px">ไม่มีเรื่องต้องเตือนตอนนี้ ✨</p>'}
     <div class="sumbars" style="margin-top:12px"><button class="sumbar" data-act="open-today"><img src="${IMG.calendar}" alt=""><span class="grow"><b>งานและเวรวันนี้</b><small>เพิ่มงานหรือลงเวรของวันนี้</small></span><span class="chev">›</span></button>
     <button class="sumbar" data-act="cneu-open"><img src="${IMG.report}" alt=""><span class="grow"><b>หน่วยกิต CNEU</b><small>เก็บแล้ว ${fmt(cneuCalc().got)} / ${cneuCalc().req} หน่วย</small></span><span class="chev">›</span></button></div>
-    ${can&&perm!=='denied'?`<label class="inline small" style="margin-top:10px"><input type="checkbox" id="notif-dev" ${S.notifOn&&perm==='granted'?'checked':''}> เด้งแจ้งเตือนบนเครื่องนี้ (เวรพรุ่งนี้ และเรื่องสำคัญ)</label>`:''}
-    <p class="small muted" style="margin:6px 2px 0">แจ้งเตือนทำงานเมื่อเปิดแอปนี้ไว้ หรือเมื่อเปิดแอปในวันนั้น แอปตรวจเวร 14 วันข้างหน้า: เวรวันนี้/พรุ่งนี้ พักระหว่างเวรไม่ถึง 8 ชม. ทำงานติดกันตั้งแต่ 6 วัน หนี้ใกล้ครบกำหนด และ CNEU ใกล้หมดอายุ</p></div></div>`}
+    ${can&&perm!=='denied'?`<label class="inline small" style="margin-top:10px"><input type="checkbox" id="notif-dev" ${S.notifOn&&perm==='granted'?'checked':''}> แจ้งเตือนบนเครื่องนี้</label>`:''}
+    <p class="small muted" style="margin:6px 2px 0">เตือนเมื่อเปิดแอป · ดูล่วงหน้า 14 วัน: เวรพรุ่งนี้ พักไม่ถึง 8 ชม. ทำงานติดกัน 6 วัน หนี้ใกล้ครบกำหนด CNEU ใกล้หมดอายุ</p></div></div>`}
 function updateBell(){const el=$('#bellN');if(!el)return;let n=0;try{n=computeAlerts().filter(a=>a.lvl!=='info'||/^(วันนี้|พรุ่งนี้)/.test(a.t)).length}catch(e){}el.hidden=!n;el.textContent=n>9?'9+':n}
 function devNotify(){try{if(!S.notifOn||!('Notification' in window)||Notification.permission!=='granted')return;const k='nr-notified',today=isoD(new Date());let last='';try{last=localStorage.getItem(k)||''}catch(e){}
   if(last===today)return;const A=computeAlerts().filter(a=>a.lvl!=='info'||/^พรุ่งนี้/.test(a.t));if(!A.length)return;
@@ -1348,7 +1348,7 @@ function debtSimHtml(){const ex=num(S.nw.extra),st=S.nw.strat||'snow';const base
   return `<div class="line"><span class="l">ผ่อนตามงวดปกติ หมดหนี้</span><span class="v num">${fm(base.m)}</span></div>
     <div class="line total"><span class="l">ตามแผนนี้ หมดหนี้</span><span class="v num pos">${fm(plan.m)}</span></div>
     ${base.m!==Infinity&&plan.m<base.m?`<div class="tip" style="margin:8px 0 0"><b>🎉 เร็วขึ้น ${base.m-plan.m} เดือน</b><span>ประหยัดดอกเบี้ยได้ประมาณ <b class="num pos">฿${fmt(Math.max(0,base.int-plan.int))}</b></span></div>`:''}
-    ${base.stuck.length?`<p class="small neg" style="margin:6px 0 0">ค่างวดของ ${esc(base.stuck.join(', '))} ยังไม่พอจ่ายดอกเบี้ย หรือยังไม่ได้ใส่ค่างวด</p>`:''}
+    ${base.stuck.length?`<p class="small neg" style="margin:6px 0 0">ค่างวดของ ${esc(base.stuck.join(', '))} ไม่พอจ่ายดอกเบี้ย หรือยังไม่ใส่ค่างวด</p>`:''}
     ${ord.length>1?`<p class="small muted" style="margin:8px 0 0">ลำดับการโปะ: ${ord.map((x,i)=>`${i+1}. ${esc(x.name||'หนี้')}`).join(' → ')}</p>`:''}`}
 function debtDetail(){const D=S.nw.debts;const tot=sum(D.map(x=>num(x.amt))),pay=sum(D.map(x=>num(x.pay)));const st=S.nw.strat||'snow';const plan=debtSim(num(S.nw.extra),st,true);
   const cards=D.slice().sort((a,b)=>((dueInfo(a)||{days:98}).days)-((dueInfo(b)||{days:98}).days)).map(x=>{const bal=num(x.amt),orig=Math.max(num(x.orig),bal);const pc=orig?Math.round((1-bal/orig)*100):0;const di=dueInfo(x);const fm=plan.fin[x.id];
@@ -1367,7 +1367,7 @@ function debtDetail(){const D=S.nw.debts;const tot=sum(D.map(x=>num(x.amt))),pay
       <div id="debt-sim">${debtSimHtml()}</div></div>
     <div class="hsec"><div class="hsh">หนี้แต่ละก้อน <span>→</span></div>${cards}</div>
     <button class="btn" style="width:100%;margin-top:10px" data-act="dsheet" data-v="nw">แก้ไขยอดหนี้ ดอกเบี้ย ค่างวด</button>
-    <p class="small muted" style="margin:6px 2px 0">กด "จ่ายงวดนี้" แล้ว แอปจะบันทึกเป็นรายจ่ายของวันนี้ และลดยอดหนี้ให้ตามเงินต้นที่จ่าย ก้อนเล็กก่อน (Snowball) ช่วยให้ปิดหนี้ได้เร็วและมีกำลังใจ ดอกเบี้ยสูงก่อน (Avalanche) ช่วยประหยัดดอกเบี้ยได้มากที่สุด</p>`}
+    <p class="small muted" style="margin:6px 2px 0">กด "จ่ายงวดนี้" = บันทึกรายจ่ายและลดยอดหนี้ให้ · ก้อนเล็กก่อน ปิดหนี้ได้ไว · ดอกเบี้ยสูงก่อน ประหยัดดอกเบี้ยสุด</p>`}
 function nwRefresh(){const t=nwTotals();const set=(id,v,neg)=>{const e=$('#'+id);if(e){e.textContent=v;if(neg!=null)e.classList.toggle('neg',neg)}};
   set('nw-a',fmt(t.a));set('nw-d',fmt(t.d));set('nw-n',(t.n<0?'−':'')+fmt(Math.abs(t.n)),t.n<0);set('nw-assets','฿'+fmt(t.a));set('nw-debts','฿'+fmt(t.d))}
 function healthBadge(c){const h=healthCalc(c);if(!h.has)return {t:'ยังไม่มีข้อมูล',cls:''};
@@ -1398,7 +1398,7 @@ function inDetail(c){return `
       ${GROUPS.in.map(([g,gl])=>`<div class="line"><span class="l">${gl}</span><span class="v num">${fmt(c.inGroup[g]||0)}</span></div>`).join('')}
       <div class="line total"><span class="l">รวม</span><span class="v num">${fmt(c.gross)}</span></div>
     </div>
-    <p class="small muted" style="margin:0">เงินเดือน ค่าเวร และ OT นับให้อัตโนมัติจากหน้าตั้งค่าและตารางเวร ไม่ต้องบันทึกซ้ำ</p>
+    <p class="small muted" style="margin:0">เงินเดือน ค่าเวร OT นับให้อัตโนมัติ ไม่ต้องบันทึกซ้ำ</p>
   `}
 function listDetail(c){const byDay={};for(const e of c.mo.entries)(byDay[e.d]=byDay[e.d]||[]).push(e);
   const tot=arr=>({i:sum(arr.filter(e=>e.t==='in').map(e=>e.amt)),x:sum(arr.filter(e=>e.t==='ex').map(e=>e.amt))});
@@ -1476,12 +1476,12 @@ function shareSheet(){return `<div class="scrim" data-act="share-close"><div cla
   <div class="share-prev" id="share-prev"><span class="small muted">กำลังสร้างรูป...</span></div>
   <div class="so-box"><div class="so-h">เลือกสิ่งที่จะแสดงในรูป</div>
     <div class="so-grid">${[['name','ชื่อเล่น'],['avatar','รูปโปรไฟล์'],['ot','ป้าย OT'],['sum','สรุปจำนวนเวร / ชั่วโมง'],['income','รายได้ค่าเวร + OT']].map(([k,l])=>`<label class="so-t"><input type="checkbox" data-so="${k}" ${S.shareOpt[k]?'checked':''}><span>${l}</span></label>`).join('')}</div>
-    <p id="so-warn" class="small neg" style="margin:0" ${S.shareOpt.income?'':'hidden'}>⚠️ รูปจะแสดงรายได้ค่าเวรของเดือนนี้ ปิดก่อนแชร์ถ้าไม่อยากให้คนอื่นเห็น</p>
+    <p id="so-warn" class="small neg" style="margin:0" ${S.shareOpt.income?'':'hidden'}>⚠️ รูปจะโชว์รายได้ค่าเวร</p>
     <label class="so-th">ธีมสี<select id="so-theme">${Object.entries(SHARE_TH).map(([k,v])=>`<option value="${k}" ${S.shareOpt.theme===k?'selected':''}>${v.n}</option>`).join('')}</select></label>
-    <p class="small muted" style="margin:0">เงินเดือน รายรับรายจ่าย หนี้ และภาษี จะไม่อยู่ในรูปเสมอ</p></div>
+    <p class="small muted" style="margin:0">เงินเดือน รายรับรายจ่าย หนี้ ภาษี ไม่อยู่ในรูป</p></div>
   <div class="grid2"><button class="btn primary big" data-act="share-img">บันทึก / ส่งรูป</button><button class="btn big" data-act="share-text">คัดลอกเป็นข้อความ</button></div>
   <textarea id="share-txt" class="share-txt" readonly hidden>${esc(shareText())}</textarea>
-  <p class="small muted" style="margin:0">ส่งรูปหรือข้อความนี้ให้เพื่อนทาง LINE หรือแอปแชตได้เลย</p></div></div>`}
+  <p class="small muted" style="margin:0">ส่งให้เพื่อนทาง LINE ได้เลย</p></div></div>`}
 async function buildShare(){UI.shareBlob=null;try{const cv=await rosterCanvas();const blob=await new Promise(r=>cv.toBlob(r,'image/png'));UI.shareBlob=blob;
   const el=$('#share-prev');if(el&&blob){const url=URL.createObjectURL(blob);el.innerHTML=`<img src="${url}" alt="รูปตารางเวรเดือน${TH_M[UI.m-1]}">`}}catch(e){const el=$('#share-prev');if(el)el.innerHTML='<span class="small muted">สร้างรูปไม่สำเร็จ ลองคัดลอกเป็นข้อความแทนได้ค่ะ</span>'}}
 async function shareImage(){const blob=UI.shareBlob;if(!blob){toast('รอสักครู่ กำลังสร้างรูป');return}
@@ -1489,8 +1489,8 @@ async function shareImage(){const blob=UI.shareBlob;if(!blob){toast('รอส�
   try{const f=new File([blob],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'ตารางเวร'});return}}catch(e){if(e&&e.name==='AbortError')return}
   let dl=null;try{dl=await claude.use('downloads')}catch(e){}
   if(!dl&&!window.claude){try{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();toast('บันทึกรูปแล้ว ส่งให้เพื่อนได้เลย ♡');return}catch(e){}}
-  if(!dl){toast('บันทึกรูปไม่ได้ในหน้านี้ กดค้างที่รูปเพื่อบันทึกแทนได้ค่ะ');return}
-  try{await dl.save({filename:name,data:blob});toast('บันทึกรูปแล้ว ส่งให้เพื่อนได้เลย ♡')}catch(e){if(e&&e.code==='declined')return;toast(e&&e.code==='rate_limited'?'รอสักครู่แล้วลองใหม่':'บันทึกรูปไม่ได้ในหน้านี้ กดค้างที่รูปเพื่อบันทึกแทนได้ค่ะ')}}
+  if(!dl){toast('บันทึกไม่ได้ กดค้างที่รูปเพื่อบันทึกแทน');return}
+  try{await dl.save({filename:name,data:blob});toast('บันทึกรูปแล้ว ส่งให้เพื่อนได้เลย ♡')}catch(e){if(e&&e.code==='declined')return;toast(e&&e.code==='rate_limited'?'รอสักครู่แล้วลองใหม่':'บันทึกไม่ได้ กดค้างที่รูปเพื่อบันทึกแทน')}}
 async function copyShareText(){const txt=shareText();
   try{await navigator.clipboard.writeText(txt);toast('คัดลอกแล้ว วางในแชตได้เลย');return}catch(e){}
   const ta=$('#share-txt');if(ta){ta.hidden=false;ta.focus();ta.select();try{if(document.execCommand('copy')){toast('คัดลอกแล้ว วางในแชตได้เลย');return}}catch(e){}}
@@ -1507,7 +1507,7 @@ function entryForm(inline){
     </div>
     ${t==='in'?`<div class="grid2"><label>ประเภทเงินได้ทางภาษี<select id="e-tax">${Object.entries(TAXTYPES).map(([k,l])=>`<option value="${k}" ${k===(s.tax||'none')?'selected':''}>${l}</option>`).join('')}</select></label>
       <label>ภาษีหัก ณ ที่จ่าย<input id="e-wh" class="num" inputmode="decimal" value="${esc(s.wh||'')}" placeholder="0"></label></div>`:''}
-    <p id="cathint" class="small muted" style="margin:0;text-align:center" ${num(s.amt)>0?'hidden':''}>กรอกจำนวนเงินก่อน แล้วจะให้เลือกหมวดหมู่ค่ะ</p>
+    <p id="cathint" class="small muted" style="margin:0;text-align:center" ${num(s.amt)>0?'hidden':''}>ใส่จำนวนเงิน แล้วเลือกหมวด</p>
     <div id="catsec" class="catsec" ${num(s.amt)>0?'':'hidden'}>
     <button class="catpick-btn ${sel?'':'empty'}" data-act="cat-open">${sel?ico(sel):'<span class="ico plus">＋</span>'}<span class="grow"><small>หมวดหมู่</small><b id="e-catname">${sel?esc(sel.name):'แตะเพื่อเลือกหมวดหมู่'}</b></span><span class="chev">›</span></button>
     <label id="bankrow" ${sel&&sel.dep?'':'hidden'}>ธนาคาร<select id="e-bank"><option value="">— เลือกธนาคาร —</option>${BANKS.map(b=>`<option ${b===(s.bank||'')?'selected':''}>${b}</option>`).join('')}</select></label>
@@ -1628,9 +1628,9 @@ function vTax(){
   return `<div class="switcher"><button class="icon-btn" data-act="yprev" aria-label="ปีก่อน">‹</button><strong>ปีภาษี ${y+543}</strong><button class="icon-btn" data-act="ynext" aria-label="ปีถัดไป">›</button></div>
   <div id="taxResults" class="wrap"></div>
   ${UI.taxSec==='fam'||UI.taxSec==='inv'?`<div class="setback"><button class="btn sm" data-act="taxsec" data-v="">‹ ภาษีทั้งหมด</button></div>
-  <section class="card">${UI.taxSec==='fam'?`<h2 class="h-ico"><img src="${IMG.profile}" alt="">ครอบครัว</h2>${fam}`:`<h2 class="h-ico"><img src="${IMG.tax}" alt="">ประกัน กองทุน และอื่นๆ</h2><p class="small muted" style="margin:0">กรอกยอดที่จ่ายนอกเหนือจากที่บันทึกในหน้าการเงิน ยอดจากรายการจ่ายจะบวกให้อัตโนมัติ</p>${inv}
-    <p class="small muted" style="margin:0">ประกันสังคม กบข./กองทุนสำรองเลี้ยงชีพ และหักค่าใช้จ่าย 50% (ไม่เกิน 100,000) คำนวณให้จากเงินเดือนและค่าเวร</p>`}</section>`:'<div id="taxSub" class="wrap"></div>'}
-  <p class="small muted">ใช้อัตราภาษีเงินได้บุคคลธรรมดาแบบขั้นบันไดและรายการลดหย่อนปีภาษี 2569 รายได้ค่าเช่า ดอกเบี้ย และเงินปันผลไม่ได้รวมในการคำนวณ เป็นการประมาณการเพื่อวางแผน ไม่ใช่คำแนะนำทางภาษี ก่อนยื่นจริงตรวจสอบกับกรมสรรพากรหรือโปรแกรมยื่นภาษีออนไลน์</p>`;
+  <section class="card">${UI.taxSec==='fam'?`<h2 class="h-ico"><img src="${IMG.profile}" alt="">ครอบครัว</h2>${fam}`:`<h2 class="h-ico"><img src="${IMG.tax}" alt="">ประกัน กองทุน และอื่นๆ</h2><p class="small muted" style="margin:0">ใส่ยอดที่ยังไม่ได้บันทึกในหน้าการเงิน (ที่บันทึกแล้วบวกให้เอง)</p>${inv}
+    <p class="small muted" style="margin:0">ประกันสังคม กองทุน และหักค่าใช้จ่าย 50% คิดให้อัตโนมัติ</p>`}</section>`:'<div id="taxSub" class="wrap"></div>'}
+  <p class="small muted">ประมาณการตามอัตราภาษีปี 2569 (ไม่รวมค่าเช่า ดอกเบี้ย ปันผล) ใช้วางแผนเท่านั้น ก่อนยื่นจริงตรวจกับกรมสรรพากร</p>`;
 }
 function renderTaxResults(){
   const box=$('#taxResults');if(!box)return;const y=UI.ty;const r=taxCalc(y);
@@ -1645,7 +1645,7 @@ function renderTaxResults(){
   const sv=(k,a)=>Math.max(0,r.tax-taxCalc(y,{[k]:a}).tax);
   const near=r.tax>0&&!r.minTax&&gap>0?(()=>{const p=plans.find(p=>p.room>=gap)||plans[0];if(!p)return null;const a=Math.min(gap,p.room);return{p,a,save:sv(p.k,a),full:a>=gap}})():null;
   for(const p of plans){p.steps=[5000,10000,20000].filter(a=>a<p.room).slice(0,2).map(a=>({a,s:sv(p.k,a)}));p.steps.push({a:p.room,s:p.save,full:true})}
-  const tipHtml=near?`<div class="tip"><b>💡 ${gap<=50000?'ใกล้ขั้นภาษีถัดไป':'ลดลงอีกขั้นภาษี'}</b><span>เงินได้สุทธิเข้าขั้น ${Math.round(r.marg*100)}% มาเพียง <b class="num">฿${fmt(gap)}</b> ถ้าซื้อ${near.p.l} เพิ่มอีก <b class="num">฿${fmt(near.a)}</b> จะช่วยประหยัดภาษีได้ <b class="num pos">฿${fmt(near.save)}</b>${near.full?` และเงินได้สุทธิจะลงมาอยู่ขั้น ${lowR}%`:''}</span><span class="small muted">ตอนนี้ลดหย่อนทุก 100 บาท ได้ภาษีคืน ${Math.round(r.marg*100)} บาท</span></div>`:'';
+  const tipHtml=near?`<div class="tip"><b>💡 ${gap<=50000?'ใกล้ขั้นภาษีถัดไป':'ลดลงอีกขั้นภาษี'}</b><span>ซื้อ${near.p.l} เพิ่ม <b class="num">฿${fmt(near.a)}</b> → ประหยัดภาษี <b class="num pos">฿${fmt(near.save)}</b>${near.full?` และเงินได้สุทธิจะลงมาอยู่ขั้น ${lowR}%`:''}</span><span class="small muted">ลดหย่อนทุก 100 บาท ประหยัด ${Math.round(r.marg*100)} บาท</span></div>`:'';
   const lines=[
     ['เงินได้ 40(1) เงินเดือน + ค่าเวร',r.inc401],['เงินได้ 40(2) เวรนอก / ค่าจ้างทั่วไป',r.inc402],
     ['หักค่าใช้จ่าย 50% (ไม่เกิน 100,000)',-r.expense],['ค่าลดหย่อนรวม',-r.dedSum]];
@@ -1660,7 +1660,7 @@ function renderTaxResults(){
     <div class="hero"><div class="h-ico"><img src="${IMG.tax}" alt=""><div class="eyebrow">ภาษีที่ต้องเสียทั้งปี (ประมาณการ)</div></div><div class="big">฿${fmt(r.tax)}</div>
       <div class="row">${due>0?`<span class="pill bad">ต้องจ่ายเพิ่มตอนยื่น ฿${fmt(due)}</span>`:r.tax>0||r.wh>0?`<span class="pill good">${due<0?'ได้คืนประมาณ ฿'+fmt(-due):'หักไว้พอดีแล้ว'}</span>`:`<span class="pill good">ยังไม่ถึงเกณฑ์เสียภาษี</span>`}
       <span class="pill neutral">หักไว้แล้ว ฿${fmt(r.wh)}</span><span class="pill neutral">ขั้นภาษีสูงสุด ${Math.round(r.marg*100)}%</span></div></div>
-    ${noData?'<p class="small muted" style="margin:0">ยังไม่มีเวรหรือรายการในปีนี้ ตัวเลขนี้คิดจากเงินเดือนในหน้าตั้งค่าอย่างเดียว</p>':''}
+    ${noData?'<p class="small muted" style="margin:0">ยังไม่มีเวรปีนี้ · คิดจากเงินเดือนอย่างเดียว</p>':''}
     ${r.proj?`<p class="small muted" style="margin:0">ประมาณค่าเวรอีก ${r.proj} เดือนจากค่าเฉลี่ย ${r.shiftMonths} เดือนที่ลงเวรแล้ว</p>`:''}
     ${due>0&&remain>0?`<div class="banner"><span>ควรกันเงินไว้จ่ายภาษีเดือนละประมาณ <b class="num">฿${fmt(due/remain)}</b> อีก ${remain} เดือน</span></div>`:''}
   </section>`;
@@ -1668,7 +1668,7 @@ function renderTaxResults(){
   const back='<div class="setback"><button class="btn sm" data-act="taxsec" data-v="">‹ ภาษีทั้งหมด</button></div>';
   if(UI.taxSec==='calc'){sub.innerHTML=back+`<section class="card">
     <h2 class="h-ico"><img src="${IMG.slip}" alt="">สรุปการคำนวณ</h2>
-    <label class="inline"><input type="checkbox" data-taxb="project" ${taxP(y).project?'checked':''}> ประมาณค่าเวรเดือนที่ยังไม่ได้ลง ด้วยค่าเฉลี่ยเดือนที่ลงแล้ว</label>
+    <label class="inline"><input type="checkbox" data-taxb="project" ${taxP(y).project?'checked':''}> เดือนที่ยังไม่ลงเวร ใช้ค่าเฉลี่ยประมาณให้</label>
     <div class="lines">
       ${lines.map(([l,v])=>`<div class="line"><span class="l">${l}</span><span class="v num ${v<0?'neg':''}">${v<0?'−':''}${fmt(Math.abs(v))}</span></div>`).join('')}
       <div class="line total"><span class="l">เงินได้สุทธิ</span><span class="v num">${fmt(r.net)}</span></div>
@@ -1685,12 +1685,12 @@ function renderTaxResults(){
   </section>`;return}
   if(UI.taxSec==='plan'){sub.innerHTML=back+`<section class="card">
     <h3 class="h-ico"><img src="${IMG.chart}" alt="">วางแผนลดหย่อน</h3>
-    ${r.tax<=0?'<p class="small muted" style="margin:0">ปีนี้ยังไม่ต้องเสียภาษี การซื้อกองทุนหรือประกันเพิ่มจะไม่ช่วยลดภาษีอีก</p>':
+    ${r.tax<=0?'<p class="small muted" style="margin:0">ปีนี้ยังไม่ต้องเสียภาษี ไม่ต้องซื้อกองทุนเพิ่ม</p>':
       tipHtml+(plans.length?plans.map(p=>`<div class="plan"><span>${p.l}</span><span class="save num">−฿${fmt(p.save)}</span><span class="small muted">ใช้สิทธิได้อีก ฿${fmt(p.room)}</span><span class="small muted">ภาษีที่ลดได้สูงสุด</span>
         <div class="steps">${p.steps.map(x=>`<span>${x.full?'เต็มสิทธิ ':'+'}<b class="num">${fmt(x.a)}</b> → <b class="num pos">−฿${fmt(x.s)}</b></span>`).join('')}</div></div>`).join(''):'')+(plans.length?'':'<p class="small muted">ใช้สิทธิลดหย่อนหลักครบแล้ว</p>')}
     ${r.tax>0?`<label>ลองเพิ่มค่าลดหย่อน: <b class="num" id="what-v">฿${fmt(W)}</b><input type="range" id="what" min="0" max="${Math.max(100000,Math.ceil(r.net/10000)*10000)}" step="5000" value="${W}"></label>
     <div class="line"><span class="l">ภาษีหลังเพิ่มลดหย่อน</span><span class="v num" id="what-r">${wt?`฿${fmt(wt.tax)} (ประหยัด ฿${fmt(r.tax-wt.tax)})`:'เลื่อนเพื่อดูผล'}</span></div>`:''}
-    <p class="small muted" style="margin:0">RMF ประกันบำนาญ กบข./กองทุนสำรองเลี้ยงชีพ และ กอช. รวมกันไม่เกิน 500,000 บาท Thai ESG ปี 2569 เป็นปีสุดท้ายของวงเงิน 300,000 บาท</p>
+    <p class="small muted" style="margin:0">RMF + บำนาญ + กบข./สำรองเลี้ยงชีพ + กอช. รวมไม่เกิน 500,000 · Thai ESG ไม่เกิน 300,000</p>
   </section>`;return}
   const items=[['fam','ครอบครัว',famD?`ลดหย่อน ฿${fmt(famD)}`:'คู่สมรส บุตร พ่อแม่ คนพิการ','profile'],
     ['inv','ประกัน กองทุน และอื่นๆ',invD?`ลดหย่อน ฿${fmt(invD)}`:'ประกันชีวิต สุขภาพ RMF Thai ESG ดอกเบี้ยบ้าน บริจาค','tax'],
@@ -1720,7 +1720,7 @@ function settingsAll(){
     <div class="prof">${avatarEl(88)}<div class="grow"><label>ชื่อเล่น<input id="set-name" value="${esc(S.userName||'')}" maxlength="30" placeholder="เช่น ฝน"></label><label style="margin-top:6px">Gmail<input id="set-email" type="email" inputmode="email" value="${esc(S.email||'')}" maxlength="80" placeholder="name@gmail.com" autocapitalize="off"></label>
       <div class="row" style="gap:6px;margin-top:8px"><label class="btn sm" for="av-file">📷 ${S.avatar?'เปลี่ยนรูป':'เพิ่มรูปโปรไฟล์'}</label>${S.avatar?'<button class="btn sm danger" data-act="av-del">ลบรูป</button>':''}</div></div></div>
     <input type="file" id="av-file" accept="image/*" hidden>
-    <p class="small muted" style="margin:0">ชื่อและรูปใช้ทักทาย และแสดงในรูปแชร์ตารางเวรเมื่อคุณเลือกเปิด${fbUser?' · ซิงก์กับบัญชี '+esc(fbUser.email||''):' · เก็บในเครื่องนี้'}</p>
+    <p class="small muted" style="margin:0">ใช้ทักทายและแสดงในรูปแชร์ (ถ้าเปิด)${fbUser?' · ซิงก์กับบัญชี '+esc(fbUser.email||''):' · เก็บในเครื่องนี้'}</p>
     <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" data-act="pin-change">🔒 ${S.pin?'เปลี่ยน PIN':'ตั้ง PIN เข้าแอป'}</button><button class="btn lo-btn" data-act="logout-ask">⎋ ออกจากระบบ</button></div>
   </section>
   <section class="card">
@@ -1730,25 +1730,25 @@ function settingsAll(){
       <div><label>กองทุนสำรองเลี้ยงชีพ / กบข. (% ของเงินเดือน)<input class="num" data-set="pvdPct" inputmode="decimal" value="${S.pvdPct||''}" placeholder="เช่น 3 หรือ 10"><span class="pvd-calc small">${pvdText()}</span></label>
     <div class="pvd-chips">${[2,3,5,10,15].map(v=>`<button class="tbtn ${num(S.pvdPct)===v?'on':''}" data-act="pvd-pick" data-v="${v}">${v}%</button>`).join('')}</div></div>
     </div>
-    <div class="lagbox"><div class="lag-h">รอบการจ่ายของโรงพยาบาล <span class="muted small">เงินแต่ละอย่างโอนเข้าบัญชีเดือนไหน</span></div>
+    <div class="lagbox"><div class="lag-h">รอบการจ่าย <span class="muted small">เงินเข้าบัญชีเดือนไหน</span></div>
       ${PAY_ITEMS.map(([k,l])=>`<label class="lag-row"><span>${l}</span><select data-lag="${k}">${LAG_LAB.map((t,i)=>`<option value="${i}" ${payLag(k)===i?'selected':''}>${t}</option>`).join('')}</select></label>`).join('')}
-      <p class="small muted" style="margin:0">ตัวอย่าง: ค่าเวรที่ทำเดือน ต.ค. แต่โรงพยาบาลโอนให้เดือน พ.ย. ให้เลือก "เดือนถัดไป" · หน้ารายรับรายจ่าย สลิป และภาษีจะคิดตามเดือนที่ได้รับเงินจริง ส่วนหน้าตารางเวรยังแสดงค่าเวรของเดือนที่ทำงาน</p></div>
-    <label>อัตรา OT / งานนอกรายชั่วโมงเริ่มต้น (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
-    <label>งบรายจ่ายต่อเดือน (บาท) ว่างไว้ = ไม่ตั้งงบ<input class="num" data-set="budget" inputmode="decimal" value="${S.budget||''}" placeholder="เช่น 15000"></label>
+      <p class="small muted" style="margin:0">เช่น ทำเวร ต.ค. ได้เงิน พ.ย. = เลือก "เดือนถัดไป" · การเงินและภาษีคิดตามเดือนที่เงินเข้าจริง</p></div>
+    <label>OT / งานนอก รายชั่วโมง (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
+    <label>งบรายจ่ายต่อเดือน (บาท)<input class="num" data-set="budget" inputmode="decimal" value="${S.budget||''}" placeholder="เช่น 15000"></label>
     <label>สิทธิวันพักร้อนต่อปี (วัน)<input class="num" data-set="vacQuota" inputmode="numeric" value="${S.vacQuota||''}" placeholder="10"></label>
     <label class="inline"><input type="checkbox" data-setb="sso" ${S.sso?'checked':''}> หักประกันสังคม 5% (เพดานค่าจ้าง ${fmt(SSO_CAP_WAGE)} = สูงสุด ${fmt(SSO_CAP_WAGE*.05)}/เดือน)</label>
-    <p class="small muted" style="margin:0">ข้าราชการ: ปิดประกันสังคม แล้วใส่ กบข. (ปกติ 3%) · โรงพยาบาลเอกชน/ลูกจ้าง: เปิดประกันสังคม</p>
+    <p class="small muted" style="margin:0">ข้าราชการ: ปิด แล้วใส่ กบข. 3% · เอกชน/ลูกจ้าง: เปิด</p>
     <h3>เงินเพิ่มประจำทุกเดือน</h3>
     ${S.allowances.map(a=>`<div class="grid2" style="grid-template-columns:minmax(0,1fr) 120px auto"><input data-allow="name" data-id="${a.id}" value="${esc(a.name)}" aria-label="ชื่อรายการ"><input class="num" data-allow="amount" data-id="${a.id}" inputmode="decimal" value="${a.amount}" aria-label="จำนวนเงิน"><button class="icon-btn" data-act="del-allow" data-id="${a.id}" aria-label="ลบ">×</button></div>`).join('')||'<p class="small muted">ยังไม่มี เช่น พ.ต.ส. เงินประจำตำแหน่ง ค่าครองชีพ</p>'}
     <div><button class="btn sm" data-act="add-allow">+ เพิ่มรายการ</button></div>
     <h3>รายการหักประจำทุกเดือน</h3>
-    <label>ภาษีหัก ณ ที่จ่ายต่อเดือน (บาท) ใช้ทุกเดือนที่ไม่ได้แก้เอง<input class="num" data-set="whDefault" inputmode="decimal" value="${S.whDefault||''}" placeholder="0"></label>
+    <label>ภาษีหัก ณ ที่จ่าย (บาท/เดือน)<input class="num" data-set="whDefault" inputmode="decimal" value="${S.whDefault||''}" placeholder="0"></label>
     ${dedRows('grid2 ded-row')||'<p class="small muted" style="margin:0">ยังไม่มี เช่น สหกรณ์ออมทรัพย์ ค่าสาธารณูปโภค เงินกู้</p>'}
     ${dedQuick()}
   </section>
   <section class="card">
     <h2 class="h-ico"><img src="${IMG.ot}" alt="">ปุ่มเวรควบ</h2>
-    <p class="small muted" style="margin:0">ตั้งปุ่มลัดสำหรับเวรที่ทำต่อกันบ่อย แตะปุ่มเดียวลงได้หลายเวรในวันนั้น</p>
+    <p class="small muted" style="margin:0">ปุ่มลัดเวรควบ แตะครั้งเดียวลงได้หลายเวร</p>
     <div class="catchips">${(S.combos||[]).map((cb,i)=>`<span>${cb.map(id=>{const t=typeById(id);return t?esc(t.code):'?'}).join('')} · ${cb.map(id=>{const t=typeById(id);return t?esc(t.name.replace('เวร','')):'?'}).join(' + ')}<button data-act="del-combo" data-i="${i}" aria-label="ลบเวรควบ">×</button></span>`).join('')||'<span class="small muted" style="border:0">ยังไม่มี</span>'}</div>
     <div class="h3 small muted">เลือกเวรที่จะรวมเป็นปุ่มใหม่ (2 เวรขึ้นไป)</div>
     <div class="row">${S.shiftTypes.filter(t=>t.work).map(t=>`<label class="inline small"><input type="checkbox" class="combo-pick" value="${t.id}"> <span class="chip k${t.color}">${esc(t.code)}</span> ${esc(t.name)}</label>`).join('')}</div>
@@ -1756,8 +1756,8 @@ function settingsAll(){
   </section>
   <section class="card">
     <h2 class="h-ico"><img src="${IMG.calendar}" alt="">ประเภทเวร เวลา และอัตราค่าเวร</h2>
-    <p class="small muted" style="margin:0">ตั้งเวลาเริ่ม‑เลิกของแต่ละเวร ระบบคำนวณชั่วโมงให้ (ถ้าเลิกหลังเที่ยงคืนก็ใส่ได้ เช่น 16:00–00:00)</p>
-    <p class="small muted" style="margin:0">อัตราเริ่มต้นต่อเวรของโรงพยาบาลคุณ (แก้เป็นรายวันได้ในตารางเวร) ถ้าเวรเช้าวันธรรมดาเป็นเวลาราชการปกติให้ใส่ 0</p>
+    <p class="small muted" style="margin:0">ใส่เวลาเริ่ม–เลิก แอปคิดชั่วโมงให้ (ข้ามเที่ยงคืนได้ เช่น 16:00–00:00)</p>
+    <p class="small muted" style="margin:0">อัตราต่อเวร (แก้รายวันได้ในตารางเวร) · เวรเช้าที่เป็นเวลาราชการ ใส่ 0</p>
     <div>${S.shiftTypes.map(t=>`<div class="st-row">
       <label>ตัวย่อ<input data-st="code" data-id="${t.id}" value="${esc(t.code)}" maxlength="4"></label>
       <label class="wide">ชื่อเวร<input data-st="name" data-id="${t.id}" value="${esc(t.name)}"></label>
@@ -1776,7 +1776,7 @@ function settingsAll(){
   </section>
   <section class="card">
     <h2 class="h-ico"><img src="${IMG.summary}" alt="">หมวดหมู่รายรับ‑รายจ่าย</h2>
-    <p class="small muted" style="margin:0">เพิ่มหมวดใหม่ได้ตอนบันทึกรายการ (ปุ่ม + เพิ่มหมวดหมู่) ลบหมวดที่ไม่ใช้ได้ที่นี่ รายการเก่าในหมวดที่ลบยังอยู่ครบ</p>
+    <p class="small muted" style="margin:0">เพิ่มหมวดได้ตอนบันทึก (ปุ่ม +) · ลบหมวดแล้วรายการเก่ายังอยู่</p>
     ${['ex','in'].map(t=>GROUPS[t].map(([g,gl])=>`<div class="grp"><div class="grp-h"><span>${gl}</span></div><div class="catchips">${cats(t).filter(c=>c.g===g).map(c=>`<span>${esc(c.name)}<button data-act="del-cat" data-t="${t}" data-id="${esc(c.id)}" aria-label="ลบหมวด ${esc(c.name)}">×</button></span>`).join('')}</div></div>`).join('')).join('')}
     ${S.catsHidden.length?'<div><button class="btn sm" data-act="restore-cats">คืนหมวดเริ่มต้นที่ลบไป</button></div>':''}
   </section>
@@ -1973,7 +1973,7 @@ document.addEventListener('click',async ev=>{
     case 'copy':{const txt=JSON.stringify({settings:S,months:M});try{await navigator.clipboard.writeText(txt);toast('คัดลอกแล้ว วางเก็บไว้ในโน้ตได้เลย')}catch(e){const t=$('#imp');t.value=txt;t.select();toast('เลือกข้อความไว้ให้แล้ว กดคัดลอกเอง')}break}
     case 'import':{try{const d=JSON.parse($('#imp').value);if(!d.settings&&!d.months)throw 0;
       if(d.settings){S=normSettings(d.settings);touch('settings')}for(const k in (d.months||{})){if(/^\d{4}-\d{2}$/.test(k)){M[k]=normMonth(d.months[k]);touch(k)}}
-      render();toast('นำเข้าข้อมูลแล้ว')}catch(e){toast('ข้อความไม่ใช่ข้อมูลที่คัดลอกจากแอปนี้ ลองคัดลอกใหม่ทั้งหมด')}break}
+      render();toast('นำเข้าข้อมูลแล้ว')}catch(e){toast('ข้อความนี้ไม่ใช่ข้อมูลจากแอป ลองคัดลอกใหม่')}break}
     case 'reset':UI.resetAsk=true;render();break;
     case 'reset-no':UI.resetAsk=false;render();break;
     case 'reset-yes':for(const k in M)touch(k);M={};S=normSettings(null);touch('settings');UI.resetAsk=false;render();toast('ล้างข้อมูลทั้งหมดแล้ว');break;
@@ -2089,11 +2089,11 @@ async function connect(){mode='local';setSync('','บันทึกในเค
   fbAuth.onAuthStateChanged(u=>{fbUser=u||null;if(u)startSync(u);else stopSync();if(!isEditing())render()})}
 function acctHtml(){
   if(!CLOUD_ON)return `<div class="acct">${avatarEl(40)}<div class="grow"><b>${esc(S.userName||'ผู้ใช้เครื่องนี้')}</b><small>${esc(S.email||'ยังไม่ได้ใส่ Gmail')}</small></div><button class="btn sm" data-act="logout-ask">ออกจากระบบ</button></div>
-    <p class="small muted" style="margin:0">ข้อมูลเก็บในเบราว์เซอร์ของเครื่องนี้ · การซิงก์ข้อมูลกับบัญชี Gmail จะเปิดให้ใช้เร็ว ๆ นี้</p>`;
+    <p class="small muted" style="margin:0">ข้อมูลเก็บในเครื่องนี้ · ซิงก์กับ Gmail เร็ว ๆ นี้</p>`;
   if(fbUser)return `<div class="acct">${fbUser.photoURL?`<img src="${esc(fbUser.photoURL)}" alt="" referrerpolicy="no-referrer">`:''}<div class="grow"><b>${esc(fbUser.displayName||'บัญชี Google')}</b><small>${esc(fbUser.email||'')}</small></div><button class="btn sm" data-act="sign-out">ออกจากระบบ</button></div>
     <p class="small muted" style="margin:0">ข้อมูลซิงก์กับบัญชีนี้อัตโนมัติ เปิดจากมือถือ แท็บเล็ต หรือคอมก็เห็นข้อมูลเดียวกัน</p>`;
   return `<button class="btn primary big" data-act="sign-in">เข้าสู่ระบบด้วย Google</button>
-    <p class="small muted" style="margin:0">ตอนนี้ข้อมูลเก็บในเบราว์เซอร์ของเครื่องนี้เท่านั้น เข้าสู่ระบบเพื่อสำรองขึ้นบัญชีและใช้ได้หลายเครื่อง ข้อมูลที่มีอยู่จะถูกย้ายขึ้นบัญชีให้</p>`}
+    <p class="small muted" style="margin:0">ข้อมูลอยู่ในเครื่องนี้ · เข้าสู่ระบบเพื่อสำรองและใช้หลายเครื่อง</p>`}
 
 try{document.documentElement.style.setProperty('--wl-tile',`url(${WL_TILE})`)}catch(e){}
 try{$('#brandLogo').src=LOGO_SVG;$('#bellImg').src=IMG.bell}catch(e){}
