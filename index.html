@@ -311,7 +311,7 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .lo-warn{display:flex;flex-direction:column;gap:8px;border:1px solid #f6b8bf;background:#ffeef0;border-radius:14px;padding:10px}.lo-btn{color:var(--bad);border-color:#f6b8bf;align-self:flex-start}
 .onb-wrap.wl{background:#eef0ea var(--wl-tile) repeat;background-size:220px 220px}
 .wl-card{background:#fbf4e4;border-radius:30px;padding:0;overflow:hidden auto;box-shadow:0 20px 60px rgba(60,70,50,.22);max-width:480px;gap:0;position:relative}
-.onb-wrap.wl{flex-direction:column;justify-content:center;gap:0;overflow:hidden}
+.onb-wrap.wl{flex-direction:column;justify-content:center;align-items:center;gap:0;overflow:hidden;padding:24px 16px;height:100%;min-height:100vh;min-height:100dvh;box-sizing:border-box}
 .wl-top{width:100%;max-width:480px;display:flex;justify-content:center;flex:0 0 auto;margin-bottom:-2px;position:relative;z-index:0}
 .wl-hero{display:block;width:100%;height:min(27vh,250px);object-fit:contain}
 .wl-top.sm .wl-hero{height:min(19vh,170px)}
@@ -1138,9 +1138,15 @@ function lockHtml(){const P=UI.pin||{};const forgot=UI.pinForgot;
 const CLOUD_ON=false; // เปิดเป็น true เมื่อพร้อมซิงก์กับบัญชี Google จริง
 const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function fbAvail(){return CLOUD_ON&&!!(fbAuth&&(fbUser||S.fbLinked))}
+function fitOnb(){const w=document.querySelector('#onb .onb-wrap.wl');if(!w)return;const top=w.querySelector('.wl-top'),card=w.querySelector('.wl-card'),hero=top&&top.querySelector('.wl-hero');if(!card)return;
+  const vh=window.innerHeight,pad=24;card.style.maxHeight='';if(hero){hero.style.height='';top.style.display=''}
+  const ch=card.scrollHeight,want=top&&top.classList.contains('sm')?150:240;
+  let hh=Math.min(want,vh-ch-pad*2);if(hero){if(hh<90){top.style.display='none';hh=0}else hero.style.height=hh+'px'}
+  card.style.maxHeight=(vh-hh-pad*2+(hh?2:0))+'px'}
+window.addEventListener('resize',()=>{clearTimeout(fitOnb._t);fitOnb._t=setTimeout(fitOnb,80)});
 function renderOnb(){const el=$('#onb');if(!el)return;
-  if(UI.lock){el.innerHTML=lockHtml();return}
-  if(!UI.onb){el.innerHTML='';return}el.innerHTML=onbHtml();
+  if(UI.lock){el.innerHTML=lockHtml();fitOnb();return}
+  if(!UI.onb){el.innerHTML='';return}el.innerHTML=onbHtml();fitOnb();
   if(UI.onb===1)setTimeout(()=>{const n=$('#onb-name');if(n&&!n.value)n.focus()},50)}
 async function pinHash(pin,salt){const str=salt+':'+pin+':shifttax';
   try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
