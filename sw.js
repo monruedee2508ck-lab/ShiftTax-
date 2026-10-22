@@ -1,5 +1,5 @@
 // ShiftTax service worker: network first (always get the newest version), fall back to cache when offline.
-const CACHE = 'shifttax-v1';
+const CACHE = 'shifttax-v2';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
