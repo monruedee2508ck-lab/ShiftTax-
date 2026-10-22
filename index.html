@@ -295,6 +295,7 @@ summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
 .onb-sub{font-weight:600;font-size:14px;margin-top:4px}.onb-allow{display:grid;grid-template-columns:minmax(0,1fr) 110px auto;gap:6px}
 .onb-g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}@media (max-width:420px){.onb-g2{grid-template-columns:1fr}}
 .ded-quick{display:flex;flex-wrap:wrap;gap:6px}
+.acct{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}.acct img{width:40px;height:40px;border-radius:50%;object-fit:cover}.acct b{display:block;font-size:14.5px}.acct small{display:block;color:var(--muted);font-size:12px;word-break:break-all}
 .grid2.ded-row{grid-template-columns:minmax(0,1fr) 120px auto}
 .onb-rates{display:flex;flex-direction:column;gap:6px}.onb-rates .hd,.onb-rates .rr{display:grid;grid-template-columns:56px repeat(3,minmax(0,1fr));gap:6px;align-items:center}.onb-rates .hd{font-size:11.5px;color:var(--muted);text-align:center}.onb-rates .rr input{min-width:0;text-align:center}.onb-rates .chip{justify-self:start}
 .onb-nav{gap:8px;margin-top:4px}.slogan{margin:2px 0 0;text-align:center;font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.2px;line-height:1.5}.slogan .s1{color:#2f6fc0}.slogan .s2{color:#3fa34d}.slogan .s3{color:#1c2b45}.onb-card .slogan{margin:-4px 0 2px}.setlogo+.slogan{margin:6px 0 4px}
@@ -643,10 +644,10 @@ async function flush(){
   if(mode!=='db'||saving)return; saving=true; setSync('wait','กำลังบันทึก');
   try{
     while(dirty.size){const k=dirty.values().next().value;dirty.delete(k);
-      const body=k==='settings'?S:M[k];const ref=store.collection('data/users/'+uid).doc(docId(k));
-      inflight.add(k);try{if(body)await ref.set(clone(body));else await ref.delete()}finally{inflight.delete(k)}}
+      const body=k==='settings'?S:M[k];const ref=colRef().doc(docId(k));
+      inflight.add(k);try{if(body)await ref.set(encDoc(body));else await ref.delete()}finally{inflight.delete(k)}}
     setSync('db','บันทึกในบัญชีแล้ว');
-  }catch(e){setSync('err','บันทึกไม่สำเร็จ · เก็บไว้ในเครื่องนี้');}
+  }catch(e){setSync('err','บันทึกไม่สำเร็จ · เก็บไว้ในเครื่องนี้');fbErrToast(e);}
   finally{saving=false;if(dirty.size){clearTimeout(saveTimer);saveTimer=setTimeout(flush,1500)}}
 }
 function setSync(cls,txt){const el=$('#sync');el.className='sync '+cls;el.title=txt;el.setAttribute('aria-label',txt);el.querySelector('span').textContent=txt}
@@ -1016,7 +1017,8 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     <div class="prof onb-prof"><label for="av-file" class="avbtn" aria-label="เพิ่มรูปโปรไฟล์">${avatarEl(64)}<span class="avplus">📷</span></label><span class="small muted">แตะเพื่อเพิ่มรูปโปรไฟล์ (ไม่บังคับ)</span></div>
     <input type="file" id="av-file" accept="image/*" hidden>
     <label>ชื่อของคุณ (ชื่อเล่นก็ได้)<input id="onb-name" value="${nm}" maxlength="30" placeholder="เช่น ฝน" autocomplete="nickname"></label>
-    <button class="btn primary big" data-act="onb-next">ถัดไป ›</button>`;
+    <button class="btn primary big" data-act="onb-next">ถัดไป ›</button>
+    ${fbUser?'':'<button class="onb-skip" data-act="sign-in">มีข้อมูลในบัญชีแล้ว? เข้าสู่ระบบด้วย Google</button>'}`;
   if(st===2)body=`<h2>สวัสดีค่ะ คุณ${nm||'พยาบาล'} 💚</h2><p class="muted">ขั้นที่ 2/3 · ใส่รายได้ประจำต่อเดือน เพื่อคำนวณเงินได้และภาษี</p>
     <label>เงินเดือน (บาท/เดือน)<input class="num" data-set="salary" inputmode="decimal" value="${S.sample?'':S.salary||''}" placeholder="เช่น 25000"></label>
     <label class="inline"><input type="checkbox" data-setb="sso" ${S.sso?'checked':''}> หักประกันสังคม 5%</label>
@@ -1484,7 +1486,7 @@ function setSecs(){return [
   ['combo','ปุ่มเวรควบ',(S.combos||[]).length?`${S.combos.length} ปุ่ม`:'ยังไม่มี · ตั้งปุ่มลัดลงหลายเวรในวันเดียว','ot'],
   ['types','ประเภทเวร เวลา และอัตราค่าเวร',`${S.shiftTypes.length} ประเภท · เวลาเริ่ม-เลิก ค่าเวร OT`,'calendar'],
   ['cats','หมวดหมู่รายรับ-รายจ่าย',S.catsCustom.length?`เพิ่มเอง ${S.catsCustom.length} หมวด`:'ดูหรือลบหมวดหมู่','summary'],
-  ['data','ข้อมูลในเครื่อง','เก็บในเบราว์เซอร์ของเครื่องนี้ · ล้างข้อมูล','export']]}
+  ['data','บัญชีและข้อมูล',fbUser?`ซิงก์กับ ${fbUser.email||'บัญชี Google'}`:'เข้าสู่ระบบ Google เพื่อสำรองและใช้หลายเครื่อง · ล้างข้อมูล','export']]}
 function vSettings(){const secs=setSecs();const parts=settingsAll().split('<section class="card">').slice(1).map(x=>'<section class="card">'+x);
   const i=secs.findIndex(x=>x[0]===UI.setSec);
   if(i>=0&&parts[i])return `<div class="setback"><button class="btn sm" data-act="setsec" data-v="">‹ ตั้งค่าทั้งหมด</button></div>${parts[i]}`;
@@ -1552,9 +1554,9 @@ function settingsAll(){
     ${S.catsHidden.length?'<div><button class="btn sm" data-act="restore-cats">คืนหมวดเริ่มต้นที่ลบไป</button></div>':''}
   </section>
   <section class="card">
-    <h2 class="h-ico"><img src="${IMG.export}" alt="">ข้อมูลในเครื่อง</h2>
-    <p class="small muted" style="margin:0">ข้อมูลทั้งหมดเก็บไว้ในเบราว์เซอร์ของเครื่องนี้เท่านั้น ไม่ได้ส่งขึ้นบัญชี ถ้าเปิดจากเครื่องอื่นหรือล้างข้อมูลเบราว์เซอร์ จะไม่เห็นข้อมูลเดิม</p>
-    <div class="row">${UI.resetAsk?`<span class="small">ลบเวร รายการ และการตั้งค่าทั้งหมด?</span><button class="btn danger" data-act="reset-yes">ยืนยันลบทั้งหมด</button><button class="btn" data-act="reset-no">ยกเลิก</button>`:`<button class="btn danger" data-act="reset">ล้างข้อมูลทั้งหมด</button>`}</div>
+    <h2 class="h-ico"><img src="${IMG.export}" alt="">บัญชีและข้อมูล</h2>
+    ${acctHtml()}
+    <div class="row">${UI.resetAsk?`<span class="small">ลบเวร รายการ และการตั้งค่าทั้งหมด${fbUser?' ทั้งในเครื่องและในบัญชี':''}?</span><button class="btn danger" data-act="reset-yes">ยืนยันลบทั้งหมด</button><button class="btn" data-act="reset-no">ยกเลิก</button>`:`<button class="btn danger" data-act="reset">ล้างข้อมูลทั้งหมด</button>`}</div>
   </section>`;
 }
 
@@ -1707,6 +1709,8 @@ document.addEventListener('click',async ev=>{
     case 'del-nw':{const k=b.dataset.k;S.nw[k]=S.nw[k].filter(x=>x.id!==b.dataset.id);touch('settings');renderSheet();break}
     case 'add-allow':S.allowances.push({id:uidGen(),name:'เงินเพิ่ม',amount:0});S.sample=false;touch('settings');render();break;
     case 'add-ded':{const nm=b.dataset.name==='รายการหักอื่น'?'':(b.dataset.name||'');S.deductions.push({id:uidGen(),name:nm,amount:0});S.sample=false;touch('settings');render();const ins=document.querySelectorAll(nm?'[data-ded="amount"]':'[data-ded="name"]');if(ins.length)ins[ins.length-1].focus();break}
+    case 'sign-in':signIn();break;
+    case 'sign-out':signOut();break;
     case 'del-ded':S.deductions=S.deductions.filter(x=>x.id!==b.dataset.id);S.sample=false;touch('settings');render();break;
     case 'del-allow':S.allowances=S.allowances.filter(a=>a.id!==b.dataset.id);S.sample=false;touch('settings');render();break;
     case 'add-st':{const used=S.shiftTypes.map(t=>+t.color);const col=[1,2,3,4,5,6,7,8].find(c=>!used.includes(c))||7;
@@ -1770,14 +1774,65 @@ document.addEventListener('focusout',()=>{setTimeout(()=>{if(needRender&&!isEdit
 function isEditing(){const a=document.activeElement;return a&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName)&&a.id!=='what'}
 
 /* ---------- storage connect ---------- */
+/* ---------- account + cloud sync (Firebase) ---------- */
+const FB_CFG={apiKey:"AIzaSyCil5tVRpF7yONzGwCb9aPla2xqxkRQCjA",authDomain:"shifttax-df6f7.firebaseapp.com",projectId:"shifttax-df6f7",storageBucket:"shifttax-df6f7.firebasestorage.app",messagingSenderId:"850651996868",appId:"1:850651996868:web:aac2f9f3074cd1f9e09f91",measurementId:"G-RRKDZ685K7"};
+const FB_BASE='https://www.gstatic.com/firebasejs/10.14.1/firebase-';
+let fbAuth=null, fbUser=null, fbUnsub=null, fbReady=null, fbErrShown='';
+function loadScript(src){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;el.async=false;el.onload=res;el.onerror=()=>rej(new Error('load '+src));document.head.appendChild(el)})}
+function fbLoad(){if(fbReady)return fbReady;
+  fbReady=(async()=>{for(const n of ['app','auth','firestore'])await loadScript(FB_BASE+n+'-compat.js');
+    if(!firebase.apps.length)firebase.initializeApp(FB_CFG);fbAuth=firebase.auth();store=firebase.firestore();
+    loadScript(FB_BASE+'analytics-compat.js').then(()=>{try{firebase.analytics()}catch(e){}}).catch(()=>{});return true})();
+  fbReady.catch(()=>{fbReady=null});return fbReady}
+const colRef=()=>store.collection('users').doc(uid).collection('data');
+const encDoc=b=>({json:JSON.stringify(b),_v:num(b._v)||Date.now()});
+const decDoc=d=>{try{return typeof d.json==='string'?JSON.parse(d.json):d}catch(e){return null}};
+const keyOfDoc=id=>id==='settings'?'settings':/^m-\d{4}-\d{2}$/.test(id)?id.slice(2):null;
+function applyDoc(k,body){if(!body)return;if(k==='settings')S=normSettings(body);else M[k]=normMonth(body)}
+function fbErrToast(e){const c=(e&&e.code)||'';if(!c||fbErrShown===c)return;fbErrShown=c;
+  if(c==='permission-denied'||c==='failed-precondition'||c==='not-found')toast('ซิงก์ไม่ได้ · ยังไม่ได้ตั้งค่า Firestore ใน Firebase');}
+function afterRemote(){saveLocal();hadLocal=true;
+  let force=false;if(S.onboarded&&UI.onb){UI.onb=0;force=true;if(UI.tab==='settings'&&!UI.setSec)UI.tab='roster';try{document.activeElement.blur()}catch(e){}}
+  if(isEditing()&&!force)needRender=true;else render()}
+function initialMerge(snap){const remote={};
+  for(const d of snap.docs){const k=keyOfDoc(d.id);if(k){const b=decDoc(d.data()||{});if(b)remote[k]=b}}
+  const rk=Object.keys(remote);let pulled=0;
+  if(!rk.length){dirty.add('settings');for(const k in M)dirty.add(k)}
+  else if(!Object.keys(M).length){for(const k of rk){applyDoc(k,remote[k]);pulled++}}
+  else{const keys=new Set([...rk,'settings',...Object.keys(M)]);
+    for(const k of keys){const r=remote[k],l=k==='settings'?S:M[k];
+      if(!r){if(l)dirty.add(k)}else if(!l||num(r._v)>num(l._v)){applyDoc(k,r);pulled++}else if(num(l._v)>num(r._v))dirty.add(k)}}
+  mode='db';afterRemote();
+  if(dirty.size)flush();else setSync('db','ซิงก์กับบัญชีแล้ว');
+  toast(pulled?'เข้าสู่ระบบแล้ว · ดึงข้อมูลจากบัญชีมาแล้ว':'เข้าสู่ระบบแล้ว · ข้อมูลซิงก์กับบัญชีอัตโนมัติ')}
+function startSync(u){uid=u.uid;let first=true;setSync('wait','กำลังซิงก์');if(fbUnsub)fbUnsub();
+  fbUnsub=colRef().onSnapshot({includeMetadataChanges:true},snap=>{
+    if(first){if(snap.metadata.fromCache)return;first=false;initialMerge(snap);return}
+    let ch=false;
+    for(const c of snap.docChanges()){const d=c.doc;if(d.metadata.hasPendingWrites)continue;const k=keyOfDoc(d.id);if(!k||dirty.has(k)||inflight.has(k))continue;
+      if(c.type==='removed'){if(k!=='settings'&&M[k]){delete M[k];ch=true}continue}
+      const b=decDoc(d.data()||{});const l=k==='settings'?S:M[k];if(!b||(l&&num(l._v)>=num(b._v)))continue;applyDoc(k,b);ch=true}
+    if(ch)afterRemote();
+  },e=>{setSync('err','ซิงก์ไม่สำเร็จ · เก็บไว้ในเครื่องนี้');fbErrToast(e)})}
+function stopSync(){if(fbUnsub)fbUnsub();fbUnsub=null;uid=null;mode='local';setSync('','บันทึกในเครื่องนี้')}
+function authErr(e){const c=(e&&e.code)||'';if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;
+  toast(c==='auth/unauthorized-domain'?'ยังไม่ได้เพิ่มโดเมนนี้ใน Firebase (Authorized domains)':c==='auth/operation-not-allowed'?'ยังไม่ได้เปิดล็อกอิน Google ใน Firebase':c==='auth/network-request-failed'?'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง':'เข้าสู่ระบบไม่สำเร็จ'+(c?' ('+c+')':''))}
+async function signIn(){
+  if(/\bLine\/|FBAN|FBAV|Instagram/i.test(navigator.userAgent)){toast('เปิดเว็บนี้ใน Chrome หรือ Safari ก่อน แล้วค่อยเข้าสู่ระบบด้วย Google');return}
+  try{await fbLoad()}catch(e){toast('เชื่อมต่อไม่ได้ ลองใหม่เมื่อออนไลน์');return}
+  const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:'select_account'});
+  try{await fbAuth.signInWithPopup(pr)}
+  catch(e){if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment')){try{await fbAuth.signInWithRedirect(pr)}catch(e2){authErr(e2)}}else authErr(e)}}
+async function signOut(){try{await fbAuth.signOut();toast('ออกจากระบบแล้ว · ข้อมูลยังอยู่ในเครื่องนี้')}catch(e){toast('ออกจากระบบไม่สำเร็จ')}}
 async function connect(){mode='local';setSync('','บันทึกในเครื่องนี้');
-  if(hadLocal||!window.claude||!window.claude.use)return;
-  try{const [db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);const id=user?await user.id():null;if(!db||!id)return;
-    const snap=await db.collection('data/users/'+id).get();if(!snap||!snap.docs||!snap.docs.length||hadLocal||dirty.size)return;
-    for(const d of snap.docs){const data=d.data()||{};if(d.id==='settings')S=normSettings(data);else if(/^m-\d{4}-\d{2}$/.test(d.id))M[d.id.slice(2)]=normMonth(data)}
-    saveLocal();hadLocal=true;render();toast('ย้ายข้อมูลเดิมมาเก็บในเครื่องนี้แล้ว');
-  }catch(e){}
-}
+  try{await fbLoad()}catch(e){return}
+  fbAuth.getRedirectResult().catch(authErr);
+  fbAuth.onAuthStateChanged(u=>{fbUser=u||null;if(u)startSync(u);else stopSync();if(!isEditing())render()})}
+function acctHtml(){
+  if(fbUser)return `<div class="acct">${fbUser.photoURL?`<img src="${esc(fbUser.photoURL)}" alt="" referrerpolicy="no-referrer">`:''}<div class="grow"><b>${esc(fbUser.displayName||'บัญชี Google')}</b><small>${esc(fbUser.email||'')}</small></div><button class="btn sm" data-act="sign-out">ออกจากระบบ</button></div>
+    <p class="small muted" style="margin:0">ข้อมูลซิงก์กับบัญชีนี้อัตโนมัติ เปิดจากมือถือ แท็บเล็ต หรือคอมก็เห็นข้อมูลเดียวกัน</p>`;
+  return `<button class="btn primary big" data-act="sign-in">เข้าสู่ระบบด้วย Google</button>
+    <p class="small muted" style="margin:0">ตอนนี้ข้อมูลเก็บในเบราว์เซอร์ของเครื่องนี้เท่านั้น เข้าสู่ระบบเพื่อสำรองขึ้นบัญชีและใช้ได้หลายเครื่อง ข้อมูลที่มีอยู่จะถูกย้ายขึ้นบัญชีให้</p>`}
 
 try{$('#brandLogo').src=LOGO_SVG;$('#bellImg').src=IMG.bell}catch(e){}
 document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target&&ev.target.id==='onb-name'){ev.preventDefault();const b=document.querySelector('[data-act=onb-next]');if(b)b.click()}});
