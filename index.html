@@ -631,6 +631,17 @@ html.fitpage #view .cal .day{min-height:0!important;height:auto;overflow:hidden}
 .sw{display:grid;grid-template-columns:repeat(4,16px);gap:4px;flex:none}.sw button{width:16px;height:16px;border-radius:50%;border:0;background:var(--c);cursor:pointer;padding:0}.sw button.on{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--ink)}
 .ih{margin:10px 2px 6px;font-size:13px;font-weight:600;color:var(--muted)}.igrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .igrid button{aspect-ratio:1;border:1.5px solid var(--line);background:var(--field);border-radius:14px;display:grid;place-items:center;cursor:pointer;padding:4px}.igrid button img{width:100%;height:100%;border-radius:10px;object-fit:cover}.igrid.emo button{font-size:24px;padding:0}.igrid button.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--soft)}
+
+.taxnote{background:#fff6da;border:1px solid #f3d98a;border-radius:16px;padding:8px 12px;font-size:12.5px;line-height:1.5;margin:0 0 10px}.taxnote summary{display:flex;justify-content:space-between;gap:8px;cursor:pointer;list-style:none}.taxnote summary::-webkit-details-marker{display:none}
+.taxnote ul{margin:6px 0;padding-left:18px;display:flex;flex-direction:column;gap:2px}
+.stepno{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--primary);color:var(--primary-ink);font-family:var(--f-num);font-size:15px;font-weight:600;flex:none}.stepno.sm{width:24px;height:24px;font-size:12px}
+.sumbar .stepno{width:40px;height:40px;font-size:17px}
+.ttype{display:grid;gap:8px}.tt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;background:var(--surface);border-radius:14px;padding:10px 12px}.tt b{font-size:14px}.tt .num{font-family:var(--f-num);font-size:15px;font-weight:600}.tt small{grid-column:1/-1;color:var(--muted);font-size:12px}.tt.muted b,.tt.muted .num{color:var(--muted)}
+.whgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.whgrid label{display:flex;flex-direction:column;gap:2px;font-size:12.5px}.whgrid input{min-width:0}.whgrid label.fut span{color:var(--muted)}.whgrid small{font-size:10.5px}
+.res{display:flex;justify-content:space-between;align-items:center;border-radius:16px;padding:12px 14px;margin:8px 0;font-family:var(--f-display)}.res b{font-family:var(--f-num);font-size:22px}.res.bad{background:var(--pink-soft);color:var(--bad)}.res.good{background:var(--soft);color:var(--good)}
+.incsum{display:flex;flex-direction:column;background:var(--surface);border-radius:14px;padding:10px 12px}.incsum b{font-family:var(--f-num);font-size:22px}
+.brk.inc tr.pj td{color:var(--muted);font-style:italic}.brk.inc table,.cstep .brk table{width:100%;min-width:0;table-layout:fixed;font-size:12px}.brk.inc th:first-child,.brk.inc td:first-child{width:18%}.cstep .brk th:nth-child(2),.cstep .brk td:nth-child(2){width:17%}.cstep .brk td,.cstep .brk th{padding-left:3px;padding-right:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cstep .brk th:first-child,.cstep .brk td:first-child{width:36%}
+.cstep{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}.cstep>div>b{font-size:14px}.cstep .lines .line{padding:4px 0;font-size:13px}
 </style>
 
 <div class="wrap">
@@ -659,6 +670,12 @@ const TH_MS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','ม�
 const TH_D=['อา','จ','อ','พ','พฤ','ศ','ส'];
 const TH_DL=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 const SSO_CAP_WAGE=17500, SSO_MIN_WAGE=1650, SSO_DED_CAP=10500;
+/* Tax rules by tax year (พ.ศ. = y+543). Years outside the table use the nearest year. */
+const TAX_RULES={
+  2024:{sso:9000,ssoWage:15000,esg:100000,notes:['Easy E-Receipt (ซื้อ 1 ม.ค.–15 ก.พ. 67) ไม่เกิน 50,000','ค่าสร้างบ้านใหม่ 10,000 ต่อทุก 1 ล้านบาท ไม่เกิน 100,000','Thai ESG 30% ของเงินได้ ไม่เกิน 100,000']},
+  2025:{sso:9000,ssoWage:15000,esg:300000,notes:['Easy E-Receipt 2.0 (ซื้อ 16 ม.ค.–28 ก.พ. 68) ไม่เกิน 50,000','เที่ยวดีมีคืน (ต.ค.–ธ.ค. 68) เมืองหลักไม่เกิน 20,000 · เมืองรองไม่เกิน 30,000','ค่าสร้างบ้านใหม่ (สัญญาถึง 31 ธ.ค. 68) ไม่เกิน 100,000','Thai ESG / Thai ESGX 30% ของเงินได้ ไม่เกิน 300,000']},
+  2026:{sso:10500,ssoWage:17500,esg:300000,notes:['ประกันสังคม เพดานค่าจ้างใหม่ 17,500 บาท · ลดหย่อนได้สูงสุด 10,500','Thai ESG / Thai ESGX 30% ของเงินได้ ไม่เกิน 300,000','มาตรการพิเศษที่รัฐประกาศระหว่างปี ใส่เองที่ "ลดหย่อนอื่นๆ"']}};
+function taxRule(y){const ys=Object.keys(TAX_RULES).map(Number).sort((a,b)=>a-b);const k=Math.min(ys[ys.length-1],Math.max(ys[0],y));return Object.assign({y:k,exact:k===y},TAX_RULES[k])}
 const BRACKETS=[[0,150000,0],[150000,300000,.05],[300000,500000,.10],[500000,750000,.15],[750000,1000000,.20],[1000000,2000000,.25],[2000000,5000000,.30],[5000000,Infinity,.35]];
 const TAXTYPES={'401':'40(1) เงินเดือน/ค่าจ้างจากนายจ้าง','402':'40(2) ค่าจ้างทั่วไป/เวรนอก','none':'ไม่นำมาคิดภาษี'};
 const GROUPS={in:[['work','รายได้จากการทำงาน'],['asset','รายได้จากสินทรัพย์'],['other','รายได้อื่นๆ']],ex:[['var','ค่าใช้จ่ายผันแปร'],['fixed','ค่าใช้จ่ายคงที่'],['save','ออมและลงทุน']]};
@@ -743,7 +760,7 @@ const DEFAULTS={
     {id:'TR',code:'อบ',name:'อบรม',start:'',end:'',hours:0,color:3,wd:0,hd:0,tax:'401',work:false}],
   tax:{}
 };
-const TAX_DEFAULT={project:true,spouse:false,child1:0,child2:0,parents:0,disabled:0,life:0,health:0,parentsHealth:0,pension:0,rmf:0,nsf:0,thaiesg:0,home:0,donate:0,donate2:0,other:0};
+const TAX_DEFAULT={x401:0,x402:0,x408:0,whx:0,project:true,spouse:false,child1:0,child2:0,parents:0,disabled:0,life:0,health:0,parentsHealth:0,pension:0,rmf:0,nsf:0,thaiesg:0,home:0,donate:0,donate2:0,other:0};
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -832,7 +849,7 @@ function earnCalc(key){
   for(const e of mo.entries){const a=num(e.amt);
     if(e.t==='in'){if(e.tax==='401')x401+=a;else if(e.tax==='402')x402+=a;else xNone+=a;whE+=num(e.wh);const c=catById('in',e.cat);const g=c?c.g:'other';inGroup[g]=(inGroup[g]||0)+a}
     else{exp+=a;byCat[e.cat]=(byCat[e.cat]||0)+a;const c=catById('ex',e.cat);const g=c?c.g:'var';byGroup[g]=(byGroup[g]||0)+a;if(c&&c.ded)ded[c.ded]=(ded[c.ded]||0)+a}}
-  const sso=S.sso?Math.round(0.05*Math.min(Math.max(salary,SSO_MIN_WAGE),SSO_CAP_WAGE)):0;
+  const sso=S.sso?Math.round(0.05*Math.min(Math.max(salary,SSO_MIN_WAGE),taxRule(y).ssoWage)):0;
   const pvd=Math.round(salary*num(S.pvdPct)/100);
   const fixDed=sum(S.deductions.map(x=>num(x.amount)));
   const withheld=whMonth(mo)+whE;
@@ -857,7 +874,7 @@ function monthCalc(key){const e=earnCalc(key);e.earn=e;if(!anyLag())return e;
   c.salary=sS.salary;c.allow=sA.allow;
   c.otIn=sO.otIn;c.otOut=sO.otOut;c.ot=sO.ot;c.otHrs=sO.otHrs;c.otShiftN=sO.otShiftN;
   c.s401=(sR.s401-sR.otIn)+sO.otIn;c.s402=(sR.s402-sR.otOut)+sO.otOut;c.shift=c.s401+c.s402;
-  c.sso=S.sso?Math.round(0.05*Math.min(Math.max(c.salary,SSO_MIN_WAGE),SSO_CAP_WAGE)):0;
+  c.sso=S.sso?Math.round(0.05*Math.min(Math.max(c.salary,SSO_MIN_WAGE),taxRule(c.y).ssoWage)):0;
   c.pvd=Math.round(c.salary*num(S.pvdPct)/100);
   c.gross=c.salary+c.allow+c.shift+e.x401+e.x402+e.xNone;c.net=c.gross-c.sso-c.pvd-e.withheld-e.fixDed;c.left=c.net-e.exp;
   c.hasShift=sR.hasShift||sO.hasShift;c.earn=e;c.lagged=true;return c}
@@ -865,16 +882,18 @@ function progressive(net){let tax=0,marg=0;const rows=BRACKETS.map(([lo,hi,r])=>
 function taxCalc(y,extra){
   extra=extra||{};const T=taxP(y);const mons=[];for(let m=1;m<=12;m++)mons.push(monthCalc(mkey(y,m)));
   const ws=mons.filter(c=>c.hasShift);const a401=ws.length?sum(ws.map(c=>c.s401))/ws.length:0;const a402=ws.length?sum(ws.map(c=>c.s402))/ws.length:0;
-  let inc401=0,inc402=0,sso=0,pvd=0,wh=0,proj=0,salaryAll=0;const auto={};
-  for(const c of mons){salaryAll+=c.salary+c.allow;inc401+=c.salary+c.allow+c.x401;inc402+=c.x402;
-    if(c.hasShift){inc401+=c.s401;inc402+=c.s402}else if(T.project&&ws.length){inc401+=a401;inc402+=a402;proj++}
+  let inc401=0,inc402=0,sso=0,pvd=0,wh=0,proj=0,salaryAll=0,exempt=0;const auto={};const mrows=[];const R=taxRule(y);
+  for(const c of mons){salaryAll+=c.salary+c.allow;let i1=c.salary+c.allow+c.x401,i2=c.x402,pj=false;
+    if(c.hasShift){i1+=c.s401;i2+=c.s402}else if(T.project&&ws.length){i1+=a401;i2+=a402;proj++;pj=true}
+    inc401+=i1;inc402+=i2;exempt+=c.xNone||0;mrows.push({m:c.m,key:c.key,i1,i2,pj,real:c.hasShift,wh:c.withheld,whE:c.whE||0});
     sso+=c.sso;pvd+=c.pvd;wh+=c.withheld;for(const k in c.ded)auto[k]=(auto[k]||0)+c.ded[k]}
-  const total=inc401+inc402;const expense=Math.min(total*.5,100000);
+  const xi1=num(T.x401),xi2=num(T.x402),inc408=num(T.x408),whx=num(T.whx);inc401+=xi1;inc402+=xi2;const whM=wh;wh+=whx;
+  const total=inc401+inc402+inc408;const e12=Math.min((inc401+inc402)*.5,100000);const e8=inc408*.6;const expense=e12+e8;
   const raw=k=>num(T[k])+(auto[k]||0)+num(extra[k]);
   const v={};
   v.personal=60000;v.spouse=T.spouse?60000:0;v.children=num(T.child1)*30000+num(T.child2)*60000;
   v.parents=Math.min(4,num(T.parents))*30000;v.disabled=num(T.disabled)*60000;
-  v.sso=Math.min(sso,SSO_DED_CAP);
+  v.sso=Math.min(sso,R.sso);
   v.health=Math.min(raw('health'),25000);v.life=Math.min(raw('life'),100000);if(v.life+v.health>100000)v.life=Math.max(0,100000-v.health);
   v.parentsHealth=Math.min(raw('parentsHealth'),15000);
   v.pvd=Math.min(pvd,.15*salaryAll,500000);
@@ -883,7 +902,7 @@ function taxCalc(y,extra){
   v.nsf=Math.min(raw('nsf'),30000);
   let over=v.pvd+v.pension+v.rmf+v.nsf-500000;
   for(const k of ['rmf','pension','nsf']){if(over<=0)break;const cut=Math.min(v[k],over);v[k]-=cut;over-=cut}
-  v.thaiesg=Math.min(raw('thaiesg'),.30*total,300000);
+  v.thaiesg=Math.min(raw('thaiesg'),.30*total,R.esg);
   v.home=Math.min(raw('home'),100000);
   v.other=raw('other');
   const dedKeys=['personal','spouse','children','parents','disabled','sso','pvd','life','health','parentsHealth','pension','rmf','nsf','thaiesg','home','other'];
@@ -892,8 +911,8 @@ function taxCalc(y,extra){
   v.donate=Math.min(raw('donate')+2*raw('donate2'),.10*before);
   const net=Math.max(0,before-v.donate);
   const p=progressive(net);let tax=p.tax,minTax=0;
-  if(inc402>=120000){minTax=inc402*.005;if(minTax>5000&&minTax>tax)tax=minTax;else minTax=0}
-  return {y,T,mons,inc401,inc402,total,expense,v,auto,dedSum:dedSum+v.donate,net,tax,rows:p.rows,marg:p.marg,minTax,wh,proj,shiftMonths:ws.length,sso,pvd}
+  const non1=inc402+inc408;let alt=0;if(non1>=120000){alt=non1*.005;if(alt>5000&&alt>tax){minTax=alt;tax=alt}}
+  return {y,T,R,mons,mrows,inc401,inc402,inc408,xi1,xi2,exempt,total,e12,e8,expense,v,auto,dedSum:dedSum+v.donate,before,net,stepTax:p.tax,alt,tax,rows:p.rows,marg:p.marg,minTax,wh,whM,whx,proj,shiftMonths:ws.length,sso,pvd}
 }
 
 /* ---------- render: shell ---------- */
@@ -1803,7 +1822,7 @@ function vSlip(){
       <div class="line total"><span class="l">รายรับรวม</span><span class="v num">${fmt(c.gross)}</span></div>
     </div>
     <div class="lines">
-      ${S.sso?`<div class="line"><span class="l">ประกันสังคม 5% (เพดาน ${fmt(SSO_CAP_WAGE)})</span><span class="v num neg">−${fmt(c.sso)}</span></div>`:''}
+      ${S.sso?`<div class="line"><span class="l">ประกันสังคม 5% (เพดาน ${fmt(taxRule(c.y).ssoWage)})</span><span class="v num neg">−${fmt(c.sso)}</span></div>`:''}
       ${c.pvd?`<div class="line"><span class="l">กบข. / กองทุนสำรองเลี้ยงชีพ ${num(S.pvdPct)}%</span><span class="v num neg">−${fmt(c.pvd)}</span></div>`:''}
       ${S.deductions.filter(x=>num(x.amount)).map(x=>`<div class="line"><span class="l">${esc(x.name||'รายการหัก')}</span><span class="v num neg">−${fmt(x.amount)}</span></div>`).join('')}
       <div class="line"><span class="l">ภาษีหัก ณ ที่จ่าย</span><span class="v num neg">−${fmt(c.withheld)}</span></div>
@@ -1846,21 +1865,52 @@ function yearChart(yr){
 function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(x||1)));const f=x/p;return (f<=1?1:f<=2?2:f<=5?5:10)*p}
 
 /* ---------- tax ---------- */
+const TAX_STEPS=[['inc','ประมาณการรายได้ทั้งปี','income'],['type','แยกประเภทเงินได้','summary'],['wh','ภาษีหัก ณ ที่จ่าย','slip'],['ded','ค่าลดหย่อนภาษี','tax'],['due','ภาษีที่ต้องชำระ / ขอคืน','money'],['calc','วิธีคำนวณ','stats']];
+function taxRuleBox(y){const R=taxRule(y);return `<details class="taxnote"><summary><span>⚠️ ผลลัพธ์เป็น<b>การประมาณการ</b> · ใช้หลักเกณฑ์ปีภาษี ${R.y+543}${R.exact?'':` (ยังไม่มีเกณฑ์ปี ${y+543} จึงใช้ปีล่าสุด)`}</span><span class="small">ดูเกณฑ์ ▾</span></summary>
+  <ul>${['ส่วนตัว 60,000 · คู่สมรสไม่มีเงินได้ 60,000 · บุตร 30,000 (คนที่ 2 เกิดปี 2561 ขึ้นไป 60,000)','หักค่าใช้จ่าย 40(1)+40(2) 50% ไม่เกิน 100,000 · 40(8) เหมา 60%',`ประกันสังคมลดหย่อนได้ไม่เกิน ${fmt(R.sso)} (เพดานค่าจ้าง ${fmt(R.ssoWage)})`,'ประกันชีวิต+สุขภาพ ไม่เกิน 100,000 · RMF/บำนาญ/กองทุนสำรองฯ/กอช. รวมไม่เกิน 500,000',...R.notes].map(x=>`<li>${x}</li>`).join('')}</ul>
+  <p class="small muted" style="margin:0">ก่อนยื่นจริง ตรวจสอบกับกรมสรรพากร (rd.go.th) อีกครั้ง หลักเกณฑ์อาจเปลี่ยนตามประกาศของปีนั้น</p></details>`}
 function vTax(){
-  const y=UI.ty;const T=taxP(y);
+  const y=UI.ty;const T=taxP(y);const sec=UI.taxSec;
   const fam=`<div class="grid2">
     <label class="inline" style="grid-column:1/-1"><input type="checkbox" data-taxb="spouse" ${T.spouse?'checked':''}> มีคู่สมรสที่ไม่มีเงินได้ (60,000)</label>
     <label>บุตร (คนละ 30,000)<input class="num" data-tax="child1" inputmode="numeric" value="${T.child1||''}" placeholder="0"></label>
     <label>บุตรคนที่ 2 ขึ้นไป เกิดตั้งแต่ปี 2561 (คนละ 60,000)<input class="num" data-tax="child2" inputmode="numeric" value="${T.child2||''}" placeholder="0"></label>
     <label>พ่อแม่อายุ 60+ (คนละ 30,000 สูงสุด 4)<input class="num" data-tax="parents" inputmode="numeric" value="${T.parents||''}" placeholder="0"></label>
     <label>อุปการะคนพิการ (คนละ 60,000)<input class="num" data-tax="disabled" inputmode="numeric" value="${T.disabled||''}" placeholder="0"></label></div>`;
-  const inv=`<div class="grid2">${DEDUCT_FIELDS.map(f=>`<label>${f.label}<input class="num" data-tax="${f.k}" inputmode="decimal" value="${T[f.k]||''}" placeholder="0"><span class="small muted">${f.cap}</span><span class="auto" id="auto-${f.k}"></span></label>`).join('')}</div>`;
+  const R=taxRule(y);
+  const inv=`<div class="grid2">${DEDUCT_FIELDS.map(f=>`<label>${f.label}<input class="num" data-tax="${f.k}" inputmode="decimal" value="${T[f.k]||''}" placeholder="0"><span class="small muted">${f.k==='thaiesg'?`30% ของเงินได้ ไม่เกิน ${fmt(R.esg)}`:f.cap}</span><span class="auto" id="auto-${f.k}"></span></label>`).join('')}</div>`;
+  const back='<div class="setback"><button class="btn sm" data-act="taxsec" data-v="">‹ ภาษีทั้งหมด</button></div>';
+  const no=k=>TAX_STEPS.findIndex(x=>x[0]===k)+1;
+  const head=(k,t)=>`<h2 class="h-ico"><span class="stepno">${no(k)}</span>${t}</h2>`;
+  let body='<div id="taxSub" class="wrap"></div>';
+  if(sec==='type')body=back+`<section class="card">${head('type','แยกประเภทเงินได้')}
+    <p class="small muted" style="margin:0">แอปแยกให้จากตารางเวรและรายรับที่บันทึก · ตั้งประเภทของเวรแต่ละแบบได้ที่ ตั้งค่า › ประเภทเวร</p>
+    <div class="ttype"><div class="tt"><b>40(1) เงินเดือน ค่าจ้าง</b><span class="num" id="ty-401">–</span><small>เงินเดือน เงินเพิ่ม พ.ต.ส. ค่าเวร/OT ที่ รพ.ต้นสังกัดจ่าย โบนัส</small></div>
+      <div class="tt"><b>40(2) ค่าตอบแทนจากงานที่ทำให้</b><span class="num" id="ty-402">–</span><small>เวรนอก/เวรเสริมที่อื่น ค่าวิทยากร เบี้ยประชุม</small></div>
+      <div class="tt"><b>40(8) เงินได้จากธุรกิจ ขายของ</b><span class="num" id="ty-408">–</span><small>ขายของออนไลน์ งานอิสระเชิงธุรกิจ (หักค่าใช้จ่ายเหมา 60%)</small></div>
+      <div class="tt muted"><b>ไม่ต้องนำมาคำนวณภาษี</b><span class="num" id="ty-ex">–</span><small>รายรับที่บันทึกเป็น "ไม่ต้องเสียภาษี" เช่น เงินที่ได้รับคืน ของขวัญจากครอบครัว</small></div></div>
+    <h3 class="h3" style="margin:8px 0 0">เพิ่มเงินได้อื่นทั้งปี (ที่ยังไม่ได้บันทึก)</h3>
+    <div class="grid2"><label>40(1) อื่น เช่น โบนัส<input class="num" data-tax="x401" inputmode="decimal" value="${T.x401||''}" placeholder="0"></label>
+      <label>40(2) อื่น เช่น ค่าวิทยากร<input class="num" data-tax="x402" inputmode="decimal" value="${T.x402||''}" placeholder="0"></label>
+      <label>40(8) ขายของ / ธุรกิจ<input class="num" data-tax="x408" inputmode="decimal" value="${T.x408||''}" placeholder="0"></label></div>
+    <p class="small muted" style="margin:0">ดอกเบี้ย เงินปันผล ค่าเช่า ยังไม่รวมในการคำนวณนี้</p></section>`;
+  if(sec==='wh'){const today=new Date();
+    body=back+`<section class="card">${head('wh','ภาษีหัก ณ ที่จ่าย')}
+    <p class="small muted" style="margin:0">ดูยอดจากสลิปเงินเดือนหรือหนังสือรับรอง 50 ทวิ · เดือนที่ไม่ใส่ ใช้ค่าตั้งต้นจากตั้งค่า (฿${fmt(S.whDefault)}/เดือน)</p>
+    <div class="whgrid">${Array.from({length:12},(_,i)=>{const k=mkey(y,i+1);const mo=getM(k,false);const v=mo.whSet?num(mo.withheld):(num(mo.withheld)||'');const fut=new Date(y,i,1)>today;
+      return `<label class="${fut?'fut':''}"><span>${TH_MS[i]}</span><input class="num" data-whm="${k}" inputmode="decimal" value="${v===''?'':v}" placeholder="${num(S.whDefault)?fmt(S.whDefault):'0'}"><small class="muted" id="whe-${k}"></small></label>`}).join('')}</div>
+    <label>หักจากที่อื่นตาม 50 ทวิ (ทั้งปี) เช่น เวรนอก ค่าวิทยากร<input class="num" data-tax="whx" inputmode="decimal" value="${T.whx||''}" placeholder="0"></label>
+    <div class="line total"><span class="l">หักไว้แล้วทั้งปี</span><span class="v num" id="wh-tot">–</span></div></section>`}
+  if(sec==='ded'||sec==='fam'||sec==='inv')body=back+`<section class="card">${head('ded','ค่าลดหย่อนภาษี')}<div class="line total"><span class="l">ลดหย่อนรวม (ใช้ได้จริง)</span><span class="v num" id="ded-tot">–</span></div>
+    <h3 class="h3 h-ico" style="margin:6px 0 0"><img src="${IMG.profile}" alt="">ครอบครัว</h3>${fam}
+    <h3 class="h3 h-ico" style="margin:10px 0 0"><img src="${IMG.tax}" alt="">ประกัน กองทุน และอื่นๆ</h3><p class="small muted" style="margin:0">ใส่ยอดที่ยังไม่ได้บันทึกในหน้าการเงิน (ที่บันทึกแล้วบวกให้เอง)</p>${inv}
+    <p class="small muted" style="margin:0">ประกันสังคม กองทุนสำรองเลี้ยงชีพ และค่าใช้จ่าย 50% คิดให้อัตโนมัติ</p>
+    <button class="btn" style="width:100%" data-act="taxsec" data-v="plan">💡 ดูว่าลดหย่อนอะไรเพิ่มแล้วคุ้มที่สุด</button></section>`;
   return `<div class="switcher"><button class="icon-btn" data-act="yprev" aria-label="ปีก่อน">‹</button><strong>ปีภาษี ${y+543}</strong><button class="icon-btn" data-act="ynext" aria-label="ปีถัดไป">›</button></div>
+  ${taxRuleBox(y)}
   <div id="taxResults" class="wrap"></div>
-  ${UI.taxSec==='fam'||UI.taxSec==='inv'?`<div class="setback"><button class="btn sm" data-act="taxsec" data-v="">‹ ภาษีทั้งหมด</button></div>
-  <section class="card">${UI.taxSec==='fam'?`<h2 class="h-ico"><img src="${IMG.profile}" alt="">ครอบครัว</h2>${fam}`:`<h2 class="h-ico"><img src="${IMG.tax}" alt="">ประกัน กองทุน และอื่นๆ</h2><p class="small muted" style="margin:0">ใส่ยอดที่ยังไม่ได้บันทึกในหน้าการเงิน (ที่บันทึกแล้วบวกให้เอง)</p>${inv}
-    <p class="small muted" style="margin:0">ประกันสังคม กองทุน และหักค่าใช้จ่าย 50% คิดให้อัตโนมัติ</p>`}</section>`:'<div id="taxSub" class="wrap"></div>'}
-  <p class="small muted">ประมาณการตามอัตราภาษีปี 2569 (ไม่รวมค่าเช่า ดอกเบี้ย ปันผล) ใช้วางแผนเท่านั้น ก่อนยื่นจริงตรวจกับกรมสรรพากร</p>`;
+  ${body}
+  <p class="small muted">ประมาณการเพื่อวางแผนเท่านั้น ไม่ใช่คำปรึกษาทางภาษี · ก่อนยื่นจริงตรวจสอบกับกรมสรรพากร</p>`;
 }
 function renderTaxResults(){
   const box=$('#taxResults');if(!box)return;const y=UI.ty;const r=taxCalc(y);
@@ -1885,9 +1935,12 @@ function renderTaxResults(){
   const W=Math.max(0,num(box.dataset.what||0));
   const wt=W?taxCalc(y,{other:W}):null;
   const T0=taxP(y);const famD=r.v.spouse+r.v.children+r.v.parents+r.v.disabled;const invD=['life','health','parentsHealth','pension','rmf','nsf','thaiesg','home','other','donate','donate2'].reduce((a,k)=>a+(num(r.v[k])||0),0);
+  const fill=(id,v)=>{const e=$('#'+id);if(e)e.textContent=v};
+  fill('ty-401','฿'+fmt(r.inc401));fill('ty-402','฿'+fmt(r.inc402));fill('ty-408','฿'+fmt(r.inc408));fill('ty-ex','฿'+fmt(r.exempt));fill('wh-tot','฿'+fmt(r.wh));fill('ded-tot','฿'+fmt(r.dedSum));
+  for(const mr of r.mrows){const e=$('#whe-'+mr.key);if(e)e.textContent=mr.whE?`+ จากรายรับ ฿${fmt(mr.whE)}`:''}
   box.innerHTML=`
   <section class="card">
-    <div class="hero"><div class="h-ico"><img src="${IMG.tax}" alt=""><div class="eyebrow">ภาษีที่ต้องเสียทั้งปี (ประมาณการ)</div></div><div class="big">฿${fmt(r.tax)}</div>
+    <div class="hero"><div class="h-ico"><img src="${IMG.tax}" alt=""><div class="eyebrow">ภาษีทั้งปี (ประมาณการ)</div></div><div class="big">฿${fmt(r.tax)}</div>
       <div class="row">${due>0?`<span class="pill bad">ต้องจ่ายเพิ่มตอนยื่น ฿${fmt(due)}</span>`:r.tax>0||r.wh>0?`<span class="pill good">${due<0?'ได้คืนประมาณ ฿'+fmt(-due):'หักไว้พอดีแล้ว'}</span>`:`<span class="pill good">ยังไม่ถึงเกณฑ์เสียภาษี</span>`}
       <span class="pill neutral">หักไว้แล้ว ฿${fmt(r.wh)}</span><span class="pill neutral">ขั้นภาษีสูงสุด ${Math.round(r.marg*100)}%</span></div></div>
     ${noData?'<p class="small muted" style="margin:0">ยังไม่มีเวรปีนี้ · คิดจากเงินเดือนอย่างเดียว</p>':''}
@@ -1896,23 +1949,39 @@ function renderTaxResults(){
   </section>`;
   const sub=$('#taxSub');if(!sub)return;
   const back='<div class="setback"><button class="btn sm" data-act="taxsec" data-v="">‹ ภาษีทั้งหมด</button></div>';
-  if(UI.taxSec==='calc'){sub.innerHTML=back+`<section class="card">
-    <h2 class="h-ico"><img src="${IMG.slip}" alt="">สรุปการคำนวณ</h2>
-    <label class="inline"><input type="checkbox" data-taxb="project" ${taxP(y).project?'checked':''}> เดือนที่ยังไม่ลงเวร ใช้ค่าเฉลี่ยประมาณให้</label>
-    <div class="lines">
-      ${lines.map(([l,v])=>`<div class="line"><span class="l">${l}</span><span class="v num ${v<0?'neg':''}">${v<0?'−':''}${fmt(Math.abs(v))}</span></div>`).join('')}
-      <div class="line total"><span class="l">เงินได้สุทธิ</span><span class="v num">${fmt(r.net)}</span></div>
-    </div>
-    ${r.minTax?`<p class="small muted" style="margin:0">เงินได้ 40(2) ถึง 120,000 บาท จึงคิดแบบ 0.5% ของเงินได้ (฿${fmt(r.minTax)}) ซึ่งสูงกว่าวิธีขั้นบันได</p>`:''}
-    <details><summary>ค่าลดหย่อนที่ใช้ (${fmt(r.dedSum)})</summary><div class="lines" style="padding-top:6px">${dedRows.map(([l,v])=>`<div class="line"><span class="l">${l}</span><span class="v num">${fmt(v)}</span></div>`).join('')}</div></details>
-  </section>`;return}
-  if(UI.taxSec==='brk'){sub.innerHTML=back+`<section class="card">
-    <details class="sec" open><summary data-sec="brk"><span>ขั้นบันไดภาษี</span><span class="muted small">ขั้นสูงสุด ${Math.round(r.marg*100)}%</span></summary>
-    <div class="brk"><table><thead><tr><th>เงินได้สุทธิ</th><th>อัตรา</th><th>ส่วนที่เข้าขั้น</th><th>ภาษี</th></tr></thead><tbody>
-    ${r.rows.filter(x=>x.lo<Math.max(r.net*1.4,1000000)).map(x=>{const on=x.amt>0;const cur=on&&r.net<=x.hi;return `<tr class="${cur?'cur on':on?'on':'off'}"><td class="num">${fmt(x.lo+(x.lo?1:0))}–${x.hi===Infinity?'ขึ้นไป':fmt(x.hi)}</td><td class="num">${x.r?Math.round(x.r*100)+'%':'ยกเว้น'}</td><td class="num">${on?fmt(x.amt):'—'}</td><td class="num">${on?fmt(x.t):'—'}</td></tr>`}).join('')}
-    </tbody></table></div></details>
-    ${gap>0?`<p class="small" style="margin:0">ลดหย่อนเพิ่มอีก <b class="num">฿${fmt(gap)}</b> เงินได้สุทธิจะลงไปอยู่ขั้น ${Math.round((BRACKETS[BRACKETS.indexOf(cb)-1]||[0,0,0])[2]*100)}% ทุก 10,000 บาทที่ลดหย่อนได้ตอนนี้ช่วยประหยัดภาษี ฿${fmt(10000*r.marg)}</p>`:''}
-  </section>`;return}
+  const form=r.inc402+r.inc408>0?'ภ.ง.ด.90':'ภ.ง.ด.91';const fy=y+544;
+  const resLine=due>0?`<div class="res bad"><span>ต้องชำระเพิ่ม</span><b class="num">฿${fmt(due)}</b></div>`:due<0?`<div class="res good"><span>ขอคืนได้ประมาณ</span><b class="num">฿${fmt(-due)}</b></div>`:`<div class="res good"><span>${r.tax>0?'หักไว้พอดีแล้ว':'ไม่ต้องเสียภาษี'}</span><b class="num">฿0</b></div>`;
+  if(UI.taxSec==='inc'){const tot1=sum(r.mrows.map(x=>x.i1)),tot2=sum(r.mrows.map(x=>x.i2));const realN=r.mrows.filter(x=>x.real).length;
+    sub.innerHTML=back+`<section class="card"><h2 class="h-ico"><span class="stepno">1</span>ประมาณการรายได้ทั้งปี</h2>
+    <div class="incsum"><span>รายได้ทั้งปีโดยประมาณ</span><b class="num">฿${fmt(r.total)}</b><small class="muted">ลงเวรแล้ว ${realN} เดือน${r.proj?` · ประมาณอีก ${r.proj} เดือนจากค่าเฉลี่ย`:''}</small></div>
+    <label class="inline"><input type="checkbox" data-taxb="project" ${taxP(y).project?'checked':''}> เดือนที่ยังไม่ลงเวร ใช้ค่าเฉลี่ยค่าเวรประมาณให้</label>
+    <div class="brk inc"><table><thead><tr><th>เดือน</th><th>40(1)</th><th>40(2)</th></tr></thead><tbody>
+    ${r.mrows.map(x=>`<tr class="${x.pj?'pj':''}"><td>${TH_MS[x.m-1]}${x.pj?' *':''}</td><td class="num">${fmt(x.i1)}</td><td class="num">${x.i2?fmt(x.i2):'—'}</td></tr>`).join('')}
+    ${r.xi1||r.xi2?`<tr><td>อื่นๆ</td><td class="num">${fmt(r.xi1)}</td><td class="num">${fmt(r.xi2)}</td></tr>`:''}
+    ${r.inc408?`<tr><td>40(8)</td><td colspan="2" class="num">${fmt(r.inc408)}</td></tr>`:''}
+    <tr class="cur on"><td>รวม</td><td class="num">${fmt(r.inc401)}</td><td class="num">${fmt(r.inc402)}</td></tr></tbody></table></div>${r.proj?'<p class="small muted" style="margin:0">* ประมาณจากค่าเฉลี่ยค่าเวร</p>':''}
+    <p class="small muted" style="margin:0">คิดตามเดือนที่ได้รับเงินจริง (ตั้งรอบจ่ายย้อนเดือนได้ที่ ตั้งค่า › เงินเดือน)</p></section>`;return}
+  if(UI.taxSec==='due'){sub.innerHTML=back+`<section class="card"><h2 class="h-ico"><span class="stepno">5</span>ภาษีที่ต้องชำระ / ขอคืน</h2>
+    <div class="lines"><div class="line"><span class="l">ภาษีที่ต้องเสียทั้งปี</span><span class="v num">฿${fmt(r.tax)}</span></div>
+      <div class="line"><span class="l">หัก ณ ที่จ่ายไว้แล้ว</span><span class="v num">−฿${fmt(r.wh)}</span></div></div>
+    ${resLine}
+    ${due>0&&remain>0?`<div class="banner"><span>กันเงินไว้เดือนละ <b class="num">฿${fmt(due/remain)}</b> อีก ${remain} เดือน จะพอจ่ายตอนยื่น</span></div>`:''}
+    <div class="lines"><div class="line"><span class="l">แบบที่ใช้ยื่น</span><span class="v">${form}</span></div>
+      <div class="line"><span class="l">ยื่นภายใน</span><span class="v">31 มี.ค. ${fy}</span></div></div><p class="small muted" style="margin:0">ยื่นออนไลน์ (e-Filing) มักได้ถึงต้นเดือน เม.ย.</p>
+    <p class="small muted" style="margin:0">${due<0?'ขอคืนภาษีผ่าน e-Filing ของกรมสรรพากร เก็บหนังสือรับรอง 50 ทวิ และหลักฐานลดหย่อนไว้ให้พร้อม':'จ่ายได้ผ่าน e-Filing หรือผ่อนชำระ 3 งวดได้ถ้ายื่นตรงเวลาและภาษีตั้งแต่ 3,000 บาท'}</p></section>`;return}
+  if(UI.taxSec==='calc'||UI.taxSec==='brk'){const st=(n,t,body)=>`<div class="cstep"><span class="stepno sm">${n}</span><div><b>${t}</b>${body}</div></div>`;const L=(l,v,neg)=>`<div class="line"><span class="l">${l}</span><span class="v num ${neg?'neg':''}">${neg?'−':''}${fmt(Math.abs(v))}</span></div>`;
+    sub.innerHTML=back+`<section class="card"><h2 class="h-ico"><span class="stepno">6</span>วิธีคำนวณ</h2>
+    ${st(1,'รวมเงินได้พึงประเมิน',`<div class="lines">${L('40(1) เงินเดือน ค่าเวร',r.inc401)}${r.inc402?L('40(2) ค่าตอบแทน เวรนอก',r.inc402):''}${r.inc408?L('40(8) ธุรกิจ ขายของ',r.inc408):''}${L('รวม',r.total)}</div>`)}
+    ${st(2,'หักค่าใช้จ่าย',`<div class="lines">${L('40(1)+40(2) หัก 50% ไม่เกิน 100,000',r.e12,1)}${r.inc408?L('40(8) หักเหมา 60%',r.e8,1):''}</div>`)}
+    ${st(3,'หักค่าลดหย่อน',`<div class="lines">${dedRows.map(([l,v])=>L(l,v,1)).join('')}</div>`)}
+    ${st(4,'เงินได้สุทธิ',`<p class="small" style="margin:2px 0 0">${fmt(r.total)} − ${fmt(r.expense)} − ${fmt(r.dedSum)} = <b class="num">฿${fmt(r.net)}</b></p>`)}
+    ${st(5,'คิดภาษีแบบขั้นบันได',`<div class="brk"><table><thead><tr><th>เงินได้สุทธิ</th><th>อัตรา</th><th>ส่วนในขั้น</th><th>ภาษี</th></tr></thead><tbody>
+      ${r.rows.filter(x=>x.lo<Math.max(r.net*1.4,1000000)).map(x=>{const on=x.amt>0;const cur=on&&r.net<=x.hi;return `<tr class="${cur?'cur on':on?'on':'off'}"><td class="num">${x.hi===Infinity?'เกิน '+fmt(x.lo):'ถึง '+fmt(x.hi)}</td><td class="num">${x.r?Math.round(x.r*100)+'%':'ยกเว้น'}</td><td class="num">${on?fmt(x.amt):'—'}</td><td class="num">${on?fmt(x.t):'—'}</td></tr>`}).join('')}
+      </tbody></table></div><p class="small" style="margin:4px 0 0">ภาษีแบบขั้นบันได <b class="num">฿${fmt(r.stepTax)}</b></p>`)}
+    ${r.inc402+r.inc408>=120000?st(6,'เทียบวิธีที่ 2 (เงินได้นอก 40(1) ตั้งแต่ 120,000)',`<p class="small" style="margin:2px 0 0">0.5% × ${fmt(r.inc402+r.inc408)} = ฿${fmt(r.alt)} ${r.minTax?'→ <b>สูงกว่าและเกิน 5,000 จึงใช้วิธีนี้</b>':'→ ไม่เกิน 5,000 หรือไม่สูงกว่า จึงใช้ขั้นบันได'}</p>`):''}
+    ${st(r.inc402+r.inc408>=120000?7:6,'เทียบกับภาษีที่ถูกหักไว้',`<p class="small" style="margin:2px 0 0">${fmt(r.tax)} − ${fmt(r.wh)} = <b class="num ${due>0?'neg':'pos'}">${due>0?'ชำระเพิ่ม ฿'+fmt(due):due<0?'ขอคืน ฿'+fmt(-due):'฿0'}</b></p>`)}
+    ${gap>0?`<p class="small" style="margin:0">💡 ลดหย่อนเพิ่มอีก <b class="num">฿${fmt(gap)}</b> จะลงไปขั้น ${lowR}% · ทุก 10,000 บาทที่ลดหย่อนได้ตอนนี้ ประหยัดภาษี ฿${fmt(10000*r.marg)}</p>`:''}
+    ${r.minTax?'':''}</section>`;return}
   if(UI.taxSec==='plan'){sub.innerHTML=back+`<section class="card">
     <h3 class="h-ico"><img src="${IMG.chart}" alt="">วางแผนลดหย่อน</h3>
     ${r.tax<=0?'<p class="small muted" style="margin:0">ปีนี้ยังไม่ต้องเสียภาษี ไม่ต้องซื้อกองทุนเพิ่ม</p>':
@@ -1922,12 +1991,11 @@ function renderTaxResults(){
     <div class="line"><span class="l">ภาษีหลังเพิ่มลดหย่อน</span><span class="v num" id="what-r">${wt?`฿${fmt(wt.tax)} (ประหยัด ฿${fmt(r.tax-wt.tax)})`:'เลื่อนเพื่อดูผล'}</span></div>`:''}
     <p class="small muted" style="margin:0">RMF + บำนาญ + กบข./สำรองเลี้ยงชีพ + กอช. รวมไม่เกิน 500,000 · Thai ESG ไม่เกิน 300,000</p>
   </section>`;return}
-  const items=[['fam','ครอบครัว',famD?`ลดหย่อน ฿${fmt(famD)}`:'คู่สมรส บุตร พ่อแม่ คนพิการ','profile'],
-    ['inv','ประกัน กองทุน และอื่นๆ',invD?`ลดหย่อน ฿${fmt(invD)}`:'ประกันชีวิต สุขภาพ RMF Thai ESG ดอกเบี้ยบ้าน บริจาค','tax'],
-    ['plan','วางแผนลดหย่อน',near?`💡 ซื้อ ${near.p.l.replace('กองทุน ','')} อีก ฿${fmt(near.a)} ประหยัดภาษี ฿${fmt(near.save)}`:r.tax>0&&plans.length?`ลดภาษีได้สูงสุด ฿${fmt(plans[0].save)} จาก${plans[0].l}`:'ดูทางเลือกลดหย่อน','chart'],
-    ['calc','สรุปการคำนวณ',`เงินได้สุทธิ ฿${fmt(r.net)} · ลดหย่อน ฿${fmt(r.dedSum)}`,'slip'],
-    ['brk','ขั้นบันไดภาษี',`ขั้นสูงสุด ${Math.round(r.marg*100)}%${gap>0?' · ลดหย่อนอีก ฿'+fmt(gap)+' ลงขั้นถัดไป':''}`,'stats']];
-  sub.innerHTML=`<div class="sumbars">${items.map(([k,t,d,ic])=>`<button class="sumbar" data-act="taxsec" data-v="${k}"><img src="${IMG[ic]||IMG.tax}" alt=""><span class="grow"><b>${t}</b><small>${esc(d)}</small></span><span class="chev">›</span></button>`).join('')}</div>`;;
+  const desc={inc:`฿${fmt(r.total)}${r.proj?` · ประมาณ ${r.proj} เดือน`:''}`,type:`40(1) ฿${fmt(r.inc401)}${r.inc402?` · 40(2) ฿${fmt(r.inc402)}`:''}${r.inc408?` · 40(8) ฿${fmt(r.inc408)}`:''}`,
+    wh:`หักไว้แล้ว ฿${fmt(r.wh)}`,ded:`ลดหย่อน ฿${fmt(r.dedSum)}${near?` · 💡 ${near.p.l.replace('กองทุน ','')} อีก ฿${fmt(near.a)} ประหยัด ฿${fmt(near.save)}`:''}`,
+    due:due>0?`ต้องชำระเพิ่ม ฿${fmt(due)}`:due<0?`ขอคืนได้ ฿${fmt(-due)}`:'ไม่มียอดต้องชำระ',calc:`เงินได้สุทธิ ฿${fmt(r.net)} · ขั้นสูงสุด ${Math.round(r.marg*100)}%`};
+  sub.innerHTML=`<div class="sumbars">${TAX_STEPS.map(([k,t,ic],i)=>`<button class="sumbar" data-act="taxsec" data-v="${k}"><span class="stepno">${i+1}</span><span class="grow"><b>${t}</b><small>${esc(desc[k])}</small></span><span class="chev">›</span></button>`).join('')}
+    <button class="sumbar" data-act="taxsec" data-v="plan"><img src="${IMG.chart}" alt=""><span class="grow"><b>วางแผนลดหย่อน</b><small>${esc(r.tax>0&&plans.length?`ลดภาษีได้สูงสุด ฿${fmt(plans[0].save)} จาก${plans[0].l}`:'ดูทางเลือกลดหย่อน')}</small></span><span class="chev">›</span></button></div>`;
 }
 
 /* ---------- settings ---------- */
@@ -1966,7 +2034,7 @@ function settingsAll(){
     <label>OT / งานนอก รายชั่วโมง (บาท/ชม.)<input class="num" data-set="otRate" inputmode="decimal" value="${S.otRate||''}" placeholder="200"></label>
     <label>งบรายจ่ายต่อเดือน (บาท)<input class="num" data-set="budget" inputmode="decimal" value="${S.budget||''}" placeholder="เช่น 15000"></label>
     <label>สิทธิวันพักร้อนต่อปี (วัน)<input class="num" data-set="vacQuota" inputmode="numeric" value="${S.vacQuota||''}" placeholder="10"></label>
-    <label class="inline"><input type="checkbox" data-setb="sso" ${S.sso?'checked':''}> หักประกันสังคม 5% (เพดานค่าจ้าง ${fmt(SSO_CAP_WAGE)} = สูงสุด ${fmt(SSO_CAP_WAGE*.05)}/เดือน)</label>
+    <label class="inline"><input type="checkbox" data-setb="sso" ${S.sso?'checked':''}> หักประกันสังคม 5% (เพดานค่าจ้าง ${fmt(taxRule(new Date().getFullYear()).ssoWage)} = สูงสุด ${fmt(SSO_CAP_WAGE*.05)}/เดือน)</label>
     <p class="small muted" style="margin:0">ข้าราชการ: ปิด แล้วใส่ กบข. 3% · เอกชน/ลูกจ้าง: เปิด</p>
     <h3>เงินเพิ่มประจำทุกเดือน</h3>
     ${S.allowances.map(a=>`<div class="grid2" style="grid-template-columns:minmax(0,1fr) 120px auto"><input data-allow="name" data-id="${a.id}" value="${esc(a.name)}" aria-label="ชื่อรายการ"><input class="num" data-allow="amount" data-id="${a.id}" inputmode="decimal" value="${a.amount}" aria-label="จำนวนเงิน"><button class="icon-btn" data-act="del-allow" data-id="${a.id}" aria-label="ลบ">×</button></div>`).join('')||'<p class="small muted">ยังไม่มี เช่น พ.ต.ส. เงินประจำตำแหน่ง ค่าครองชีพ</p>'}
@@ -2279,6 +2347,7 @@ document.addEventListener('input',ev=>{
   if(t.id==='debt-extra'){S.nw.extra=num(t.value);touch('settings');const el=$('#debt-sim');if(el)el.innerHTML=debtSimHtml();return}
   if(t.dataset.nw==='amt'){const x=(S.nw[t.dataset.k]||[]).find(x=>x.id===t.dataset.id);if(x){x.amt=num(t.value);S.nw.upd=Date.now();touch('settings');nwRefresh(x.id)}return}
   if(t.dataset.tax){setTax(UI.ty,t.dataset.tax,num(t.value));renderTaxResults();return}
+  if(t.dataset.whm){const mw=getM(t.dataset.whm,true);mw.withheld=num(t.value);mw.whSet=t.value.trim()!=='';touch(t.dataset.whm);renderTaxResults();return}
   if(t.dataset.otf&&UI.sheet){const key=mkey(UI.y,UI.m);const mo=getM(key,true);const d=UI.sheet;const x=otList(mo,d).find(o=>o.id===t.dataset.id);if(!x)return;
     const f=t.dataset.otf;x[f]=t.value;if(f==='rate'&&num(t.value)){S.otRate=num(t.value);touch('settings')}
     const ov=$('#otv-'+x.id);if(ov)ov.textContent='฿'+fmt(otVal(x));const el=$('#day-pay');if(el)el.textContent='฿'+fmt(dayPay(mo,d,isHol(UI.y,UI.m,+d,mo)));touch(key);needRender=true;return}
