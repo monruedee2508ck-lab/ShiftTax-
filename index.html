@@ -1328,7 +1328,7 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     <label class="wl-lab">ชื่อของคุณ (ชื่อเล่นก็ได้)<input id="onb-name" class="wl-in" value="${nm}" maxlength="30" placeholder="เช่น ฝน" autocomplete="nickname"></label>
     <label class="wl-lab">Gmail<input id="onb-email" class="wl-in" type="email" inputmode="email" value="${esc(S.email||'')}" maxlength="80" placeholder="name@gmail.com" autocomplete="email" autocapitalize="off" spellcheck="false"></label>
     <button class="wl-next" data-act="onb-next">${back?'เข้าสู่ระบบ ›':'สมัครใช้งาน ›'}</button>
-    <p class="small muted wl-note">${back?'ข้อมูลเก็บในเครื่อง · Gmail ใช้ตอนลืม PIN':'ข้อมูลเก็บในเครื่อง · ชื่อและ Gmail ส่งให้ผู้พัฒนาเพื่อนับผู้ใช้เท่านั้น'}</p>`}
+    <p class="small muted wl-note">${back?'ข้อมูลเก็บในเครื่อง · Gmail ใช้ตอนลืม PIN':'ข้อมูลเก็บในเครื่อง · Gmail ส่งให้ผู้พัฒนาเพื่อนับผู้ใช้เท่านั้น'}</p>`}
   if(st===2)body=`<h2>สวัสดีค่ะ คุณ${nm||'พยาบาล'} 💚</h2><p class="muted">ขั้นที่ 2/4 · รายได้ประจำต่อเดือน</p>
     <label>เงินเดือน (บาท/เดือน)<input class="num" data-set="salary" inputmode="decimal" value="${S.sample?'':S.salary||''}" placeholder="เช่น 25000"></label>
     <label class="inline"><input type="checkbox" data-setb="sso" ${S.sso?'checked':''}> หักประกันสังคม 5%</label>
@@ -1407,11 +1407,11 @@ const unlockedNow=()=>{try{return sessionStorage.getItem('st_unlocked')==='1'}ca
 function markUnlocked(){try{sessionStorage.setItem('st_unlocked','1')}catch(e){}}
 function startLock(mode){UI.pin={mode:mode||'unlock',stage:mode==='change'?'old':'enter',buf:''};UI.pinForgot=false;UI.lock=true;renderOnb()}
 /* ---- sign-up counter: posts to the developer's Google Form (set REG_FORM after the form exists) ---- */
-const REG_FORM={url:'',name:'',email:'',dev:'',kind:''};
+const REG_FORM={url:'https://docs.google.com/forms/d/e/1FAIpQLSeC8D2k8w_I5FKZfu8VTrltT9XPgyGGtUMDXiyB9Khx9z04Ew/formResponse',name:'',email:'entry.86343981',dev:'',kind:''};
 let regBusy=false;
 function regSend(){try{if(!REG_FORM.url||S.regSent||!S.onboarded||regBusy||navigator.onLine===false)return;regBusy=true;
   const isNew=!!S.regNew;const fd=new URLSearchParams();
-  fd.append(REG_FORM.name,String(S.userName||'').slice(0,30));fd.append(REG_FORM.email,isNew?String(S.email||'').slice(0,80):'(ผู้ใช้เดิม)');
+  if(REG_FORM.name)fd.append(REG_FORM.name,String(S.userName||'').slice(0,30));fd.append(REG_FORM.email,isNew?String(S.email||'').slice(0,80):'(ผู้ใช้เดิม)');
   if(REG_FORM.dev)fd.append(REG_FORM.dev,devId());if(REG_FORM.kind)fd.append(REG_FORM.kind,isNew?'สมัครใหม่':'ผู้ใช้เดิม');
   fetch(REG_FORM.url,{method:'POST',mode:'no-cors',body:fd}).then(()=>{S.regSent=Date.now();touch('settings')}).catch(()=>{}).finally(()=>{regBusy=false})}catch(e){regBusy=false}}
 window.addEventListener('online',()=>setTimeout(regSend,1500));
