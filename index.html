@@ -1318,7 +1318,7 @@ function pinPad(){const P=UI.pin||{};const n=(P.buf||'').length;
     <div class="pin-pad">${['1','2','3','4','5','6','7','8','9','','0','del'].map(k=>k===''?'<span></span>':`<button class="pk ${k==='del'?'del':''}" data-act="pin-key" data-k="${k}" aria-label="${k==='del'?'ลบ':k}" ${UI.lockUntil&&Date.now()<UI.lockUntil?'disabled':''}>${k==='del'?'⌫':k}</button>`).join('')}</div>`}
 function pinTitle(){const P=UI.pin||{};return P.stage==='old'?'ใส่ PIN เดิม':P.stage==='new'?'ตั้ง PIN 4 หลัก':P.stage==='confirm'?'ใส่ PIN อีกครั้งเพื่อยืนยัน':'ใส่ PIN 4 หลักเพื่อเข้าใช้งาน'}
 function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
-  const sn=st==='auth'?1:st;const dots=`<div class="onb-dots">${[1,2,3,4].map(i=>`<i class="${i===sn?'on':i<sn?'done':''}"></i>`).join('')}</div>`;
+  const sn=st==='auth'||st===1?1:2;const dots=`<div class="onb-dots">${[1,2].map(i=>`<i class="${i===sn?'on':i<sn?'done':''}"></i>`).join('')}</div>`;
   const hero=`<img class="wl-hero" src="${WL_HERO}" alt="ShiftTax · Smart Tax Solutions for Growth · Your Shifts. Your Income. Your Balance.">`;
   let body='',top='';
   if(st==='auth'||st===1){top=hero;const back=!!(S.setupDone&&S.email);
@@ -1354,7 +1354,7 @@ function onbHtml(){const st=UI.onb;const nm=esc(S.userName||'');
     <p class="small muted" style="margin:0">OT ว่าง = เท่าค่าเวร · วันหยุดคิดเท่าวันปกติ (แก้ได้ในตั้งค่า)</p>
     <div class="row onb-nav"><button class="btn" data-act="onb-back">‹ ย้อนกลับ</button><button class="wl-next grow" data-act="onb-done">ถัดไป ›</button></div>`}
   if(st===4){if(!UI.pin||UI.pin.mode!=='set')UI.pin={mode:'set',stage:'new',buf:''};
-    body=`<h2>ตั้ง PIN เข้าแอป 🔒</h2><p class="muted">ขั้นที่ 4/4 · ครั้งหน้าใส่แค่ PIN</p>
+    body=`<h2>ตั้ง PIN เข้าแอป 🔒</h2><p class="muted">ขั้นที่ 2/2 · ครั้งหน้าใส่แค่ PIN</p>
     <div class="pin-box"><b class="pin-title">${pinTitle()}</b>${pinPad()}</div>
     ${UI.pin.stage==='confirm'?'<button class="onb-skip" data-act="pin-restart">ตั้ง PIN ใหม่</button>':'<button class="onb-skip" data-act="onb-back">‹ ย้อนกลับ</button>'}`}
   const skip=(st===2||st===3)?'<button class="onb-skip" data-act="onb-done">ข้ามไปก่อน ตั้งค่าทีหลัง</button>':'';
@@ -1425,7 +1425,7 @@ async function pinKey(k){const P=UI.pin;if(!P)return;if(UI.lockUntil&&Date.now()
   if(P.stage==='confirm'){if(v!==P.first){P.stage='new';P.buf='';P.first='';P.err='PIN 2 ครั้งไม่ตรงกัน ลองตั้งใหม่อีกครั้ง';renderOnb();return}
     const salt=Math.random().toString(36).slice(2,10);S.pin={s:salt,h:await pinHash(v,salt)};
     if(P.mode==='change'){touch('settings');UI.lock=false;UI.pin=null;renderOnb();toast('เปลี่ยน PIN แล้ว');return}
-    if(UI.onb){finishSetup();toast(`พร้อมแล้วค่ะ คุณ${S.userName||''} ครั้งหน้าใส่ PIN ${'•'.repeat(4)} เพื่อเข้าแอป`);return}
+    if(UI.onb){finishSetup();toast(`พร้อมแล้วค่ะ คุณ${S.userName||''} 💚 ตั้งเงินเดือน ค่าเวร OT ได้ที่ ตั้งค่า`);return}
     touch('settings');markUnlocked();UI.lock=false;UI.pin=null;render();toast('ตั้ง PIN ใหม่แล้ว');return}
   // enter / old
   const ok=S.pin&&(await pinHash(v,S.pin.s))===S.pin.h;
@@ -2005,9 +2005,9 @@ document.addEventListener('click',async ev=>{
         if(S.setupDone&&S.pin){UI.pendName=v;UI.pendEmail=em;S.onboarded=true;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();startLock('unlock');break}
         S.userName=v;S.email=em;if(!S.setupDone)S.regNew=true;touch('settings');
         if(S.setupDone||(!S.sample&&Object.keys(M).length)){S.setupDone=true;if(S.pin){S.onboarded=true;touch('settings');UI.onb=0;UI.setSec=null;UI.tab='roster';render();startLock('unlock');break}UI.onb=4;UI.pin=null;render();break}
-        UI.onb=2;UI.tab='settings';UI.setSec='pay';render();window.scrollTo(0,0);break}
+        UI.onb=4;UI.pin=null;UI.setSec=null;render();window.scrollTo(0,0);break}
       else if(UI.onb===2){UI.setSec='types'}UI.onb++;render();window.scrollTo(0,0);break}
-    case 'onb-back':UI.pin=null;UI.onb=UI.onb<=2?'auth':UI.onb-1;UI.setSec=UI.onb===2?'pay':null;render();break;
+    case 'onb-back':UI.pin=null;UI.onb='auth';UI.setSec=null;render();break;
     case 'onb-done':if(UI.onb===3){for(const t of S.shiftTypes)if(t.work)t.hd=num(t.wd)}if(S.sample&&num(S.salary))S.sample=false;touch('settings');if(S.pin){finishSetup();toast(`พร้อมแล้วค่ะ คุณ${S.userName||''}`);break}UI.onb=4;UI.pin=null;UI.setSec=null;render();window.scrollTo(0,0);break;
     case 'profile-open':UI.tab='settings';UI.setSec='profile';UI.sheet=null;UI.notif=false;render();window.scrollTo(0,0);break;
     case 'av-del':S.avatar='';touch('settings');render();break;
