@@ -672,6 +672,10 @@ html.fitpage #view .cal .day{min-height:0!important;height:auto;overflow:hidden}
 .psteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.psteps button{border:0;background:none;font-size:11px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;text-align:center;line-height:1.3}.psteps button span{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;background:#fff;font-size:12px}.psteps button.ok{color:var(--good)}.psteps button.ok span{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
 .okbtn{border:1.5px dashed var(--line);background:var(--field);border-radius:12px;padding:9px;font-size:13px;color:var(--muted);cursor:pointer}.okbtn.on{border-style:solid;border-color:var(--primary);background:var(--soft);color:var(--good);font-weight:600}
 .docs{gap:8px}.docs>b{font-size:14px}.dgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.dgrid div{background:var(--field);border:1px solid var(--line);border-radius:12px;padding:8px 6px;font-size:11px;line-height:1.35;text-align:center;display:flex;flex-direction:column;gap:3px}.dgrid span{font-size:20px}
+
+.day.multi .chips{flex-direction:row;flex-wrap:wrap;gap:2px;align-items:flex-start}
+.day.multi .chip{font-size:9.5px;padding:1px 3px;line-height:1.15}.day.multi .chip .shi{display:none}
+.day.multi .chip.icn{padding:0;border-radius:50%}.day.multi .chip.icn+.chip.icn{margin-left:-8px}.day.multi .chip.icn .shi{display:inline-grid;width:18px;height:18px;margin:0;border-radius:50%;box-shadow:0 0 0 1.5px #fff}.day.multi .chip.icn .shi.emo{font-size:14px;background:#fff!important}.day.multi .chips{gap:2px 0}.day.multi .chip:not(.icn)+.chip{margin-left:0}.chip .otx{font-style:normal}.day.multi .chip.icn .otx{display:none}.day.multi .chip.icn.otc .shi{box-shadow:0 0 0 2px #F2A33A}
 </style>
 
 <div class="wrap">
@@ -976,9 +980,9 @@ function vRoster(){
   for(let i=0;i<first;i++)cells+='<div class="day blank" aria-hidden="true"></div>';
   for(let d=1;d<=dim;d++){const dd=pad(d);const wd=new Date(UI.y,UI.m-1,d).getDay();const arr=mo.shifts[dd]||[];
     const cls=['day',wd===0||wd===6?'we':'',mo.hol[dd]?'hol':'',isCur&&today.getDate()===d?'today':''].join(' ');
-    const RS=S.rosterStyle;const chips=arr.map(id=>{const t=typeById(id);if(!t)return '';const ot=t.work&&isOTs(mo,dd,id);const ic=RS==='code'?'':shIco(id,RS==='icon'?'ci big':'ci',ot);const tx=RS==='icon'&&ic?'':esc(t.code);return `<span class="chip k${t.color} ${ot?'otc':''} ${RS==='icon'&&ic?'icn':''}">${ic}${tx}${ot?' OT':''}</span>`}).join('')+(otList(mo,dd).length?'<span class="chip k8">OT</span>':'');
+    const RS=S.rosterStyle;const chips=arr.map(id=>{const t=typeById(id);if(!t)return '';const ot=t.work&&isOTs(mo,dd,id);const ic=RS==='code'?'':shIco(id,RS==='icon'?'ci big':'ci',ot);const tx=RS==='icon'&&ic?'':esc(t.code);return `<span class="chip k${t.color} ${ot?'otc':''} ${RS==='icon'&&ic?'icn':''}">${ic}${tx}${ot?'<i class="otx"> OT</i>':''}</span>`}).join('')+(otList(mo,dd).length?'<span class="chip k8">OT</span>':'');
     const td=mo.todos[dd]||[];const open=td.filter(x=>!x.done).length;const cnD=sum(S.cneu.list.filter(x=>x.d===key+'-'+dd).map(x=>num(x.cr)));
-    cells+=`<button class="${cls}" data-act="day" data-d="${dd}" aria-label="${d} ${TH_M[UI.m-1]}${td.length?' มีงาน '+td.length+' รายการ':''}"><span class="d">${d}</span><span class="chips">${chips}</span>${cnD?`<span class="cneu-n">🎓${fmt(cnD)}</span>`:''}${td.length?`<span class="todo-n ${open?'':'done'}">${open?'งาน '+open:'✓'}</span>`:''}${isCur&&today.getDate()===d?FLOWER():''}</button>`}
+    cells+=`<button class="${cls}${arr.length+(otList(mo,dd).length?1:0)>1?' multi':''}" data-act="day" data-d="${dd}" aria-label="${d} ${TH_M[UI.m-1]}${td.length?' มีงาน '+td.length+' รายการ':''}"><span class="d">${d}</span><span class="chips">${chips}</span>${cnD?`<span class="cneu-n">🎓${fmt(cnD)}</span>`:''}${td.length?`<span class="todo-n ${open?'':'done'}">${open?'งาน '+open:'✓'}</span>`:''}${isCur&&today.getDate()===d?FLOWER():''}</button>`}
   const palLabel=t=>String(t.name).split(/[ (\/]/)[0].replace(/^เวร/,'')||t.code;
   const workT=S.shiftTypes.filter(t=>t.work);const prim=workT.slice(0,4);const otT=workT.filter(t=>['M','E','N'].includes(t.id)).slice(0,3);
   const restT=S.shiftTypes.filter(t=>!prim.includes(t));
