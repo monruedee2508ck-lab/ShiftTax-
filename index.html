@@ -561,7 +561,7 @@ html.fitpage{height:100%;overflow:hidden}html.fitpage body{margin:0;height:100vh
 html.fitpage body>.wrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
 html.fitpage #view{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
 html.fitpage #view>section.card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-html.fitpage #view .cal{flex:1 1 auto;min-height:0;grid-template-rows:auto repeat(var(--rows,5),minmax(42px,1fr))}
+html.fitpage #view .cal{flex:1 1 auto;min-height:0;grid-template-rows:auto repeat(var(--rows,5),minmax(34px,1fr))}
 html.fitpage #view .cal .day{min-height:0!important;height:auto;overflow:hidden}
 .cb-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}.cb-row{display:flex;gap:10px;align-items:center}.cb-row .grow{min-width:0}.cb-top{display:flex;justify-content:space-between;gap:6px;font-size:13.5px}.cb-top b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cb-row .bar{height:7px;margin-top:3px}.cb-row .bar i{background:var(--accent)}.cb-row.warn .bar i{background:var(--warn)}.cb-row.bad .bar i{background:var(--bad)}.cb-row small{font-size:11.5px}.warnt{color:#9a6b00}
@@ -642,6 +642,36 @@ html.fitpage #view .cal .day{min-height:0!important;height:auto;overflow:hidden}
 .incsum{display:flex;flex-direction:column;background:var(--surface);border-radius:14px;padding:10px 12px}.incsum b{font-family:var(--f-num);font-size:22px}
 .brk.inc tr.pj td{color:var(--muted);font-style:italic}.brk.inc table,.cstep .brk table{width:100%;min-width:0;table-layout:fixed;font-size:12px}.brk.inc th:first-child,.brk.inc td:first-child{width:18%}.cstep .brk th:nth-child(2),.cstep .brk td:nth-child(2){width:17%}.cstep .brk td,.cstep .brk th{padding-left:3px;padding-right:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cstep .brk th:first-child,.cstep .brk td:first-child{width:36%}
 .cstep{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}.cstep>div>b{font-size:14px}.cstep .lines .line{padding:4px 0;font-size:13px}
+
+/* ---- v2 polish ---- */
+:root{--bg:#FFFEF7;--muted:#71666A}
+.top{padding-top:6px!important;gap:8px}.brand{gap:8px!important}.brand-logo{width:36px!important;height:36px!important}.brand h1{font-size:17px!important;line-height:1.15}.tagline{font-size:10.5px!important;line-height:1.2}
+.top .bell,.top .hav{width:34px!important;height:34px!important}.top .bell img{width:34px;height:34px}.top .sync{transform:scale(.85)}
+.switcher{padding:2px 4px!important;border-radius:14px!important}.switcher .icon-btn{width:34px;height:34px}.mtitle{font-size:16px!important;padding:3px!important}
+.card{padding:12px}
+.qgrid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;flex:none}.qgrid4.sub{padding-top:2px}
+.qgrid4 .qb{min-width:0;justify-content:flex-start;padding:3px 6px 3px 3px;gap:4px;font-size:12px;border-radius:12px;overflow:hidden}.qgrid4 .qb>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qgrid4 .qbi{width:21px;height:21px}.qgrid4 .qb{font-size:11.5px}.qgrid4 .qb.ot{border-style:dashed}.qgrid4 .qb.ot .qbi{position:relative}
+.qgrid4 .qb.more{--c:var(--muted)}.qgrid4 .qb.more.open{background:var(--surface2)}
+.cstrip{display:flex;align-items:center;gap:6px;flex:none;min-height:34px;overflow:hidden}.cstrip .cs-h{font-size:11.5px;color:var(--muted)}
+.cstrip .cs{display:inline-flex;align-items:center;gap:3px;background:var(--field);border:1px solid var(--line);border-radius:999px;padding:2px 8px 2px 3px;font-size:11.5px;white-space:nowrap}.cstrip .cs .shi.li{width:18px;height:18px;margin:0}.cstrip .cs b{font-size:13px}
+.addbtn{margin-left:auto;flex:none;width:34px;height:34px;border-radius:50%;border:0;background:var(--primary);color:var(--primary-ink);font-size:20px;line-height:1;display:grid;place-items:center;box-shadow:0 3px 8px rgba(111,189,172,.4);cursor:pointer}
+.stat .chg,.ovt .chg{display:block;font-size:10.5px;line-height:1.3;color:var(--muted);margin-top:2px}.chg.good{color:var(--good)}.chg.bad{color:var(--bad)}
+.recent{gap:4px}.rrow{display:flex;align-items:center;border-bottom:1px solid var(--line)}.rrow:last-child{border-bottom:0}
+.rmain{flex:1;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;border:0;background:none;padding:8px 2px;text-align:left;color:var(--ink);cursor:pointer}.rmain .meta{display:flex;flex-direction:column;min-width:0}.rmain .meta b{font-size:14px;font-weight:600}.rmain .meta small{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rdel{border:0;background:none;width:34px;height:34px;border-radius:10px;font-size:15px;opacity:.55;cursor:pointer}.rdel:hover{opacity:1;background:var(--pink-soft)}
+.save-row .btn.primary{box-shadow:0 4px 12px rgba(111,189,172,.35)}
+.ov{gap:10px}.ovg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.ovt{border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:2px;min-width:0}.ovt span{font-size:12px}.ovt b{font-family:var(--f-num);font-size:18px;font-weight:600;overflow-wrap:anywhere}
+.ovt.in{background:var(--mint-soft)}.ovt.in b{color:var(--good)}.ovt.ex{background:var(--pink-soft)}.ovt.ex b{color:var(--bad)}.ovt.lf{background:var(--lav-soft)}.ovt.lf b{color:var(--lav-ink)}
+.chart text.curm{font-weight:700;fill:var(--ink)}
+.taxhero{gap:10px;border:1.5px solid color-mix(in srgb,var(--primary) 50%,var(--line))}.th-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.taxhero .big{font-family:var(--f-num);font-size:34px;font-weight:600;color:var(--lav-ink);line-height:1.15}
+.th-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.th-tiles button{border:1px solid var(--line);background:var(--field);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:2px;text-align:left;color:var(--ink);cursor:pointer;min-width:0}.th-tiles span{font-size:11px;color:var(--muted)}.th-tiles b{font-size:15px;font-weight:600}
+.th-tiles .bad{background:var(--pink-soft);border-color:#f7c9c0}.th-tiles .bad b{color:var(--bad)}.th-tiles .good{background:var(--soft)}.th-tiles .good b{color:var(--good)}
+.th-why{border:0;background:none;color:var(--accent);font-size:12.5px;text-align:left;padding:0;cursor:pointer}
+.prep{background:var(--surface2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}.prep>.row b{font-size:13px}.pbar{height:8px;border-radius:999px;background:#fff;overflow:hidden}.pbar i{display:block;height:100%;background:var(--primary);border-radius:999px;transition:width .3s}
+.psteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.psteps button{border:0;background:none;font-size:11px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;text-align:center;line-height:1.3}.psteps button span{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;background:#fff;font-size:12px}.psteps button.ok{color:var(--good)}.psteps button.ok span{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.okbtn{border:1.5px dashed var(--line);background:var(--field);border-radius:12px;padding:9px;font-size:13px;color:var(--muted);cursor:pointer}.okbtn.on{border-style:solid;border-color:var(--primary);background:var(--soft);color:var(--good);font-weight:600}
+.docs{gap:8px}.docs>b{font-size:14px}.dgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.dgrid div{background:var(--field);border:1px solid var(--line);border-radius:12px;padding:8px 6px;font-size:11px;line-height:1.35;text-align:center;display:flex;flex-direction:column;gap:3px}.dgrid span{font-size:20px}
 </style>
 
 <div class="wrap">
@@ -760,7 +790,7 @@ const DEFAULTS={
     {id:'TR',code:'อบ',name:'อบรม',start:'',end:'',hours:0,color:3,wd:0,hd:0,tax:'401',work:false}],
   tax:{}
 };
-const TAX_DEFAULT={x401:0,x402:0,x408:0,whx:0,project:true,spouse:false,child1:0,child2:0,parents:0,disabled:0,life:0,health:0,parentsHealth:0,pension:0,rmf:0,nsf:0,thaiesg:0,home:0,donate:0,donate2:0,other:0};
+const TAX_DEFAULT={okInc:false,okDed:false,okWh:false,x401:0,x402:0,x408:0,whx:0,project:true,spouse:false,child1:0,child2:0,parents:0,disabled:0,life:0,health:0,parentsHealth:0,pension:0,rmf:0,nsf:0,thaiesg:0,home:0,donate:0,donate2:0,other:0};
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -926,7 +956,7 @@ const TABS=[['roster','ตารางเวร'],['money','การเงิ�
 function renderNav(){$('#nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" class="${UI.tab===k?'on':''}" aria-current="${UI.tab===k?'page':'false'}">${ICONS[k]}<span>${l}</span></button>`).join('')}
 function monthSwitch(){return `<div class="switcher"><button class="icon-btn" data-act="mprev" aria-label="เดือนก่อน">‹</button><button class="mtitle" data-act="mpick-open" aria-label="เลือกเดือนและปี">${TH_M[UI.m-1]} ${UI.y+543} <span class="caret">▾</span></button><button class="icon-btn" data-act="mnext" aria-label="เดือนถัดไป">›</button></div>`}
 function sampleBanner(){return S.sample?`<div class="banner"><span>ตอนนี้เป็น<b>ค่าตัวอย่าง</b> แก้ให้ตรงกับโรงพยาบาลได้ในตั้งค่า</span><button class="btn sm" data-tab="settings">ไปตั้งค่า</button></div>`:''}
-function renderFab(){const el=$('#fab');if(!el)return;const t=UI.tab==='roster'?'เพิ่มเวร':'';
+function renderFab(){const el=$('#fab');if(!el)return;const t='';
   el.innerHTML=t?`<button class="fab" data-act="fab" aria-label="${t}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>`:''}
 function render(){
   if(UI.esheet&&UI.esheet.inline&&!UI.esheet._fresh)captureSheet();
@@ -950,9 +980,13 @@ function vRoster(){
     const td=mo.todos[dd]||[];const open=td.filter(x=>!x.done).length;const cnD=sum(S.cneu.list.filter(x=>x.d===key+'-'+dd).map(x=>num(x.cr)));
     cells+=`<button class="${cls}" data-act="day" data-d="${dd}" aria-label="${d} ${TH_M[UI.m-1]}${td.length?' มีงาน '+td.length+' รายการ':''}"><span class="d">${d}</span><span class="chips">${chips}</span>${cnD?`<span class="cneu-n">🎓${fmt(cnD)}</span>`:''}${td.length?`<span class="todo-n ${open?'':'done'}">${open?'งาน '+open:'✓'}</span>`:''}${isCur&&today.getDate()===d?FLOWER():''}</button>`}
   const palLabel=t=>String(t.name).split(/[ (\/]/)[0].replace(/^เวร/,'')||t.code;
-  const pal=`<div class="qbar" role="toolbar" aria-label="แตะเวร แล้วแตะวันที่">
-    ${S.shiftTypes.map(t=>`<button class="qb k${t.color} ${UI.paint===t.id?'on':''}" data-act="paint" data-id="${t.id}" aria-pressed="${UI.paint===t.id}">${shIco(t.id,'qbi')||`<span class="qbi qbt">${esc(t.code)}</span>`}<span>${esc(palLabel(t))}</span></button>`).join('')}
-    <button class="qb x ${UI.paint==='__x'?'on':''}" data-act="paint" data-id="__x" aria-pressed="${UI.paint==='__x'}"><span class="qbi qbt">✕</span><span>ลบ</span></button></div>`;
+  const workT=S.shiftTypes.filter(t=>t.work);const prim=workT.slice(0,4);const otT=workT.filter(t=>['M','E','N'].includes(t.id)).slice(0,3);
+  const restT=S.shiftTypes.filter(t=>!prim.includes(t));
+  const qb=(id,ot)=>{const t=typeById(id);const pid=ot?id+'@ot':id;return `<button class="qb k${t.color} ${UI.paint===pid?'on':''} ${ot?'ot':''}" data-act="paint" data-id="${pid}" aria-pressed="${UI.paint===pid}">${shIco(id,'qbi',ot)||`<span class="qbi qbt">${esc(t.code)}</span>`}<span>${ot?'OT ':''}${esc(palLabel(t))}</span></button>`};
+  const moreSel=UI.paint&&!UI.qMore?restT.find(t=>t.id===UI.paint):null;
+  const moreBtn=`<button class="qb more ${UI.qMore?'open':''} ${moreSel?'on k'+moreSel.color:''}" data-act="qmore" aria-expanded="${!!UI.qMore}">${moreSel?(shIco(moreSel.id,'qbi')||`<span class="qbi qbt">${esc(moreSel.code)}</span>`)+`<span>${esc(palLabel(moreSel))}</span>`:`<span class="qbi qbt">${UI.qMore?'▴':'⋯'}</span><span>${UI.qMore?'ซ่อน':'ลา / อื่นๆ'}</span>`}</button>`;
+  const pal=`<div class="qgrid4" role="toolbar" aria-label="แตะเวร แล้วแตะวันที่">${prim.map(t=>qb(t.id,false)).join('')}${otT.map(t=>qb(t.id,true)).join('')}${moreBtn}</div>
+    ${UI.qMore?`<div class="qgrid4 sub">${restT.map(t=>qb(t.id,false)).join('')}<button class="qb x ${UI.paint==='__x'?'on':''}" data-act="paint" data-id="__x" aria-pressed="${UI.paint==='__x'}"><span class="qbi qbt">✕</span><span>ลบเวร</span></button></div>`:''}`;
   let vacYear=0;for(let mm=1;mm<=12;mm++){const ms=getM(mkey(UI.y,mm),false).shifts;for(const d in ms)if((ms[d]||[]).includes('V'))vacYear++}
   const vq=num(S.vacQuota);const hasVac=S.shiftTypes.some(t=>t.id==='V');
   const vacCard=hasVac?`<div class="banner"><span>พักร้อนปี ${UI.y+543}: ใช้ไป <b class="num">${vacYear}</b> วัน${vq?` จากสิทธิ ${vq} วัน · เหลือ <b class="num">${Math.max(0,vq-vacYear)}</b> วัน`:''}</span><img class="tile sm" src="${IMG.leave}" alt=""></div>`:'';
@@ -969,9 +1003,10 @@ function vRoster(){
     <div class="stat t-pink"><span class="si"><img src="${IMG.calendar}" alt="">วันควบเวร</span><b>${c.doubles} วัน</b></div>
   </div>`:''}
     ${showPal?pal:''}
-    <p class="small muted qhint" style="margin:0">${UI.paint?(UI.paint==='__x'?'แตะวันที่จะลบเวร · แตะ ✕ อีกครั้งเพื่อจบ':`แตะวันเดียวก็ลง <b>${esc((typeById(UI.paint)||{}).name||'')}</b> · แตะซ้ำเพื่อเอาออก`):'เลือกเวรด้านบน แล้วแตะวันที่ · ลงได้หลายวันต่อกัน'}</p>
+    <p class="small muted qhint" style="margin:0">${UI.paint?(UI.paint==='__x'?'แตะวันที่จะลบเวร · แตะ ✕ อีกครั้งเพื่อจบ':`แตะวันเดียวก็ลง <b>${esc((typeById(UI.paint.split('@')[0])||{}).name||'')}${UI.paint.endsWith('@ot')?' (OT)':''}</b> · แตะซ้ำเพื่อเอาออก`):'เลือกเวรด้านบน แล้วแตะวันที่ · ลงได้หลายวันต่อกัน'}</p>
     <div class="cal th-${S.rosterTheme} ${UI.paint?'painting':''}" style="--rows:${Math.ceil((first+dim)/7)}">${cells}</div>
-    ${legend?(showSum?`<div class="legend">${legend}</div>`:''):`<div class="empty">ยังไม่มีเวร · แตะวันที่เพื่อลงเวร หรือ <button class="btn sm" data-act="sample">ใส่ตัวอย่างเดือนนี้</button></div>`}${showSum?vacCard:''}
+    <div class="cstrip">${legend?`<span class="cs-h">เดือนนี้</span>${S.shiftTypes.filter(t=>c.counts[t.id]).slice(0,5).map(t=>`<span class="cs">${shIco(t.id,'li')||`<span class="chip k${t.color}">${esc(t.code)}</span>`}<span>${esc(palLabel(t))}</span><b class="num">${c.counts[t.id]}</b></span>`).join('')}${c.earn.otShiftN?`<span class="cs"><span class="chip k8">OT</span><b class="num">${c.earn.otShiftN}</b></span>`:''}`:`<span class="small muted">ยังไม่มีเวร</span><button class="btn sm" data-act="sample">ใส่ตัวอย่าง</button>`}<button class="addbtn" data-act="fab" aria-label="ลงเวรวันนี้">＋</button></div>
+    ${legend&&showSum?`<div class="legend">${legend}</div>`:''}${showSum?vacCard:''}
     ${mo.sample?`<div class="row"><button class="btn sm danger" data-act="clear-month">ล้างข้อมูลตัวอย่างเดือนนี้</button></div>`:''}
   </section>`;
 }
@@ -1177,6 +1212,8 @@ function renderSheetInner(){
 }
 function dayPay(mo,d,hol){return sum((mo.shifts[d]||[]).map(id=>{const t=typeById(id);return t?shiftRate(mo,d,t,hol):0}))+sum(otList(mo,d).map(otVal))}
 function setOT(mo,d,id,on){const a=(mo.otShifts[d]||[]).filter(x=>x!==id);if(on)a.push(id);if(a.length)mo.otShifts[d]=a;else delete mo.otShifts[d]}
+function paintSet(d,id,ot){const key=mkey(UI.y,UI.m);const mo=getM(key,true);const t=typeById(id);if(!t)return;const want=!!(ot&&t.work);const has=(mo.shifts[d]||[]).includes(id);const isot=isOTs(mo,d,id);
+  if(has&&isot===want)toggleShift(d,id);else if(has){setOT(mo,d,id,want);if(mo.pay[d]){delete mo.pay[d][id];if(!Object.keys(mo.pay[d]).length)delete mo.pay[d]}}else{toggleShift(d,id);setOT(mo,d,id,want)}touch(key)}
 function toggleShift(d,id){const key=mkey(UI.y,UI.m);const mo=getM(key,true);const arr=(mo.shifts[d]||[]).slice();const i=arr.indexOf(id);
   if(i>=0){arr.splice(i,1);if(mo.pay[d]){delete mo.pay[d][id];if(!Object.keys(mo.pay[d]).length)delete mo.pay[d]}setOT(mo,d,id,false)}else{arr.push(id);sortIds(arr)}
   if(arr.length)mo.shifts[d]=arr;else delete mo.shifts[d];touch(key)}
@@ -1194,6 +1231,7 @@ function fillSample(){const key=mkey(UI.y,UI.m);const mo=getM(key,true);const di
 function curDay(){const key=mkey(UI.y,UI.m);const dim=new Date(UI.y,UI.m,0).getDate();
   if(UI.selKey!==key){const t=new Date();UI.selDay=(t.getFullYear()===UI.y&&t.getMonth()+1===UI.m)?pad(t.getDate()):'01';UI.selKey=key}
   if(+UI.selDay>dim)UI.selDay=pad(dim);return UI.selDay}
+function chgTag(a,b,goodUp){if(!b)return '';const p=(a-b)/Math.abs(b)*100;if(!isFinite(p)||Math.abs(p)<.05)return `<small class="chg">เท่าเดือนก่อน</small>`;const up=p>0;const good=goodUp?up:!up;return `<small class="chg ${good?'good':'bad'}">${up?'↑':'↓'} ${Math.abs(p).toFixed(1)}% จากเดือนก่อน</small>`}
 function dayLabel(d,short){const dt=new Date(UI.y,UI.m-1,+d);return short?`${TH_D[dt.getDay()]}. ${+d} ${TH_MS[UI.m-1]}`:`วัน${TH_DL[dt.getDay()]}ที่ ${+d} ${TH_M[UI.m-1]} ${UI.y+543}`}
 function entryRow(e){const c=catById(e.t,e.cat);const name=c?c.name:'หมวดที่ลบแล้ว';
   const tags=[];if(e.t==='ex'&&c&&c.ded)tags.push('ลดหย่อนภาษี');if(e.t==='in'&&e.tax)tags.push(e.tax==='none'?'ไม่คิดภาษี':e.tax==='401'?'40(1)':'40(2)');
@@ -1236,13 +1274,17 @@ function vMoney(){
   const inl=UI.esheet.inline;UI.esheet._fresh=false;
   const byDay={};for(const e of mo.entries)(byDay[e.d]=byDay[e.d]||[]).push(e);
   const tot=arr=>({i:sum(arr.filter(e=>e.t==='in').map(e=>e.amt)),x:sum(arr.filter(e=>e.t==='ex').map(e=>e.amt))});
+  const pc=monthCalc(keyShift(key,1));
+  const recent=mo.entries.map((e,i)=>[e,i]).sort((a,b)=>(b[0].d||'').localeCompare(a[0].d||'')||b[1]-a[1]).slice(0,5).map(x=>x[0]);
   return `${monthSwitch()}
-  ${inl?`<section class="card eform" id="eform">${entryForm(true)}</section>`:''}
   <div class="stats">
-    <div class="stat t-mint"><span class="si"><img src="${IMG.income}" alt="">รายรับรวม</span><b>${baht(c.gross)}</b></div>
-    <div class="stat t-pink"><span class="si"><img src="${IMG.expense}" alt="">รายจ่ายรวม</span><b>${baht(c.exp)}</b></div>
-    <div class="stat t-lav"><span class="si"><img src="${IMG.stats}" alt="">คงเหลือ</span><b>${baht(c.left)}</b></div>
+    <div class="stat t-mint"><span class="si"><img src="${IMG.income}" alt="">รายรับรวม</span><b>${baht(c.gross)}</b>${chgTag(c.gross,pc.gross,true)}</div>
+    <div class="stat t-pink"><span class="si"><img src="${IMG.expense}" alt="">รายจ่ายรวม</span><b>${baht(c.exp)}</b>${chgTag(c.exp,pc.exp,false)}</div>
+    <div class="stat t-lav"><span class="si"><img src="${IMG.stats}" alt="">คงเหลือ</span><b>${baht(c.left)}</b><small class="chg">หลังหักรายจ่าย</small></div>
   </div>
+  ${inl?`<section class="card eform" id="eform">${entryForm(true)}</section>`:''}
+  <section class="card recent"><div class="row" style="justify-content:space-between"><h3 class="h-ico" style="margin:0"><img src="${IMG.slip}" alt="">รายการล่าสุด</h3>${mo.entries.length?`<button class="btn sm" data-act="dsheet" data-v="list">ดูทั้งหมด ${mo.entries.length} ›</button>`:''}</div>
+    ${recent.length?recent.map(e=>{const ct=catById(e.t,e.cat);return `<div class="rrow"><button class="rmain" data-act="edit-entry" data-id="${e.id}">${ico(ct,'sm '+e.t)}<span class="meta"><b>${esc(ct?ct.name:'ไม่มีหมวด')}</b><small>${e.note?esc(e.note)+' · ':''}${dayLabel(e.d,true)}</small></span><span class="num ${e.t==='in'?'pos':'neg'}">${e.t==='in'?'+':'−'}฿${fmt(e.amt)}</span></button><button class="rdel" data-act="del-entry" data-id="${e.id}" aria-label="ลบรายการ">🗑</button></div>`}).join(''):'<p class="small muted" style="margin:0">ยังไม่มีรายการเดือนนี้ · ใส่จำนวนเงินด้านบนเพื่อเริ่มจด</p>'}</section>
   ${budgetCard(c)}
   <div class="sumbars">
     <button class="sumbar" data-act="dsheet" data-v="list"><img src="${IMG.slip}" alt=""><span class="grow"><b>รายการเดือนนี้</b><small>${mo.entries.length?mo.entries.length+' รายการ · แตะเพื่อดูหรือแก้ไข':'ยังไม่มีรายการ'}</small></span><b class="num">${mo.entries.length}</b><span class="chev">›</span></button>
@@ -1750,17 +1792,15 @@ function entryForm(inline){
   return `${inline?`<h2 class="h-ico"><img src="${IMG.money}" alt="">บันทึกรายรับ-รายจ่าย</h2>`:`<div class="row" style="justify-content:space-between"><h2>${s.id?'แก้ไขรายการ':'บันทึก'+(t==='in'?'รายรับ':'รายจ่าย')}</h2><button class="icon-btn" data-act="esheet-close" aria-label="ปิด">×</button></div>`}
     ${s.id?'':`<div class="seg"><button class="ex ${t==='ex'?'on':''}" data-act="es-type" data-v="ex">รายจ่าย</button><button class="in ${t==='in'?'on':''}" data-act="es-type" data-v="in">รายรับ</button></div>`}
     <div class="amt-row"><span>฿</span><input id="e-amt" class="num big-input" inputmode="decimal" value="${esc(s.amt||'')}" placeholder="0" autocomplete="off" aria-label="จำนวนเงิน"></div>
+    <button class="catpick-btn ${sel?'':'empty'}" data-act="cat-open">${sel?ico(sel):'<span class="ico plus">＋</span>'}<span class="grow"><small>หมวดหมู่</small><b id="e-catname">${sel?esc(sel.name):'แตะเพื่อเลือกหมวดหมู่'}</b></span><span class="chev">›</span></button>
+    <label id="bankrow" ${sel&&sel.dep?'':'hidden'}>ธนาคาร<select id="e-bank"><option value="">— เลือกธนาคาร —</option>${BANKS.map(b=>`<option ${b===(s.bank||'')?'selected':''}>${b}</option>`).join('')}</select></label>
     <div class="grid2">
       <label>วันที่<select id="e-day">${Array.from({length:dim},(_,i)=>`<option value="${pad(i+1)}" ${pad(i+1)===s.d?'selected':''}>${dayLabel(pad(i+1),true)}</option>`).join('')}</select></label>
-      <label>บันทึกช่วยจำ<input id="e-note" value="${esc(s.note||'')}" maxlength="80" placeholder="${t==='in'?'เช่น เวรนอก 2 เวร':'เช่น ข้าวหลังลงเวรดึก'}"></label>
+      <label>หมายเหตุ<input id="e-note" value="${esc(s.note||'')}" maxlength="80" placeholder="${t==='in'?'เช่น เวรนอก 2 เวร':'เช่น ข้าวหลังลงเวรดึก'}"></label>
     </div>
     ${t==='in'?`<div class="grid2"><label>ประเภทเงินได้ทางภาษี<select id="e-tax">${Object.entries(TAXTYPES).map(([k,l])=>`<option value="${k}" ${k===(s.tax||'none')?'selected':''}>${l}</option>`).join('')}</select></label>
       <label>ภาษีหัก ณ ที่จ่าย<input id="e-wh" class="num" inputmode="decimal" value="${esc(s.wh||'')}" placeholder="0"></label></div>`:''}
-    <p id="cathint" class="small muted" style="margin:0;text-align:center" ${num(s.amt)>0?'hidden':''}>ใส่จำนวนเงิน แล้วเลือกหมวด</p>
-    <div id="catsec" class="catsec" ${num(s.amt)>0?'':'hidden'}>
-    <button class="catpick-btn ${sel?'':'empty'}" data-act="cat-open">${sel?ico(sel):'<span class="ico plus">＋</span>'}<span class="grow"><small>หมวดหมู่</small><b id="e-catname">${sel?esc(sel.name):'แตะเพื่อเลือกหมวดหมู่'}</b></span><span class="chev">›</span></button>
-    <label id="bankrow" ${sel&&sel.dep?'':'hidden'}>ธนาคาร<select id="e-bank"><option value="">— เลือกธนาคาร —</option>${BANKS.map(b=>`<option ${b===(s.bank||'')?'selected':''}>${b}</option>`).join('')}</select></label>
-    <div class="${inline?'row':'sheet-foot'}">${s.id?'<button class="btn danger" data-act="esheet-del">ลบ</button>':''}<button class="btn primary big grow" data-act="save-entry">บันทึก${s.id?'':(t==='in'?'รายรับ':'รายจ่าย')}</button></div></div>`;
+    <div class="${inline?'row save-row':'sheet-foot'}">${s.id?'<button class="btn danger" data-act="esheet-del">ลบ</button>':''}<button class="btn primary big grow" data-act="save-entry">💾 บันทึก${s.id?'':(t==='in'?'รายรับ':'รายจ่าย')}</button></div>`;
 }
 function entrySheet(){
   return `<div class="scrim" data-act="esheet-close"><div class="sheet tall" role="dialog" aria-modal="true" aria-label="บันทึกรายการ" data-stop="1">${entryForm(false)}</div></div>`;
@@ -1810,7 +1850,14 @@ function vSlip(){
   const key=mkey(UI.y,UI.m);const c=monthCalc(key);const mo=c.mo;
   const yr=[];for(let m=1;m<=12;m++)yr.push(monthCalc(mkey(UI.y,m)));
   const rate=c.net>0?Math.round((c.left+c.byGroup.save)/c.net*100):0;
-  return `${monthSwitch()}${donutCard(c)}
+  const pc=monthCalc(keyShift(key,1));const six=[5,4,3,2,1,0].map(n=>monthCalc(keyShift(key,n)));
+  return `${monthSwitch()}
+  <section class="card ov"><div class="row" style="justify-content:space-between"><h2 class="h-ico" style="margin:0"><img src="${IMG.calendar}" alt="">${TH_M[UI.m-1]} ${UI.y+543}</h2><span class="small muted">ภาพรวมเดือนนี้</span></div>
+    <div class="ovg"><div class="ovt in"><span>💰 รายรับ</span><b class="num">฿${fmt(c.gross)}</b>${chgTag(c.gross,pc.gross,true)}</div>
+      <div class="ovt ex"><span>💸 รายจ่าย</span><b class="num">฿${fmt(c.exp)}</b>${chgTag(c.exp,pc.exp,false)}</div>
+      <div class="ovt lf"><span>💜 คงเหลือ</span><b class="num">฿${fmt(c.left)}</b>${chgTag(c.left,pc.left,true)}</div></div></section>
+  <section class="card"><div class="row" style="justify-content:space-between"><h3 class="h-ico" style="margin:0"><img src="${IMG.stats}" alt="">รายรับ-รายจ่าย 6 เดือน</h3><span class="small muted"><span class="chip" style="--c:var(--mint)">รายรับ</span> <span class="chip" style="--c:var(--pink-ink)">รายจ่าย</span></span></div>${sixChart(six)}</section>
+  ${donutCard(c)}
   <section class="card">
     <div class="h-ico"><img src="${IMG.slip}" alt=""><div><div class="eyebrow">สลิปประมาณการ${c.lagged?' · ยอดที่ได้รับจริงเดือนนี้':''}</div><h2>รายได้เดือน${TH_M[UI.m-1]} ${UI.y+543}</h2></div></div>
     <div class="lines">
@@ -1850,6 +1897,14 @@ function vSlip(){
     <p class="small muted" style="margin:0">กราฟแสดงเฉพาะเดือนที่มีการลงเวรหรือบันทึกรายการ</p>
   </section>${encourage(c)}`;
 }
+function sixChart(rows){const W=340,H=150,L=34,B=22,T=10;const vals=rows.map(r=>{const act=r.hasShift||r.mo.entries.length||r.salary;return{i:act?r.gross:0,e:r.exp,m:r.m}});
+  const mx=Math.max(1,...vals.map(v=>Math.max(v.i,v.e)));const step=niceStep(mx/3);const top=Math.ceil(mx/step)*step;const y=v=>T+(H-T-B)*(1-v/top);const bw=(W-L)/6;let g='';
+  for(let t=0;t<=top+1e-6;t+=step){g+=`<line class="gl" x1="${L}" x2="${W}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-4}" y="${y(t)+3}" text-anchor="end">${t>=1000?(t/1000)+'k':t}</text>`}
+  vals.forEach((v,i)=>{const x=L+i*bw;const w=Math.min(16,(bw-14)/2);const cx=x+bw/2;
+    if(v.i)g+=`<rect class="bi" x="${cx-w-1}" y="${y(v.i)}" width="${w}" height="${Math.max(0,H-B-y(v.i))}" rx="3"/>`;
+    if(v.e)g+=`<rect class="be" x="${cx+1}" y="${y(v.e)}" width="${w}" height="${Math.max(0,H-B-y(v.e))}" rx="3"/>`;
+    g+=`<text x="${cx}" y="${H-6}" text-anchor="middle" class="${i===5?'curm':''}">${TH_MS[v.m-1]}</text>`});
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="รายรับรายจ่าย 6 เดือนล่าสุด">${g}</svg>`}
 function yearChart(yr){
   const W=340,H=170,L=34,B=22,T=8;const vals=yr.map(r=>{const act=r.hasShift||r.mo.entries.length;return{i:act?r.gross:0,e:r.exp}});
   const mx=Math.max(1,...vals.map(v=>Math.max(v.i,v.e)));const step=niceStep(mx/3);const top=Math.ceil(mx/step)*step;
@@ -1866,6 +1921,7 @@ function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(x||1)));const f=x
 
 /* ---------- tax ---------- */
 const TAX_STEPS=[['inc','ประมาณการรายได้ทั้งปี','income'],['type','แยกประเภทเงินได้','summary'],['wh','ภาษีหัก ณ ที่จ่าย','slip'],['ded','ค่าลดหย่อนภาษี','tax'],['due','ภาษีที่ต้องชำระ / ขอคืน','money'],['calc','วิธีคำนวณ','stats']];
+function okBtn(k,l){const on=!!taxP(UI.ty)[k];return `<button class="okbtn ${on?'on':''}" data-act="tax-ok" data-k="${k}" aria-pressed="${on}">${on?'✓ '+l:'○ แตะเมื่อ'+l.replace('แล้ว','').replace('ครบ','ครบ')}</button>`}
 function taxRuleBox(y){const R=taxRule(y);return `<details class="taxnote"><summary><span>⚠️ ผลลัพธ์เป็น<b>การประมาณการ</b> · ใช้หลักเกณฑ์ปีภาษี ${R.y+543}${R.exact?'':` (ยังไม่มีเกณฑ์ปี ${y+543} จึงใช้ปีล่าสุด)`}</span><span class="small">ดูเกณฑ์ ▾</span></summary>
   <ul>${['ส่วนตัว 60,000 · คู่สมรสไม่มีเงินได้ 60,000 · บุตร 30,000 (คนที่ 2 เกิดปี 2561 ขึ้นไป 60,000)','หักค่าใช้จ่าย 40(1)+40(2) 50% ไม่เกิน 100,000 · 40(8) เหมา 60%',`ประกันสังคมลดหย่อนได้ไม่เกิน ${fmt(R.sso)} (เพดานค่าจ้าง ${fmt(R.ssoWage)})`,'ประกันชีวิต+สุขภาพ ไม่เกิน 100,000 · RMF/บำนาญ/กองทุนสำรองฯ/กอช. รวมไม่เกิน 500,000',...R.notes].map(x=>`<li>${x}</li>`).join('')}</ul>
   <p class="small muted" style="margin:0">ก่อนยื่นจริง ตรวจสอบกับกรมสรรพากร (rd.go.th) อีกครั้ง หลักเกณฑ์อาจเปลี่ยนตามประกาศของปีนั้น</p></details>`}
@@ -1900,12 +1956,12 @@ function vTax(){
     <div class="whgrid">${Array.from({length:12},(_,i)=>{const k=mkey(y,i+1);const mo=getM(k,false);const v=mo.whSet?num(mo.withheld):(num(mo.withheld)||'');const fut=new Date(y,i,1)>today;
       return `<label class="${fut?'fut':''}"><span>${TH_MS[i]}</span><input class="num" data-whm="${k}" inputmode="decimal" value="${v===''?'':v}" placeholder="${num(S.whDefault)?fmt(S.whDefault):'0'}"><small class="muted" id="whe-${k}"></small></label>`}).join('')}</div>
     <label>หักจากที่อื่นตาม 50 ทวิ (ทั้งปี) เช่น เวรนอก ค่าวิทยากร<input class="num" data-tax="whx" inputmode="decimal" value="${T.whx||''}" placeholder="0"></label>
-    <div class="line total"><span class="l">หักไว้แล้วทั้งปี</span><span class="v num" id="wh-tot">–</span></div></section>`}
+    <div class="line total"><span class="l">หักไว้แล้วทั้งปี</span><span class="v num" id="wh-tot">–</span></div>${okBtn('okWh','บันทึกภาษีหัก ณ ที่จ่ายครบแล้ว')}</section>`}
   if(sec==='ded'||sec==='fam'||sec==='inv')body=back+`<section class="card">${head('ded','ค่าลดหย่อนภาษี')}<div class="line total"><span class="l">ลดหย่อนรวม (ใช้ได้จริง)</span><span class="v num" id="ded-tot">–</span></div>
     <h3 class="h3 h-ico" style="margin:6px 0 0"><img src="${IMG.profile}" alt="">ครอบครัว</h3>${fam}
     <h3 class="h3 h-ico" style="margin:10px 0 0"><img src="${IMG.tax}" alt="">ประกัน กองทุน และอื่นๆ</h3><p class="small muted" style="margin:0">ใส่ยอดที่ยังไม่ได้บันทึกในหน้าการเงิน (ที่บันทึกแล้วบวกให้เอง)</p>${inv}
     <p class="small muted" style="margin:0">ประกันสังคม กองทุนสำรองเลี้ยงชีพ และค่าใช้จ่าย 50% คิดให้อัตโนมัติ</p>
-    <button class="btn" style="width:100%" data-act="taxsec" data-v="plan">💡 ดูว่าลดหย่อนอะไรเพิ่มแล้วคุ้มที่สุด</button></section>`;
+    <button class="btn" style="width:100%" data-act="taxsec" data-v="plan">💡 ดูว่าลดหย่อนอะไรเพิ่มแล้วคุ้มที่สุด</button>${okBtn('okDed','ตรวจค่าลดหย่อนแล้ว')}</section>`;
   return `<div class="switcher"><button class="icon-btn" data-act="yprev" aria-label="ปีก่อน">‹</button><strong>ปีภาษี ${y+543}</strong><button class="icon-btn" data-act="ynext" aria-label="ปีถัดไป">›</button></div>
   ${taxRuleBox(y)}
   <div id="taxResults" class="wrap"></div>
@@ -1938,14 +1994,20 @@ function renderTaxResults(){
   const fill=(id,v)=>{const e=$('#'+id);if(e)e.textContent=v};
   fill('ty-401','฿'+fmt(r.inc401));fill('ty-402','฿'+fmt(r.inc402));fill('ty-408','฿'+fmt(r.inc408));fill('ty-ex','฿'+fmt(r.exempt));fill('wh-tot','฿'+fmt(r.wh));fill('ded-tot','฿'+fmt(r.dedSum));
   for(const mr of r.mrows){const e=$('#whe-'+mr.key);if(e)e.textContent=mr.whE?`+ จากรายรับ ฿${fmt(mr.whE)}`:''}
+  const tdy=new Date();const ref=`${tdy.getDate()} ${TH_MS[tdy.getMonth()]} ${tdy.getFullYear()+543}`;const TP=taxP(y);
+  const autoInc=r.mrows.some(x=>x.real)||r.mons.some(c=>c.mo.entries.some(e=>e.t==='in'));
+  const prep=[['inc','บันทึกรายได้',!!TP.okInc||autoInc],['ded','ตรวจค่าลดหย่อน',!!TP.okDed],['wh','บันทึกภาษีหัก ณ ที่จ่าย',!!TP.okWh||r.whM>0]];const pdone=prep.filter(x=>x[2]).length;
   box.innerHTML=`
-  <section class="card">
-    <div class="hero"><div class="h-ico"><img src="${IMG.tax}" alt=""><div class="eyebrow">ภาษีทั้งปี (ประมาณการ)</div></div><div class="big">฿${fmt(r.tax)}</div>
-      <div class="row">${due>0?`<span class="pill bad">ต้องจ่ายเพิ่มตอนยื่น ฿${fmt(due)}</span>`:r.tax>0||r.wh>0?`<span class="pill good">${due<0?'ได้คืนประมาณ ฿'+fmt(-due):'หักไว้พอดีแล้ว'}</span>`:`<span class="pill good">ยังไม่ถึงเกณฑ์เสียภาษี</span>`}
-      <span class="pill neutral">หักไว้แล้ว ฿${fmt(r.wh)}</span><span class="pill neutral">ขั้นภาษีสูงสุด ${Math.round(r.marg*100)}%</span></div></div>
+  <section class="card taxhero">
+    <div class="th-top"><div><div class="eyebrow">🧾 ภาษีประมาณการปี ${y+543}</div><div class="big">฿${fmt(r.tax)}</div></div><span class="pill neutral">ขั้นสูงสุด ${Math.round(r.marg*100)}%</span></div>
+    <div class="th-tiles"><button data-act="taxsec" data-v="wh"><span>หักไว้แล้ว</span><b class="num">฿${fmt(r.wh)}</b></button>
+      <button class="${due>0?'bad':'good'}" data-act="taxsec" data-v="due"><span>${due>0?'คาดว่าต้องชำระเพิ่ม':due<0?'คาดว่าได้คืน':r.tax>0?'หักไว้พอดีแล้ว':'ยังไม่ถึงเกณฑ์'}</span><b class="num">฿${fmt(Math.abs(due))}</b></button>
+      <button data-act="taxsec" data-v="ded"><span>ค่าลดหย่อน</span><b class="num">฿${fmt(r.dedSum)}</b></button></div>
+    <button class="th-why" data-act="taxsec" data-v="calc">ⓘ ตัวเลขนี้มาจากไหน? ดูวิธีคำนวณ ›</button>
+    <div class="prep"><div class="row" style="justify-content:space-between"><b>ความคืบหน้าการเตรียมภาษี</b><span class="small num">${pdone}/3</span></div><div class="pbar"><i style="width:${pdone/3*100}%"></i></div>
+      <div class="psteps">${prep.map(([k,l,ok])=>`<button class="${ok?'ok':''}" data-act="taxsec" data-v="${k}"><span>${ok?'✓':'○'}</span>${l}</button>`).join('')}</div></div>
     ${noData?'<p class="small muted" style="margin:0">ยังไม่มีเวรปีนี้ · คิดจากเงินเดือนอย่างเดียว</p>':''}
-    ${r.proj?`<p class="small muted" style="margin:0">ประมาณค่าเวรอีก ${r.proj} เดือนจากค่าเฉลี่ย ${r.shiftMonths} เดือนที่ลงเวรแล้ว</p>`:''}
-    ${due>0&&remain>0?`<div class="banner"><span>ควรกันเงินไว้จ่ายภาษีเดือนละประมาณ <b class="num">฿${fmt(due/remain)}</b> อีก ${remain} เดือน</span></div>`:''}
+    ${due>0&&remain>0?`<div class="banner"><span>💰 กันเงินไว้เดือนละ <b class="num">฿${fmt(Math.ceil(due/remain))}</b> × ${remain} เดือน (${TH_MS[12-remain]}–ธ.ค. ${y+543})<br><small class="muted">คำนวณ ณ ${ref} · ตัวเลขเปลี่ยนตามเวรและรายได้ที่บันทึก</small></span></div>`:''}
   </section>`;
   const sub=$('#taxSub');if(!sub)return;
   const back='<div class="setback"><button class="btn sm" data-act="taxsec" data-v="">‹ ภาษีทั้งหมด</button></div>';
@@ -1960,7 +2022,7 @@ function renderTaxResults(){
     ${r.xi1||r.xi2?`<tr><td>อื่นๆ</td><td class="num">${fmt(r.xi1)}</td><td class="num">${fmt(r.xi2)}</td></tr>`:''}
     ${r.inc408?`<tr><td>40(8)</td><td colspan="2" class="num">${fmt(r.inc408)}</td></tr>`:''}
     <tr class="cur on"><td>รวม</td><td class="num">${fmt(r.inc401)}</td><td class="num">${fmt(r.inc402)}</td></tr></tbody></table></div>${r.proj?'<p class="small muted" style="margin:0">* ประมาณจากค่าเฉลี่ยค่าเวร</p>':''}
-    <p class="small muted" style="margin:0">คิดตามเดือนที่ได้รับเงินจริง (ตั้งรอบจ่ายย้อนเดือนได้ที่ ตั้งค่า › เงินเดือน)</p></section>`;return}
+    <p class="small muted" style="margin:0">คิดตามเดือนที่ได้รับเงินจริง (ตั้งรอบจ่ายย้อนเดือนได้ที่ ตั้งค่า › เงินเดือน)</p>${okBtn('okInc','ตรวจรายได้แล้ว')}</section>`;return}
   if(UI.taxSec==='due'){sub.innerHTML=back+`<section class="card"><h2 class="h-ico"><span class="stepno">5</span>ภาษีที่ต้องชำระ / ขอคืน</h2>
     <div class="lines"><div class="line"><span class="l">ภาษีที่ต้องเสียทั้งปี</span><span class="v num">฿${fmt(r.tax)}</span></div>
       <div class="line"><span class="l">หัก ณ ที่จ่ายไว้แล้ว</span><span class="v num">−฿${fmt(r.wh)}</span></div></div>
@@ -1995,7 +2057,8 @@ function renderTaxResults(){
     wh:`หักไว้แล้ว ฿${fmt(r.wh)}`,ded:`ลดหย่อน ฿${fmt(r.dedSum)}${near?` · 💡 ${near.p.l.replace('กองทุน ','')} อีก ฿${fmt(near.a)} ประหยัด ฿${fmt(near.save)}`:''}`,
     due:due>0?`ต้องชำระเพิ่ม ฿${fmt(due)}`:due<0?`ขอคืนได้ ฿${fmt(-due)}`:'ไม่มียอดต้องชำระ',calc:`เงินได้สุทธิ ฿${fmt(r.net)} · ขั้นสูงสุด ${Math.round(r.marg*100)}%`};
   sub.innerHTML=`<div class="sumbars">${TAX_STEPS.map(([k,t,ic],i)=>`<button class="sumbar" data-act="taxsec" data-v="${k}"><span class="stepno">${i+1}</span><span class="grow"><b>${t}</b><small>${esc(desc[k])}</small></span><span class="chev">›</span></button>`).join('')}
-    <button class="sumbar" data-act="taxsec" data-v="plan"><img src="${IMG.chart}" alt=""><span class="grow"><b>วางแผนลดหย่อน</b><small>${esc(r.tax>0&&plans.length?`ลดภาษีได้สูงสุด ฿${fmt(plans[0].save)} จาก${plans[0].l}`:'ดูทางเลือกลดหย่อน')}</small></span><span class="chev">›</span></button></div>`;
+    <button class="sumbar" data-act="taxsec" data-v="plan"><img src="${IMG.chart}" alt=""><span class="grow"><b>วางแผนลดหย่อน</b><small>${esc(r.tax>0&&plans.length?`ลดภาษีได้สูงสุด ฿${fmt(plans[0].save)} จาก${plans[0].l}`:'ดูทางเลือกลดหย่อน')}</small></span><span class="chev">›</span></button></div>
+    <section class="card docs"><b>📁 เอกสารที่ควรเก็บไว้ยื่นภาษี</b><div class="dgrid"><div><span>🧾</span>หนังสือรับรองการหักภาษี ณ ที่จ่าย (50 ทวิ)</div><div><span>📄</span>สลิปเงินเดือน / หนังสือรับรองเงินได้</div><div><span>🗂️</span>ใบเสร็จค่าลดหย่อน ประกัน กองทุน บริจาค</div></div></section>`;
 }
 
 /* ---------- settings ---------- */
@@ -2136,10 +2199,11 @@ document.addEventListener('click',async ev=>{
     case 'mnext':UI.m++;if(UI.m>12){UI.m=1;UI.y++}render();break;
     case 'yprev':UI.ty--;render();break;
     case 'ynext':UI.ty++;render();break;
+    case 'qmore':UI.qMore=!UI.qMore;render();break;
     case 'paint':UI.paint=(UI.paint===b.dataset.id)?null:(b.dataset.id||null);render();break;
     case 'day':{const d=b.dataset.d;
       if(!UI.paint){UI.sheet=d;UI.lastSet=null;renderSheet();break}
-      if(UI.paint==='__x'){const mo=getM(key,true);delete mo.shifts[d];touch(key)}else toggleShift(d,UI.paint);
+      if(UI.paint==='__x'){const mo=getM(key,true);delete mo.shifts[d];touch(key)}else{const [pid,o]=UI.paint.split('@');paintSet(d,pid,o==='ot')}
       render();break}
     case 'toggle-shift':toggleShift(UI.sheet,b.dataset.id);render();break;
     case 'toggle-hol':{const mo=getM(key,true);if(b.checked)mo.hol[UI.sheet]=true;else delete mo.hol[UI.sheet];touch(key);render();break}
@@ -2188,6 +2252,7 @@ document.addEventListener('click',async ev=>{
       if(arr.length)mo.todos[d]=arr;else delete mo.todos[d];touch(k);render();break}
     case 'mview':UI.mview=b.dataset.v;render();break;
     case 'dsheet':UI.dsheet=b.dataset.v;renderSheet();break;
+    case 'tax-ok':{const k=b.dataset.k;setTax(UI.ty,k,!taxP(UI.ty)[k]);render();break}
     case 'taxsec':UI.taxSec=b.dataset.v||null;render();window.scrollTo(0,0);break;
     case 'setsec':UI.setSec=b.dataset.v||null;UI.resetAsk=false;render();window.scrollTo(0,0);break;
     case 'deco-open':UI.deco=true;UI.sheet=null;UI.paint=null;render();break;
@@ -2249,6 +2314,7 @@ document.addEventListener('click',async ev=>{
         if(cb&&ce0<=cb&&ce1>cb)bn=`บันทึกแล้ว · ${cn} เกินงบ ฿${fmt(ce1-cb)}`;else if(cb&&ce0<cb*.8&&ce1>=cb*.8)bn=`บันทึกแล้ว · ${cn} ใช้ไป ${Math.round(ce1/cb*100)}% ของงบ`;
         else if(bdg&&exp0<=bdg&&e1>bdg)bn='บันทึกแล้ว · ใช้เกินงบเดือนนี้แล้วนะคะ';else if(bdg&&exp0<bdg*.8&&e1>=bdg*.8&&e1<=bdg)bn='บันทึกแล้ว · ใช้ไปแล้ว 80% ของงบเดือนนี้';}
       toast(bn||(s.id?'แก้ไขรายการแล้ว':(s.t==='in'?'บันทึกรายรับแล้ว':'บันทึกรายจ่ายแล้ว')));break}
+    case 'del-entry':{const mo=getM(key,true);const i=mo.entries.findIndex(e=>e.id===b.dataset.id);if(i<0)break;UI.lastUndo={key,data:clone(mo)};mo.entries.splice(i,1);touch(key);render();toast('ลบรายการแล้ว',true);break}
     case 'esheet-del':{const mo=getM(key,true);const i=mo.entries.findIndex(e=>e.id===UI.esheet.id);UI.esheet=null;if(i<0){render();break}
       UI.lastUndo={key,data:clone(mo)};mo.entries.splice(i,1);touch(key);render();toast('ลบรายการแล้ว',true);break}
     case 'del-cat':{const t=b.dataset.t,id=b.dataset.id;const ci=S.catsCustom.findIndex(c=>c.t===t&&c.id===id);
