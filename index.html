@@ -713,6 +713,15 @@ html.fitpage #view .cal{grid-template-rows:auto repeat(var(--rows,5),minmax(40px
 .catpick-btn{padding:6px 10px!important;gap:8px!important;border-radius:12px!important;border-width:1px!important}.catpick-btn .ico{width:30px!important;height:30px!important;font-size:15px}.catpick-btn .ico svg{width:16px;height:16px}.catpick-btn .grow{flex-direction:row!important;align-items:baseline;gap:6px}.catpick-btn small{font-size:12px}.catpick-btn b{font-size:13.5px;font-weight:600}
 .taxnote summary{align-items:center}.tn-ic{width:30px;height:30px;border-radius:9px;flex:none}.taxnote summary .grow{min-width:0}.taxnote{margin:4px 0 0!important}
 .tn-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.taxnote summary>.small{white-space:nowrap;flex:none}.tn-foot{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:6px 2px 0;font-size:12px;text-align:center}
+
+.taxpick{background:var(--field);border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.tp-h{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}.tp-h img{width:24px;height:24px;border-radius:7px}
+.tp-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.tp-opts button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:7px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--ink);cursor:pointer;min-width:0}
+.tp-opts b{font-family:var(--f-num);font-size:14px;font-weight:600}.tp-opts small{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tp-opts button.on{border-color:var(--primary);background:var(--soft);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 25%,transparent)}.tp-opts button.on b{color:var(--accent)}
+.tp-wh{display:flex!important;flex-direction:row!important;align-items:center;justify-content:space-between;gap:8px;font-size:13px}.tp-in{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:0 8px;width:44%}.tp-in span{color:var(--muted)}.tp-in input{border:0!important;background:none!important;padding:7px 0!important;min-width:0;width:100%;box-shadow:none!important}
+.tp-in input:focus,.tp-in input:focus-visible{outline:none!important;box-shadow:none!important;border:0!important}.tp-in:focus-within{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 30%,transparent)}
 </style>
 
 <div class="wrap">
@@ -1840,8 +1849,9 @@ function entryForm(inline){
       <label>วันที่<select id="e-day">${Array.from({length:dim},(_,i)=>`<option value="${pad(i+1)}" ${pad(i+1)===s.d?'selected':''}>${dayLabel(pad(i+1),true)}</option>`).join('')}</select></label>
       <label>หมายเหตุ<input id="e-note" value="${esc(s.note||'')}" maxlength="80" placeholder="${t==='in'?'เช่น เวรนอก 2 เวร':'เช่น ข้าวหลังลงเวรดึก'}"></label>
     </div>
-    ${t==='in'?`<div class="grid2"><label>ประเภทเงินได้ทางภาษี<select id="e-tax">${Object.entries(TAXTYPES).map(([k,l])=>`<option value="${k}" ${k===(s.tax||'none')?'selected':''}>${l}</option>`).join('')}</select></label>
-      <label>ภาษีหัก ณ ที่จ่าย<input id="e-wh" class="num" inputmode="decimal" value="${esc(s.wh||'')}" placeholder="0"></label></div>`:''}
+    ${t==='in'?`<div class="taxpick"><div class="tp-h"><img src="${IMG.tax}" alt="">ประเภทเงินได้ทางภาษี</div><input type="hidden" id="e-tax" value="${esc(s.tax||'none')}">
+      <div class="tp-opts" role="radiogroup">${[['401','40(1)','เงินเดือน ค่าเวร'],['402','40(2)','เวรนอก ค่าจ้าง'],['none','ไม่คิดภาษี','เงินคืน ของขวัญ']].map(([k,a,b])=>`<button type="button" role="radio" aria-checked="${k===(s.tax||'none')}" class="${k===(s.tax||'none')?'on':''}" data-act="es-tax" data-v="${k}"><b>${a}</b><small>${b}</small></button>`).join('')}</div>
+      ${(s.tax||'none')==='none'?'':`<label class="tp-wh"><span>ภาษีหัก ณ ที่จ่าย <small class="muted">(ถ้ามี)</small></span><span class="tp-in"><span>฿</span><input id="e-wh" class="num" inputmode="decimal" value="${esc(s.wh||'')}" placeholder="0"></span></label>`}</div>`:''}
     <div class="${inline?'row save-row':'sheet-foot'}">${s.id?'<button class="btn danger" data-act="esheet-del">ลบ</button>':''}<button class="btn primary big grow save-btn" data-act="save-entry">${SAVE_ICO}บันทึก${s.id?'':(t==='in'?'รายรับ':'รายจ่าย')}</button></div>`;
 }
 function entrySheet(){
@@ -2336,6 +2346,7 @@ document.addEventListener('click',async ev=>{
     case 'edit-entry':{const e=getM(key,false).entries.find(x=>x.id===b.dataset.id);if(!e)break;
       UI.esheet={id:e.id,bank:e.bank||'',t:e.t,d:e.d,cat:e.cat,amt:String(e.amt),note:e.note||'',tax:e.tax||'none',wh:num(e.wh)?String(e.wh):'',q:'',adding:null};render();break}
     case 'esheet-close':if(UI.esheet&&UI.esheet.pick){UI.esheet.pick=false;renderPicker();break}UI.esheet=null;render();break;
+    case 'es-tax':captureSheet();UI.esheet.tax=b.dataset.v;if(b.dataset.v==='none')UI.esheet.wh='';refreshForm();break;
     case 'es-type':captureSheet();UI.esheet.t=b.dataset.v;UI.esheet.cat=null;UI.esheet.pick=false;UI.esheet.adding=null;UI.esheet.q='';UI.esheet.tax=b.dataset.v==='in'?'401':'';refreshForm();break;
     case 'cat-open':captureSheet();UI.esheet.pick=true;UI.esheet.pickT=Date.now();UI.esheet.pi=null;UI.esheet.q='';renderPicker();break;
     case 'cat-close':if(Date.now()-(UI.esheet.pickT||0)<450)break;UI.esheet.pick=false;UI.esheet.adding=null;renderPicker();break;
