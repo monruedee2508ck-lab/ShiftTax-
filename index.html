@@ -709,6 +709,9 @@ html.fitpage #view .cal .day{min-height:0!important;height:auto;overflow:hidden}
 html.fitpage #view .cal{grid-template-rows:auto repeat(var(--rows,5),minmax(40px,1fr))!important}
 .day{padding:3px 2px!important;gap:1px!important}.day .d{font-size:11.5px;line-height:1.1}
 .csl{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1}.csl::-webkit-scrollbar{display:none}.cstrip .cs-h{white-space:nowrap}.rib{white-space:nowrap;flex:none}.ricons{flex:none}.h-ico{min-width:0}
+
+.catpick-btn{padding:6px 10px!important;gap:8px!important;border-radius:12px!important;border-width:1px!important}.catpick-btn .ico{width:30px!important;height:30px!important;font-size:15px}.catpick-btn .ico svg{width:16px;height:16px}.catpick-btn .grow{flex-direction:row!important;align-items:baseline;gap:6px}.catpick-btn small{font-size:12px}.catpick-btn b{font-size:13.5px;font-weight:600}
+.taxnote summary{align-items:center}.tn-ic{width:30px;height:30px;border-radius:9px;flex:none}.taxnote summary .grow{min-width:0}.taxnote{margin:4px 0 0!important}
 </style>
 
 <div class="wrap">
@@ -1959,10 +1962,10 @@ function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(x||1)));const f=x
 /* ---------- tax ---------- */
 const TAX_ICO={inc:'income',type:'summary',wh:'slip',ded:'tax',due:'expense',calc:'report',plan:'stats'};
 const SAVE_ICO='<svg class="save-ico" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16.5" r="12.5" fill="#FFD86B" stroke="#E2A93B" stroke-width="2"/><circle cx="16" cy="16.5" r="8.6" fill="none" stroke="#F4C44E" stroke-width="1.4"/><circle cx="12.4" cy="15" r="1.5" fill="#5B4636"/><circle cx="19.6" cy="15" r="1.5" fill="#5B4636"/><path d="M13.2 18.6q2.8 2.4 5.6 0" stroke="#5B4636" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="10" cy="18.3" r="1.7" fill="#FF9F9F" opacity=".75"/><circle cx="22" cy="18.3" r="1.7" fill="#FF9F9F" opacity=".75"/><path d="M26.5 4.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="#fff"/></svg>';
-function taxRow(k,i,title,desc){return `<button class="trow" data-act="taxsec" data-v="${k}"><span class="tic"><img src="${IMG[TAX_ICO[k]]}" alt="">${i?`<i class="tno">${i}</i>`:''}</span><span class="grow"><b>${title}</b><small>${esc(desc)}</small></span><span class="chev">›</span></button>`}
+function taxRow(k,i,title,desc){return `<button class="trow" data-act="taxsec" data-v="${k}"><span class="tic"><img src="${IMG[TAX_ICO[k]]}" alt=""></span><span class="grow"><b>${title}</b><small>${esc(desc)}</small></span><span class="chev">›</span></button>`}
 const TAX_STEPS=[['inc','ประมาณการรายได้ทั้งปี','income'],['type','แยกประเภทเงินได้','summary'],['wh','ภาษีหัก ณ ที่จ่าย','slip'],['ded','ค่าลดหย่อนภาษี','tax'],['due','ชำระเพิ่ม / ขอคืนภาษี','money'],['calc','วิธีคำนวณ','stats']];
 function okBtn(k,l){const on=!!taxP(UI.ty)[k];return `<button class="okbtn ${on?'on':''}" data-act="tax-ok" data-k="${k}" aria-pressed="${on}">${on?'✓ '+l:'○ แตะเมื่อ'+l.replace('แล้ว','').replace('ครบ','ครบ')}</button>`}
-function taxRuleBox(y){const R=taxRule(y);return `<details class="taxnote"><summary><span>⚠️ ผลลัพธ์เป็น<b>การประมาณการ</b> · ใช้หลักเกณฑ์ปีภาษี ${R.y+543}${R.exact?'':` (ยังไม่มีเกณฑ์ปี ${y+543} จึงใช้ปีล่าสุด)`}</span><span class="small">ดูเกณฑ์ ▾</span></summary>
+function taxRuleBox(y){const R=taxRule(y);return `<details class="taxnote"><summary><img class="tn-ic" src="${IMG.help}" alt=""><span class="grow">ผลลัพธ์เป็น<b>การประมาณการ</b> · ใช้หลักเกณฑ์ปีภาษี ${R.y+543}${R.exact?'':` (ยังไม่มีเกณฑ์ปี ${y+543} จึงใช้ปีล่าสุด)`}</span><span class="small">ดูเกณฑ์ ▾</span></summary>
   <ul>${['ส่วนตัว 60,000 · คู่สมรสไม่มีเงินได้ 60,000 · บุตร 30,000 (คนที่ 2 เกิดปี 2561 ขึ้นไป 60,000)','หักค่าใช้จ่าย 40(1)+40(2) 50% ไม่เกิน 100,000 · 40(8) เหมา 60%',`ประกันสังคมลดหย่อนได้ไม่เกิน ${fmt(R.sso)} (เพดานค่าจ้าง ${fmt(R.ssoWage)})`,'ประกันชีวิต+สุขภาพ ไม่เกิน 100,000 · RMF/บำนาญ/กองทุนสำรองฯ/กอช. รวมไม่เกิน 500,000',...R.notes].map(x=>`<li>${x}</li>`).join('')}</ul>
   <p class="small muted" style="margin:0">ก่อนยื่นจริง ตรวจสอบกับกรมสรรพากร (rd.go.th) อีกครั้ง หลักเกณฑ์อาจเปลี่ยนตามประกาศของปีนั้น</p></details>`}
 function vTax(){
@@ -1977,7 +1980,7 @@ function vTax(){
   const inv=`<div class="grid2">${DEDUCT_FIELDS.map(f=>`<label>${f.label}<input class="num" data-tax="${f.k}" inputmode="decimal" value="${T[f.k]||''}" placeholder="0"><span class="small muted">${f.k==='thaiesg'?`30% ของเงินได้ ไม่เกิน ${fmt(R.esg)}`:f.cap}</span><span class="auto" id="auto-${f.k}"></span></label>`).join('')}</div>`;
   const back='<div class="setback"><button class="btn sm" data-act="taxsec" data-v="">‹ ภาษีทั้งหมด</button></div>';
   const no=k=>TAX_STEPS.findIndex(x=>x[0]===k)+1;
-  const head=(k,t)=>`<h2 class="h-ico thead"><span class="tic"><img src="${IMG[TAX_ICO[k]]}" alt=""><i class="tno">${no(k)}</i></span>${t}</h2>`;
+  const head=(k,t)=>`<h2 class="h-ico thead"><span class="tic"><img src="${IMG[TAX_ICO[k]]}" alt=""></span>${t}</h2>`;
   let body='<div id="taxSub" class="wrap"></div>';
   if(sec==='type')body=back+`<section class="card">${head('type','แยกประเภทเงินได้')}
     <p class="small muted" style="margin:0">แอปแยกให้จากตารางเวรและรายรับที่บันทึก · ตั้งประเภทของเวรแต่ละแบบได้ที่ ตั้งค่า › ประเภทเวร</p>
@@ -2003,9 +2006,9 @@ function vTax(){
     <p class="small muted" style="margin:0">ประกันสังคม กองทุนสำรองเลี้ยงชีพ และค่าใช้จ่าย 50% คิดให้อัตโนมัติ</p>
     <button class="btn" style="width:100%" data-act="taxsec" data-v="plan">💡 ดูว่าลดหย่อนอะไรเพิ่มแล้วคุ้มที่สุด</button>${okBtn('okDed','ตรวจค่าลดหย่อนแล้ว')}</section>`;
   return `<div class="switcher"><button class="icon-btn" data-act="yprev" aria-label="ปีก่อน">‹</button><strong>ปีภาษี ${y+543}</strong><button class="icon-btn" data-act="ynext" aria-label="ปีถัดไป">›</button></div>
-  ${taxRuleBox(y)}
   <div id="taxResults" class="wrap"></div>
   ${body}
+  ${taxRuleBox(y)}
   <p class="small muted">ประมาณการเพื่อวางแผนเท่านั้น ไม่ใช่คำปรึกษาทางภาษี · ก่อนยื่นจริงตรวจสอบกับกรมสรรพากร</p>`;
 }
 function renderTaxResults(){
@@ -2053,7 +2056,7 @@ function renderTaxResults(){
   const form=r.inc402+r.inc408>0?'ภ.ง.ด.90':'ภ.ง.ด.91';const fy=y+544;
   const resLine=due>0?`<div class="res bad"><span>ต้องชำระเพิ่ม</span><b class="num">฿${fmt(due)}</b></div>`:due<0?`<div class="res good"><span>ขอคืนได้ประมาณ</span><b class="num">฿${fmt(-due)}</b></div>`:`<div class="res good"><span>${r.tax>0?'หักไว้พอดีแล้ว':'ไม่ต้องเสียภาษี'}</span><b class="num">฿0</b></div>`;
   if(UI.taxSec==='inc'){const tot1=sum(r.mrows.map(x=>x.i1)),tot2=sum(r.mrows.map(x=>x.i2));const realN=r.mrows.filter(x=>x.real).length;
-    sub.innerHTML=back+`<section class="card"><h2 class="h-ico thead"><span class="tic"><img src="${IMG.income}" alt=""><i class="tno">1</i></span>ประมาณการรายได้ทั้งปี</h2>
+    sub.innerHTML=back+`<section class="card"><h2 class="h-ico thead"><span class="tic"><img src="${IMG.income}" alt=""></span>ประมาณการรายได้ทั้งปี</h2>
     <div class="incsum"><span>รายได้ทั้งปีโดยประมาณ</span><b class="num">฿${fmt(r.total)}</b><small class="muted">ลงเวรแล้ว ${realN} เดือน${r.proj?` · ประมาณอีก ${r.proj} เดือนจากค่าเฉลี่ย`:''}</small></div>
     <label class="inline"><input type="checkbox" data-taxb="project" ${taxP(y).project?'checked':''}> เดือนที่ยังไม่ลงเวร ใช้ค่าเฉลี่ยค่าเวรประมาณให้</label>
     <div class="brk inc"><table><thead><tr><th>เดือน</th><th>40(1)</th><th>40(2)</th></tr></thead><tbody>
@@ -2062,7 +2065,7 @@ function renderTaxResults(){
     ${r.inc408?`<tr><td>40(8)</td><td colspan="2" class="num">${fmt(r.inc408)}</td></tr>`:''}
     <tr class="cur on"><td>รวม</td><td class="num">${fmt(r.inc401)}</td><td class="num">${fmt(r.inc402)}</td></tr></tbody></table></div>${r.proj?'<p class="small muted" style="margin:0">* ประมาณจากค่าเฉลี่ยค่าเวร</p>':''}
     <p class="small muted" style="margin:0">คิดตามเดือนที่ได้รับเงินจริง (ตั้งรอบจ่ายย้อนเดือนได้ที่ ตั้งค่า › เงินเดือน)</p>${okBtn('okInc','ตรวจรายได้แล้ว')}</section>`;return}
-  if(UI.taxSec==='due'){sub.innerHTML=back+`<section class="card"><h2 class="h-ico thead"><span class="tic"><img src="${IMG.expense}" alt=""><i class="tno">5</i></span>ภาษีที่ต้องชำระ / ขอคืน</h2>
+  if(UI.taxSec==='due'){sub.innerHTML=back+`<section class="card"><h2 class="h-ico thead"><span class="tic"><img src="${IMG.expense}" alt=""></span>ภาษีที่ต้องชำระ / ขอคืน</h2>
     <div class="lines"><div class="line"><span class="l">ภาษีที่ต้องเสียทั้งปี</span><span class="v num">฿${fmt(r.tax)}</span></div>
       <div class="line"><span class="l">หัก ณ ที่จ่ายไว้แล้ว</span><span class="v num">−฿${fmt(r.wh)}</span></div></div>
     ${resLine}
@@ -2071,7 +2074,7 @@ function renderTaxResults(){
       <div class="line"><span class="l">ยื่นภายใน</span><span class="v">31 มี.ค. ${fy}</span></div></div><p class="small muted" style="margin:0">ยื่นออนไลน์ (e-Filing) มักได้ถึงต้นเดือน เม.ย.</p>
     <p class="small muted" style="margin:0">${due<0?'ขอคืนภาษีผ่าน e-Filing ของกรมสรรพากร เก็บหนังสือรับรอง 50 ทวิ และหลักฐานลดหย่อนไว้ให้พร้อม':'จ่ายได้ผ่าน e-Filing หรือผ่อนชำระ 3 งวดได้ถ้ายื่นตรงเวลาและภาษีตั้งแต่ 3,000 บาท'}</p></section>`;return}
   if(UI.taxSec==='calc'||UI.taxSec==='brk'){const st=(n,t,body)=>`<div class="cstep"><span class="stepno sm">${n}</span><div><b>${t}</b>${body}</div></div>`;const L=(l,v,neg)=>`<div class="line"><span class="l">${l}</span><span class="v num ${neg?'neg':''}">${neg?'−':''}${fmt(Math.abs(v))}</span></div>`;
-    sub.innerHTML=back+`<section class="card"><h2 class="h-ico thead"><span class="tic"><img src="${IMG.report}" alt=""><i class="tno">6</i></span>วิธีคำนวณ</h2>
+    sub.innerHTML=back+`<section class="card"><h2 class="h-ico thead"><span class="tic"><img src="${IMG.report}" alt=""></span>วิธีคำนวณ</h2>
     ${st(1,'รวมเงินได้พึงประเมิน',`<div class="lines">${L('40(1) เงินเดือน ค่าเวร',r.inc401)}${r.inc402?L('40(2) ค่าตอบแทน เวรนอก',r.inc402):''}${r.inc408?L('40(8) ธุรกิจ ขายของ',r.inc408):''}${L('รวม',r.total)}</div>`)}
     ${st(2,'หักค่าใช้จ่าย',`<div class="lines">${L('40(1)+40(2) หัก 50% ไม่เกิน 100,000',r.e12,1)}${r.inc408?L('40(8) หักเหมา 60%',r.e8,1):''}</div>`)}
     ${st(3,'หักค่าลดหย่อน',`<div class="lines">${dedRows.map(([l,v])=>L(l,v,1)).join('')}</div>`)}
