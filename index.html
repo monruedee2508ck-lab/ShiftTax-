@@ -712,6 +712,7 @@ html.fitpage #view .cal{grid-template-rows:auto repeat(var(--rows,5),minmax(40px
 
 .catpick-btn{padding:6px 10px!important;gap:8px!important;border-radius:12px!important;border-width:1px!important}.catpick-btn .ico{width:30px!important;height:30px!important;font-size:15px}.catpick-btn .ico svg{width:16px;height:16px}.catpick-btn .grow{flex-direction:row!important;align-items:baseline;gap:6px}.catpick-btn small{font-size:12px}.catpick-btn b{font-size:13.5px;font-weight:600}
 .taxnote summary{align-items:center}.tn-ic{width:30px;height:30px;border-radius:9px;flex:none}.taxnote summary .grow{min-width:0}.taxnote{margin:4px 0 0!important}
+.tn-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.taxnote summary>.small{white-space:nowrap;flex:none}.tn-foot{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:6px 2px 0;font-size:12px;text-align:center}
 </style>
 
 <div class="wrap">
@@ -1965,8 +1966,8 @@ const SAVE_ICO='<svg class="save-ico" viewBox="0 0 32 32" aria-hidden="true"><ci
 function taxRow(k,i,title,desc){return `<button class="trow" data-act="taxsec" data-v="${k}"><span class="tic"><img src="${IMG[TAX_ICO[k]]}" alt=""></span><span class="grow"><b>${title}</b><small>${esc(desc)}</small></span><span class="chev">›</span></button>`}
 const TAX_STEPS=[['inc','ประมาณการรายได้ทั้งปี','income'],['type','แยกประเภทเงินได้','summary'],['wh','ภาษีหัก ณ ที่จ่าย','slip'],['ded','ค่าลดหย่อนภาษี','tax'],['due','ชำระเพิ่ม / ขอคืนภาษี','money'],['calc','วิธีคำนวณ','stats']];
 function okBtn(k,l){const on=!!taxP(UI.ty)[k];return `<button class="okbtn ${on?'on':''}" data-act="tax-ok" data-k="${k}" aria-pressed="${on}">${on?'✓ '+l:'○ แตะเมื่อ'+l.replace('แล้ว','').replace('ครบ','ครบ')}</button>`}
-function taxRuleBox(y){const R=taxRule(y);return `<details class="taxnote"><summary><img class="tn-ic" src="${IMG.help}" alt=""><span class="grow">ผลลัพธ์เป็น<b>การประมาณการ</b> · ใช้หลักเกณฑ์ปีภาษี ${R.y+543}${R.exact?'':` (ยังไม่มีเกณฑ์ปี ${y+543} จึงใช้ปีล่าสุด)`}</span><span class="small">ดูเกณฑ์ ▾</span></summary>
-  <ul>${['ส่วนตัว 60,000 · คู่สมรสไม่มีเงินได้ 60,000 · บุตร 30,000 (คนที่ 2 เกิดปี 2561 ขึ้นไป 60,000)','หักค่าใช้จ่าย 40(1)+40(2) 50% ไม่เกิน 100,000 · 40(8) เหมา 60%',`ประกันสังคมลดหย่อนได้ไม่เกิน ${fmt(R.sso)} (เพดานค่าจ้าง ${fmt(R.ssoWage)})`,'ประกันชีวิต+สุขภาพ ไม่เกิน 100,000 · RMF/บำนาญ/กองทุนสำรองฯ/กอช. รวมไม่เกิน 500,000',...R.notes].map(x=>`<li>${x}</li>`).join('')}</ul>
+function taxRuleBox(y){const R=taxRule(y);return `<details class="taxnote"><summary><img class="tn-ic" src="${IMG.help}" alt=""><span class="grow tn-t">เป็นการประมาณการ · เกณฑ์ปี ${R.y+543}${R.exact?'':'*'}</span><span class="small">ดูเกณฑ์ ▾</span></summary>
+  ${R.exact?'':`<p class="small" style="margin:6px 0 0">* ยังไม่มีเกณฑ์ปี ${y+543} จึงใช้เกณฑ์ปี ${R.y+543}</p>`}<ul>${['ส่วนตัว 60,000 · คู่สมรสไม่มีเงินได้ 60,000 · บุตร 30,000 (คนที่ 2 เกิดปี 2561 ขึ้นไป 60,000)','หักค่าใช้จ่าย 40(1)+40(2) 50% ไม่เกิน 100,000 · 40(8) เหมา 60%',`ประกันสังคมลดหย่อนได้ไม่เกิน ${fmt(R.sso)} (เพดานค่าจ้าง ${fmt(R.ssoWage)})`,'ประกันชีวิต+สุขภาพ ไม่เกิน 100,000 · RMF/บำนาญ/กองทุนสำรองฯ/กอช. รวมไม่เกิน 500,000',...R.notes].map(x=>`<li>${x}</li>`).join('')}</ul>
   <p class="small muted" style="margin:0">ก่อนยื่นจริง ตรวจสอบกับกรมสรรพากร (rd.go.th) อีกครั้ง หลักเกณฑ์อาจเปลี่ยนตามประกาศของปีนั้น</p></details>`}
 function vTax(){
   const y=UI.ty;const T=taxP(y);const sec=UI.taxSec;
@@ -2009,7 +2010,7 @@ function vTax(){
   <div id="taxResults" class="wrap"></div>
   ${body}
   ${taxRuleBox(y)}
-  <p class="small muted">ประมาณการเพื่อวางแผนเท่านั้น ไม่ใช่คำปรึกษาทางภาษี · ก่อนยื่นจริงตรวจสอบกับกรมสรรพากร</p>`;
+  <p class="small muted tn-foot">ใช้วางแผนเท่านั้น · ก่อนยื่นจริงตรวจกับกรมสรรพากร</p>`;
 }
 function renderTaxResults(){
   const box=$('#taxResults');if(!box)return;const y=UI.ty;const r=taxCalc(y);
