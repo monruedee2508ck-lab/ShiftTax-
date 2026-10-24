@@ -722,6 +722,7 @@ html.fitpage #view .cal{grid-template-rows:auto repeat(var(--rows,5),minmax(40px
 .tp-opts button.on{border-color:var(--primary);background:var(--soft);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 25%,transparent)}.tp-opts button.on b{color:var(--accent)}
 .tp-wh{display:flex!important;flex-direction:row!important;align-items:center;justify-content:space-between;gap:8px;font-size:13px}.tp-in{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:0 8px;width:44%}.tp-in span{color:var(--muted)}.tp-in input{border:0!important;background:none!important;padding:7px 0!important;min-width:0;width:100%;box-shadow:none!important}
 .tp-in input:focus,.tp-in input:focus-visible{outline:none!important;box-shadow:none!important;border:0!important}.tp-in:focus-within{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 30%,transparent)}
+.nwrap{position:relative}.nwrap .nrow{width:100%;padding-right:40px}.ndel{position:absolute;top:16px;right:8px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.7);color:var(--muted);font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center}.ndel:hover{background:var(--pink-soft);color:var(--bad)}.nwrap .nrow .chev{display:none}.nclear{white-space:nowrap}
 </style>
 
 <div class="wrap">
@@ -1651,17 +1652,20 @@ function computeAlerts(){const A=[];const t0=new Date();t0.setHours(0,0,0,0);con
   for(const x of S.nw.debts){if(num(x.amt)<=0)continue;const di=dueInfo(x);if(di&&di.cls&&di.cls!=='ok')A.push({lvl:'warn',ic:'💳',t:`${x.name||'หนี้'} ${di.t}`,sub:`ค่างวด ฿${fmt(num(x.pay))}`,go:'debt'})}
   const c=cneuCalc();if(c.lvl==='bad'||c.lvl==='warn')A.push({lvl:c.lvl,ic:'🎓',t:`CNEU ยังขาด ${fmt(c.remain)} หน่วย`,sub:c.exp?`ใบอนุญาตหมดอายุ ${thDate(S.cneu.exp)} (อีก ${c.mLeft} เดือน)`:'',go:'cneu'});
   const o={bad:0,warn:1,info:2};return A.sort((a,b)=>o[a.lvl]-o[b.lvl])}
-function notifSheet(){const A=computeAlerts();const can='Notification' in window;const perm=can?Notification.permission:'unsupported';
+const alertKey=a=>{const str=a.t+'|'+(a.sub||'')+'|'+(a.d||'');let h=0;for(let i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))|0;return 'a'+(h>>>0).toString(36)};
+function visibleAlerts(){const H=S.notifHide||{};return computeAlerts().filter(a=>!H[alertKey(a)])}
+function notifSheet(){const all=computeAlerts();const H=S.notifHide||{};const A=all.filter(a=>!H[alertKey(a)]);const hid=all.length-A.length;const can='Notification' in window;const perm=can?Notification.permission:'unsupported';
   return `<div class="scrim" data-act="notif-close"><div class="sheet tall" role="dialog" aria-modal="true" aria-label="การแจ้งเตือน" data-stop="1">
-    <div class="row" style="justify-content:space-between"><h2 class="h-ico"><img src="${IMG.bell}" alt="">การแจ้งเตือน</h2><button class="icon-btn" data-act="notif-close" aria-label="ปิด">×</button></div>
-    ${A.length?A.map(a=>`<button class="nrow ${a.lvl}" data-act="notif-go" data-v="${a.go||''}" data-d="${a.d||''}"><span class="nic">${a.ic}</span><span class="grow"><b>${esc(a.t)}</b>${a.sub?`<small>${esc(a.sub)}</small>`:''}</span><span class="chev">›</span></button>`).join(''):'<p class="small muted" style="padding:10px 2px">ไม่มีเรื่องต้องเตือนตอนนี้ ✨</p>'}
+    <div class="row" style="justify-content:space-between"><h2 class="h-ico"><img src="${IMG.bell}" alt="">การแจ้งเตือน</h2><div class="row" style="gap:6px;flex-wrap:nowrap">${A.length?`<button class="btn sm nclear" data-act="notif-clear">ล้างทั้งหมด</button>`:''}<button class="icon-btn" data-act="notif-close" aria-label="ปิด">×</button></div></div>
+    ${A.length?A.map(a=>`<div class="nwrap"><button class="nrow ${a.lvl}" data-act="notif-go" data-v="${a.go||''}" data-d="${a.d||''}"><span class="nic">${a.ic}</span><span class="grow"><b>${esc(a.t)}</b>${a.sub?`<small>${esc(a.sub)}</small>`:''}</span><span class="chev">›</span></button><button class="ndel" data-act="notif-del" data-k="${alertKey(a)}" aria-label="ลบการแจ้งเตือนนี้">×</button></div>`).join(''):'<p class="small muted" style="padding:10px 2px">ไม่มีเรื่องต้องเตือนตอนนี้ ✨</p>'}
+    ${hid?`<button class="btn sm" style="align-self:flex-start;margin-top:6px" data-act="notif-restore">แสดงที่ลบไปแล้ว (${hid})</button>`:''}
     <div class="sumbars" style="margin-top:12px"><button class="sumbar" data-act="open-today"><img src="${IMG.calendar}" alt=""><span class="grow"><b>งานและเวรวันนี้</b><small>เพิ่มงานหรือลงเวรของวันนี้</small></span><span class="chev">›</span></button>
     <button class="sumbar" data-act="cneu-open"><img src="${IMG.report}" alt=""><span class="grow"><b>หน่วยกิต CNEU</b><small>เก็บแล้ว ${fmt(cneuCalc().got)} / ${cneuCalc().req} หน่วย</small></span><span class="chev">›</span></button></div>
     ${can&&perm!=='denied'?`<label class="inline small" style="margin-top:10px"><input type="checkbox" id="notif-dev" ${S.notifOn&&perm==='granted'?'checked':''}> แจ้งเตือนบนเครื่องนี้</label>`:''}
     <p class="small muted" style="margin:6px 2px 0">เตือนเมื่อเปิดแอป · ดูล่วงหน้า 14 วัน: เวรพรุ่งนี้ พักไม่ถึง 8 ชม. ทำงานติดกัน 6 วัน หนี้ใกล้ครบกำหนด CNEU ใกล้หมดอายุ</p></div></div>`}
-function updateBell(){const el=$('#bellN');if(!el)return;let n=0;try{n=computeAlerts().filter(a=>a.lvl!=='info'||/^(วันนี้|พรุ่งนี้)/.test(a.t)).length}catch(e){}el.hidden=!n;el.textContent=n>9?'9+':n}
+function updateBell(){const el=$('#bellN');if(!el)return;let n=0;try{n=visibleAlerts().filter(a=>a.lvl!=='info'||/^(วันนี้|พรุ่งนี้)/.test(a.t)).length}catch(e){}el.hidden=!n;el.textContent=n>9?'9+':n}
 function devNotify(){try{if(!S.notifOn||!('Notification' in window)||Notification.permission!=='granted')return;const k='nr-notified',today=isoD(new Date());let last='';try{last=localStorage.getItem(k)||''}catch(e){}
-  if(last===today)return;const A=computeAlerts().filter(a=>a.lvl!=='info'||/^พรุ่งนี้/.test(a.t));if(!A.length)return;
+  if(last===today)return;const A=visibleAlerts().filter(a=>a.lvl!=='info'||/^พรุ่งนี้/.test(a.t));if(!A.length)return;
   new Notification('ShiftTax',{body:A.slice(0,3).map(a=>a.ic+' '+a.t).join('\n'),icon:LOGO_SVG});try{localStorage.setItem(k,today)}catch(e){}}catch(e){}}
 /* ---------- debt payoff ---------- */
 const thMY=n=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+n);return TH_M[d.getMonth()]+' '+(d.getFullYear()+543)};
@@ -2385,6 +2389,9 @@ document.addEventListener('click',async ev=>{
     case 'cneu-add':{const t=($('#cn-t').value||'').trim(),d=$('#cn-d').value,c=num($('#cn-c').value);if(!t||!d||!(c>0)){toast('ใส่หัวข้อ วันที่ และหน่วยกิตก่อนนะคะ');break}
       S.cneu.list.push({id:uidGen(),t,d,cr:c,o:($('#cn-o').value||'').trim()});UI.cneuDate=d;touch('settings');renderSheet();toast(`บันทึก ${fmt(c)} หน่วยแล้ว`);break}
     case 'cneu-del':S.cneu.list=S.cneu.list.filter(x=>x.id!==b.dataset.id);touch('settings');renderSheet();break;
+    case 'notif-del':{S.notifHide=S.notifHide||{};S.notifHide[b.dataset.k]=Date.now();const now=Date.now();for(const k in S.notifHide)if(now-S.notifHide[k]>45*864e5)delete S.notifHide[k];touch('settings');renderSheet();updateBell();break}
+    case 'notif-clear':{S.notifHide=S.notifHide||{};for(const a of computeAlerts())S.notifHide[alertKey(a)]=Date.now();touch('settings');renderSheet();updateBell();toast('ล้างการแจ้งเตือนแล้ว');break}
+    case 'notif-restore':S.notifHide={};touch('settings');renderSheet();updateBell();break;
     case 'notif-go':{const v=b.dataset.v;UI.notif=false;
       if(v==='day'&&b.dataset.d){const [y,m,d]=b.dataset.d.split('-').map(Number);UI.tab='roster';UI.y=y;UI.m=m;UI.paint=null;UI.sheet=pad(d);render()}
       else if(v==='debt'){UI.tab='money';UI.dsheet='debt';render()}
