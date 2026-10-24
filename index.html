@@ -723,6 +723,16 @@ html.fitpage #view .cal{grid-template-rows:auto repeat(var(--rows,5),minmax(40px
 .tp-wh{display:flex!important;flex-direction:row!important;align-items:center;justify-content:space-between;gap:8px;font-size:13px}.tp-in{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:0 8px;width:44%}.tp-in span{color:var(--muted)}.tp-in input{border:0!important;background:none!important;padding:7px 0!important;min-width:0;width:100%;box-shadow:none!important}
 .tp-in input:focus,.tp-in input:focus-visible{outline:none!important;box-shadow:none!important;border:0!important}.tp-in:focus-within{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 30%,transparent)}
 .nwrap{position:relative}.nwrap .nrow{width:100%;padding-right:40px}.ndel{position:absolute;top:16px;right:8px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.7);color:var(--muted);font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center}.ndel:hover{background:var(--pink-soft);color:var(--bad)}.nwrap .nrow .chev{display:none}.nclear{white-space:nowrap}
+
+.slipbox{background:var(--field);border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.sl-h{display:flex;align-items:center;justify-content:space-between}.sl-h span{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:14.5px;font-weight:500}.sl-h img{width:26px;height:26px;border-radius:8px}
+.tgl{width:44px;height:26px;border-radius:999px;border:0;background:var(--surface2);position:relative;cursor:pointer;flex:none;transition:background .2s}.tgl i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}.tgl.on{background:var(--primary)}.tgl.on i{left:21px}
+.sl-rows{display:flex;flex-direction:column}.sl-r{display:flex!important;flex-direction:row!important;align-items:center;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:13.5px}.sl-r span{min-width:0}
+.sl-r input{width:40%;max-width:140px;text-align:right;padding:5px 10px!important;border-radius:10px!important;background:#fff!important;font-size:14px}
+.sl-cfg{align-self:flex-start;border:1px solid #F3C9C0;background:#fff;color:#C8665A;border-radius:999px;padding:4px 12px;font-size:12px;cursor:pointer}
+.sl-edit{display:flex;flex-wrap:wrap;gap:6px}.sl-edit button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;color:var(--muted);cursor:pointer}.sl-edit button.on{background:var(--soft);border-color:var(--primary);color:var(--accent)}
+.sl-sum{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:8px}.sl-sum div{display:flex;justify-content:space-between;font-size:13.5px}.sl-sum .net{font-family:var(--f-display);font-size:15px}.sl-sum .net b{color:var(--good);font-size:17px}
+.sl-note{margin:-4px 2px 0}
 </style>
 
 <div class="wrap">
@@ -762,7 +772,7 @@ const TAXTYPES={'401':'40(1) เงินเดือน/ค่าจ้าง�
 const GROUPS={in:[['work','รายได้จากการทำงาน'],['asset','รายได้จากสินทรัพย์'],['other','รายได้อื่นๆ']],ex:[['var','ค่าใช้จ่ายผันแปร'],['fixed','ค่าใช้จ่ายคงที่'],['save','ออมและลงทุน']]};
 const C=(t,g,id,name,icon,x)=>Object.assign({t,g,id,name,icon},x||{});
 const DEFAULT_CATS=[
-  C('in','work','side','ค่าจ้าง / เวรนอก','briefcase',{tax:'402'}),C('in','work','ot','ค่าล่วงเวลา','clock',{tax:'401'}),
+  C('in','work','salary','เงินเดือน','banknote',{tax:'401',slip:true}),C('in','work','side','ค่าจ้าง / เวรนอก','briefcase',{tax:'402'}),C('in','work','ot','ค่าล่วงเวลา','clock',{tax:'401'}),
   C('in','work','bonus','โบนัส','banknote',{tax:'401'}),C('in','work','commission','คอมมิชชัน','percent',{tax:'401'}),
   C('in','work','extra','เงินเพิ่มพิเศษ','sparkles',{tax:'401'}),C('in','work','wother','อื่นๆ จากงาน','wallet',{tax:'401'}),
   C('in','asset','invest','ดอกเบี้ย','hand-coins',{tax:'none'}),C('in','asset','div','เงินปันผล','coins',{tax:'none'}),
@@ -925,20 +935,24 @@ function earnCalc(key){
     for(const id of arr){const t=typeById(id);if(!t)continue;const r=shiftRate(mo,d,t,hol);const isot=t.work&&isOTs(mo,d,id);
       if(t.tax==='402')s402+=r;else s401+=r;if(isot){ot+=r;otShiftN++;if(t.tax==='402')otOut+=r;else otIn+=r}else counts[id]=(counts[id]||0)+1;if(t.work){hours+=num(t.hours);w++}}
     if(w)workDays++;if(w>=2)doubles++;}
-  const salary=mo.salary!=null&&mo.salary!==''?num(mo.salary):num(S.salary);
+  const salE=mo.entries.filter(e=>e.t==='in'&&e.cat==='salary');const slips=salE.filter(e=>e.slip);
+  const salary=salE.length?sum(salE.map(e=>num(e.amt))):(mo.salary!=null&&mo.salary!==''?num(mo.salary):num(S.salary));
   const allow=sum(S.allowances.map(a=>num(a.amount)));
   let x401=0,x402=0,xNone=0,whE=0,exp=0;const byCat={},ded={},byGroup={var:0,fixed:0,save:0},inGroup={};
   for(const e of mo.entries){const a=num(e.amt);
+    if(e.t==='in'&&e.cat==='salary'){whE+=num(e.wh);inGroup.work=(inGroup.work||0)+a;
+      if(e.slip)for(const k in e.slip){if(SLIP_SPECIAL.includes(k))continue;const v=num(e.slip[k]);if(!v)continue;exp+=v;byCat[k]=(byCat[k]||0)+v;const c=catById('ex',k);const g=c?c.g:'fixed';byGroup[g]=(byGroup[g]||0)+v;if(c&&c.ded)ded[c.ded]=(ded[c.ded]||0)+v}continue}
     if(e.t==='in'){if(e.tax==='401')x401+=a;else if(e.tax==='402')x402+=a;else xNone+=a;whE+=num(e.wh);const c=catById('in',e.cat);const g=c?c.g:'other';inGroup[g]=(inGroup[g]||0)+a}
     else{exp+=a;byCat[e.cat]=(byCat[e.cat]||0)+a;const c=catById('ex',e.cat);const g=c?c.g:'var';byGroup[g]=(byGroup[g]||0)+a;if(c&&c.ded)ded[c.ded]=(ded[c.ded]||0)+a}}
-  const sso=S.sso?Math.round(0.05*Math.min(Math.max(salary,SSO_MIN_WAGE),taxRule(y).ssoWage)):0;
-  const pvd=Math.round(salary*num(S.pvdPct)/100);
-  const fixDed=sum(S.deductions.map(x=>num(x.amount)));
-  const withheld=whMonth(mo)+whE;
+  const slipSso=slips.some(e=>e.slip.sso!=null&&e.slip.sso!=='')?sum(slips.map(e=>num(e.slip.sso))):null,slipPvd=slips.some(e=>e.slip.pvd!=null&&e.slip.pvd!=='')?sum(slips.map(e=>num(e.slip.pvd))):null;
+  const sso=slipSso!=null?slipSso:(S.sso?Math.round(0.05*Math.min(Math.max(salary,SSO_MIN_WAGE),taxRule(y).ssoWage)):0);
+  const pvd=slipPvd!=null?slipPvd:Math.round(salary*num(S.pvdPct)/100);
+  const fixDed=slips.length?0:sum(S.deductions.map(x=>num(x.amount)));
+  const withheld=(salE.length?(mo.whSet?num(mo.withheld):0):whMonth(mo))+whE;
   const shift=s401+s402;
   const gross=salary+allow+shift+x401+x402+xNone;
   const net=gross-sso-pvd-withheld-fixDed;
-  return {fixDed,key,y,m,mo,otShiftN,salary,allow,s401,s402,shift,ot,otIn,otOut,otHrs,hours,workDays,doubles,counts,x401,x402,xNone,whE,withheld,exp,byCat,byGroup,inGroup,ded,sso,pvd,gross,net,left:net-exp,
+  return {salE:salE.length,slipSso,slipPvd,fixDed,key,y,m,mo,otShiftN,salary,allow,s401,s402,shift,ot,otIn,otOut,otHrs,hours,workDays,doubles,counts,x401,x402,xNone,whE,withheld,exp,byCat,byGroup,inGroup,ded,sso,pvd,gross,net,left:net-exp,
     hasShift:Object.keys(mo.shifts).some(d=>(mo.shifts[d]||[]).length)};
 }
 const PAY_ITEMS=[['salary','เงินเดือน'],['allow','เงินเพิ่ม (พ.ต.ส./ใบประกอบ)'],['shift','ค่าเวร'],['ot','OT / งานนอก']];
@@ -953,11 +967,11 @@ function monthCalc(key){const e=earnCalc(key);e.earn=e;if(!anyLag())return e;
   const src=k=>payLag(k)?earnCalc(keyShift(key,payLag(k))):e;
   const sS=src('salary'),sA=src('allow'),sR=src('shift'),sO=src('ot');
   const c=Object.assign({},e);
-  c.salary=sS.salary;c.allow=sA.allow;
+  c.salary=e.salE?e.salary:sS.salary;c.allow=sA.allow;
   c.otIn=sO.otIn;c.otOut=sO.otOut;c.ot=sO.ot;c.otHrs=sO.otHrs;c.otShiftN=sO.otShiftN;
   c.s401=(sR.s401-sR.otIn)+sO.otIn;c.s402=(sR.s402-sR.otOut)+sO.otOut;c.shift=c.s401+c.s402;
-  c.sso=S.sso?Math.round(0.05*Math.min(Math.max(c.salary,SSO_MIN_WAGE),taxRule(c.y).ssoWage)):0;
-  c.pvd=Math.round(c.salary*num(S.pvdPct)/100);
+  c.sso=e.slipSso!=null?e.slipSso:(S.sso?Math.round(0.05*Math.min(Math.max(c.salary,SSO_MIN_WAGE),taxRule(c.y).ssoWage)):0);
+  c.pvd=e.slipPvd!=null?e.slipPvd:Math.round(c.salary*num(S.pvdPct)/100);
   c.gross=c.salary+c.allow+c.shift+e.x401+e.x402+e.xNone;c.net=c.gross-c.sso-c.pvd-e.withheld-e.fixDed;c.left=c.net-e.exp;
   c.hasShift=sR.hasShift||sO.hasShift;c.earn=e;c.lagged=true;return c}
 function progressive(net){let tax=0,marg=0;const rows=BRACKETS.map(([lo,hi,r])=>{const amt=Math.max(0,Math.min(net,hi)-lo);const t=amt*r;tax+=t;if(amt>0)marg=r;return{lo,hi,r,amt,t}});return{tax,rows,marg}}
@@ -1841,6 +1855,23 @@ async function copyShareText(){const txt=shareText();
   try{await navigator.clipboard.writeText(txt);toast('คัดลอกแล้ว วางในแชตได้เลย');return}catch(e){}
   const ta=$('#share-txt');if(ta){ta.hidden=false;ta.focus();ta.select();try{if(document.execCommand('copy')){toast('คัดลอกแล้ว วางในแชตได้เลย');return}}catch(e){}}
   toast('กดค้างที่ข้อความเพื่อคัดลอก')}
+const SLIP_SPECIAL=['wh','sso','pvd'];
+const SLIP_DEF=['coopdep','home','coop','edu','util'];
+function slipItems(){const L=Array.isArray(S.slipItems)?S.slipItems:SLIP_DEF;return L.filter(k=>catById('ex',k))}
+const slipLab=k=>({wh:'ภาษีหัก ณ ที่จ่าย',sso:'ประกันสังคม',pvd:'กองทุนสำรองฯ / กบข.',util:'ค่าไฟฟ้า / น้ำ',home:'ค่าผ่อนบ้าน / คอนโด',coop:'ค่าผ่อนหนี้สหกรณ์',edu:'ค่าผ่อนหนี้ กยศ.'})[k]||((catById('ex',k)||{}).name||k);
+function slipPrefill(s){const amt=num(s.amt)||num(S.salary);if(!num(s.amt)&&amt)s.amt=String(amt);
+  let last=null;const ks=Object.keys(M).sort().reverse();for(const k of ks){const e=(M[k].entries||[]).find(e=>e.cat==='salary'&&e.slip&&e.id!==s.id);if(e){last=e.slip;break}}
+  const v={};v.wh=last&&last.wh!=null?last.wh:(num(S.whDefault)||'');v.sso=last&&last.sso!=null?last.sso:(S.sso?Math.round(0.05*Math.min(Math.max(amt,SSO_MIN_WAGE),taxRule(UI.y).ssoWage)):'');
+  v.pvd=last&&last.pvd!=null?last.pvd:(num(S.pvdPct)?Math.round(amt*num(S.pvdPct)/100):'');for(const k of slipItems())v[k]=last&&last[k]!=null?last[k]:'';
+  s.slip={on:true,v,auto:{sso:!(last&&last.sso!=null),pvd:!(last&&last.pvd!=null)}}}
+function slipPanel(s){const sl=s.slip||{on:true,v:{}};const keys=[...SLIP_SPECIAL,...slipItems()];const tot=sl.on?sum(keys.map(k=>num(sl.v[k]))):0;const net=num(s.amt)-tot;
+  const cand=cats('ex').filter(c=>(c.g==='fixed'||c.id==='coopdep'||c.id==='util'||(c.g==='save'&&c.sub==='welfare'))&&!['pvd','gpf','fother','welother'].includes(c.id));
+  return `<div class="slipbox ${sl.on?'':'off'}"><div class="sl-h"><span><img src="${IMG.slip}" alt="">รายการหักจากเงินเดือน</span><button type="button" class="tgl ${sl.on?'on':''}" data-act="slip-tog" role="switch" aria-checked="${sl.on}" aria-label="เปิดรายการหัก"><i></i></button></div>
+    ${sl.on?`<div class="sl-rows">${keys.map(k=>`<label class="sl-r"><span>${esc(slipLab(k))}</span><input class="num" data-slip="${k}" inputmode="decimal" value="${esc(sl.v[k]===0?'0':(sl.v[k]||''))}" placeholder="0.00"></label>`).join('')}</div>
+    ${s.slipEdit?`<div class="sl-edit">${cand.map(c=>`<button type="button" class="${slipItems().includes(c.id)?'on':''}" data-act="slip-item" data-id="${c.id}">${slipItems().includes(c.id)?'✓ ':'+ '}${esc(slipLab(c.id))}</button>`).join('')}</div>`:''}
+    <button type="button" class="sl-cfg" data-act="slip-edit">${s.slipEdit?'เสร็จ':'เพิ่ม / ลดรายการ'}</button>
+    <div class="sl-sum"><div><span>รวมหัก</span><b class="num" id="sl-tot">฿${fmt(tot)}</b></div><div class="net"><span>เงินได้สุทธิ</span><b class="num" id="sl-net">฿${fmt(net)}</b></div></div>`:'<p class="small muted" style="margin:0">เปิดเพื่อใส่ภาษี ประกันสังคม และรายการหักตามสลิป</p>'}</div>`}
+function slipRefresh(){const s=UI.esheet;if(!s||!s.slip)return;const keys=[...SLIP_SPECIAL,...slipItems()];const tot=sum(keys.map(k=>num(s.slip.v[k])));const a=$('#sl-tot'),b=$('#sl-net');if(a)a.textContent='฿'+fmt(tot);if(b)b.textContent='฿'+fmt(num(s.amt)-tot)}
 const newInline=(t,d)=>({inline:true,_fresh:true,t:t||'ex',d:d||curDay(),cat:null,amt:'',note:'',tax:t==='in'?'401':'',wh:'',q:'',adding:null});
 function entryForm(inline){
   const s=UI.esheet;const t=s.t;const dim=new Date(UI.y,UI.m,0).getDate();const sel=s.cat?catById(t,s.cat):null;
@@ -1848,12 +1879,13 @@ function entryForm(inline){
     ${s.id?'':`<div class="seg"><button class="ex ${t==='ex'?'on':''}" data-act="es-type" data-v="ex">รายจ่าย</button><button class="in ${t==='in'?'on':''}" data-act="es-type" data-v="in">รายรับ</button></div>`}
     <div class="amt-row"><span>฿</span><input id="e-amt" class="num big-input" inputmode="decimal" value="${esc(s.amt||'')}" placeholder="0" autocomplete="off" aria-label="จำนวนเงิน"></div>
     <button class="catpick-btn ${sel?'':'empty'}" data-act="cat-open">${sel?ico(sel):'<span class="ico plus">＋</span>'}<span class="grow"><small>หมวดหมู่</small><b id="e-catname">${sel?esc(sel.name):'แตะเพื่อเลือกหมวดหมู่'}</b></span><span class="chev">›</span></button>
+    ${t==='in'&&s.cat==='salary'?'<p class="small muted sl-note">ใส่ยอดเงินเดือนก่อนหัก · เงินเพิ่ม (เช่น พ.ต.ส.) คิดจากตั้งค่าให้อยู่แล้ว</p>':''}
     <label id="bankrow" ${sel&&sel.dep?'':'hidden'}>ธนาคาร<select id="e-bank"><option value="">— เลือกธนาคาร —</option>${BANKS.map(b=>`<option ${b===(s.bank||'')?'selected':''}>${b}</option>`).join('')}</select></label>
     <div class="grid2">
       <label>วันที่<select id="e-day">${Array.from({length:dim},(_,i)=>`<option value="${pad(i+1)}" ${pad(i+1)===s.d?'selected':''}>${dayLabel(pad(i+1),true)}</option>`).join('')}</select></label>
       <label>หมายเหตุ<input id="e-note" value="${esc(s.note||'')}" maxlength="80" placeholder="${t==='in'?'เช่น เวรนอก 2 เวร':'เช่น ข้าวหลังลงเวรดึก'}"></label>
     </div>
-    ${t==='in'?`<div class="taxpick"><div class="tp-h"><img src="${IMG.tax}" alt="">ประเภทเงินได้ทางภาษี</div><input type="hidden" id="e-tax" value="${esc(s.tax||'none')}">
+    ${t==='in'&&s.cat==='salary'?slipPanel(s):t==='in'?`<div class="taxpick"><div class="tp-h"><img src="${IMG.tax}" alt="">ประเภทเงินได้ทางภาษี</div><input type="hidden" id="e-tax" value="${esc(s.tax||'none')}">
       <div class="tp-opts" role="radiogroup">${[['401','40(1)','เงินเดือน ค่าเวร'],['402','40(2)','เวรนอก ค่าจ้าง'],['none','ไม่คิดภาษี','เงินคืน ของขวัญ']].map(([k,a,b])=>`<button type="button" role="radio" aria-checked="${k===(s.tax||'none')}" class="${k===(s.tax||'none')?'on':''}" data-act="es-tax" data-v="${k}"><b>${a}</b><small>${b}</small></button>`).join('')}</div>
       ${(s.tax||'none')==='none'?'':`<label class="tp-wh"><span>ภาษีหัก ณ ที่จ่าย <small class="muted">(ถ้ามี)</small></span><span class="tp-in"><span>฿</span><input id="e-wh" class="num" inputmode="decimal" value="${esc(s.wh||'')}" placeholder="0"></span></label>`}</div>`:''}
     <div class="${inline?'row save-row':'sheet-foot'}">${s.id?'<button class="btn danger" data-act="esheet-del">ลบ</button>':''}<button class="btn primary big grow save-btn" data-act="save-entry">${SAVE_ICO}บันทึก${s.id?'':(t==='in'?'รายรับ':'รายจ่าย')}</button></div>`;
@@ -1874,7 +1906,7 @@ function catGrid(){const s=UI.esheet;const q=(s.q||'').trim();const list=cats(s.
 function newCatForm(g){const s=UI.esheet;return `<div class="newcat"><label>ชื่อหมวดหมู่ใหม่<input id="nc-name" maxlength="30" value="${esc(s.ncName||'')}" placeholder="เช่น ค่ากาแฟ"></label>
   <div class="icons">${ICON_CHOICES.map(i=>`<button class="ipick ${s.ncIcon===i?'on':''}" data-act="nc-icon" data-i="${i}" aria-label="ไอคอน ${i}"><i data-lucide="${i}"></i><span class="ini">${i[0]}</span></button>`).join('')}</div>
   <div class="row" style="justify-content:flex-end"><button class="btn sm" data-act="nc-cancel">ยกเลิก</button><button class="btn sm primary" data-act="nc-save" data-g="${g}">เพิ่มหมวด</button></div></div>`}
-function captureSheet(){const s=UI.esheet;if(!s)return;if(document.getElementById('e-bank'))s.bank=document.getElementById('e-bank').value;const g=id=>document.getElementById(id);
+function captureSheet(){const s=UI.esheet;if(!s)return;if(s.slip)document.querySelectorAll('[data-slip]').forEach(i=>{s.slip.v[i.dataset.slip]=i.value});if(document.getElementById('e-bank'))s.bank=document.getElementById('e-bank').value;const g=id=>document.getElementById(id);
   if(g('e-amt'))s.amt=g('e-amt').value;if(g('e-day'))s.d=g('e-day').value;if(g('e-note'))s.note=g('e-note').value;
   if(g('e-tax'))s.tax=g('e-tax').value;if(g('e-wh'))s.wh=g('e-wh').value;if(g('nc-name'))s.ncName=g('nc-name').value}
 function cpPanels(t){const all=cats(t);
@@ -2348,14 +2380,17 @@ document.addEventListener('click',async ev=>{
     case 'selday':UI.selDay=b.dataset.d;render();break;
     case 'new-entry':UI.esheet={t:b.dataset.t,d:curDay(),cat:null,amt:'',note:'',tax:b.dataset.t==='in'?'401':'',wh:'',q:'',adding:null};renderSheet();setTimeout(()=>{const a=$('#e-amt');if(a)a.focus()},60);break;
     case 'edit-entry':{const e=getM(key,false).entries.find(x=>x.id===b.dataset.id);if(!e)break;
-      UI.esheet={id:e.id,bank:e.bank||'',t:e.t,d:e.d,cat:e.cat,amt:String(e.amt),note:e.note||'',tax:e.tax||'none',wh:num(e.wh)?String(e.wh):'',q:'',adding:null};render();break}
+      UI.esheet={id:e.id,bank:e.bank||'',t:e.t,d:e.d,cat:e.cat,amt:String(e.amt),note:e.note||'',tax:e.tax||'none',wh:num(e.wh)?String(e.wh):'',q:'',adding:null};if(e.cat==='salary')UI.esheet.slip={on:!!e.slip,v:Object.assign({},e.slip||{})};render();break}
     case 'esheet-close':if(UI.esheet&&UI.esheet.pick){UI.esheet.pick=false;renderPicker();break}UI.esheet=null;render();break;
+    case 'slip-tog':{captureSheet();const s=UI.esheet;if(!s.slip)slipPrefill(s);else s.slip.on=!s.slip.on;refreshForm();break}
+    case 'slip-edit':captureSheet();UI.esheet.slipEdit=!UI.esheet.slipEdit;refreshForm();break;
+    case 'slip-item':{captureSheet();const id=b.dataset.id;let L=slipItems().slice();L=L.includes(id)?L.filter(x=>x!==id):[...L,id];S.slipItems=L;touch('settings');refreshForm();break}
     case 'es-tax':captureSheet();UI.esheet.tax=b.dataset.v;if(b.dataset.v==='none')UI.esheet.wh='';refreshForm();break;
     case 'es-type':captureSheet();UI.esheet.t=b.dataset.v;UI.esheet.cat=null;UI.esheet.pick=false;UI.esheet.adding=null;UI.esheet.q='';UI.esheet.tax=b.dataset.v==='in'?'401':'';refreshForm();break;
     case 'cat-open':captureSheet();UI.esheet.pick=true;UI.esheet.pickT=Date.now();UI.esheet.pi=null;UI.esheet.q='';renderPicker();break;
     case 'cat-close':if(Date.now()-(UI.esheet.pickT||0)<450)break;UI.esheet.pick=false;UI.esheet.adding=null;renderPicker();break;
     case 'cp-tab':{const pn=$('#cpanels');const i=+b.dataset.i;if(pn)pn.scrollTo({left:i*pn.clientWidth,behavior:'smooth'});break}
-    case 'pick-cat':{captureSheet();const s=UI.esheet;s.cat=b.dataset.id;const c=catById(s.t,s.cat);if(s.t==='in'&&c)s.tax=c.tax||'none';
+    case 'pick-cat':{captureSheet();const s=UI.esheet;s.cat=b.dataset.id;const c=catById(s.t,s.cat);if(s.t==='in'&&c)s.tax=c.tax||'none';if(s.cat==='salary'&&!s.slip)slipPrefill(s);
       s.pick=false;s.adding=null;s.q='';renderPicker();refreshForm();break}
     case 'new-cat':captureSheet();UI.esheet.adding=b.dataset.g;UI.esheet.addSub=b.dataset.sub||'';UI.esheet.ncIcon='tag';UI.esheet.ncName='';regrid();setTimeout(()=>{const n=$('#nc-name');if(n)n.focus()},40);break;
     case 'nc-icon':UI.esheet.ncIcon=b.dataset.i;document.querySelectorAll('.ipick.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');break;
@@ -2366,7 +2401,7 @@ document.addEventListener('click',async ev=>{
     case 'save-entry':{captureSheet();const s=UI.esheet;const amt=num(s.amt);
       if(amt<=0){toast('ใส่จำนวนเงินมากกว่า 0');const a=$('#e-amt');if(a)a.focus();break}
       if(!s.cat){toast('เลือกหมวดหมู่ก่อนบันทึก');break}
-      const mo=getM(key,true);const data={bank:(catById(s.t,s.cat)||{}).dep?(s.bank||''):'',d:s.d,t:s.t,cat:s.cat,amt,note:(s.note||'').trim(),tax:s.t==='in'?(s.tax||'none'):'',wh:s.t==='in'?num(s.wh):0};
+      const mo=getM(key,true);const data={bank:(catById(s.t,s.cat)||{}).dep?(s.bank||''):'',d:s.d,t:s.t,cat:s.cat,amt,note:(s.note||'').trim(),tax:s.t==='in'?(s.tax||'none'):'',wh:s.t==='in'?num(s.wh):0};if(s.t==='in'&&s.cat==='salary'){data.tax='401';if(s.slip&&s.slip.on){const sl={};for(const k of [...SLIP_SPECIAL,...slipItems()]){const v=s.slip.v[k];if(v!==''&&v!=null)sl[k]=num(v)}data.slip=sl;data.wh=num(sl.wh)}else{data.slip=null;data.wh=0}}else data.slip=undefined;
       const bdg=totalBudget();const c0=s.t==='ex'?monthCalc(key):null;const exp0=c0?c0.exp:0;const cb=s.t==='ex'?num((S.catBudget||{})[s.cat]):0;const ce0=c0?(c0.byCat[s.cat]||0):0;
       if(s.id){const e=mo.entries.find(x=>x.id===s.id);if(e)Object.assign(e,data)}else mo.entries.push(Object.assign({id:uidGen()},data));
       UI.selDay=s.d;UI.esheet=s.inline?newInline(s.t,s.d):null;touch(key);render();let bn='';if(s.t==='ex'){const c1=monthCalc(key);const e1=c1.exp;const ce1=c1.byCat[s.cat]||0;const cn=(catById('ex',s.cat)||{}).name||'';
@@ -2483,7 +2518,8 @@ document.addEventListener('input',ev=>{
     {const id=t.dataset.pay;const st=typeById(id);const def=st?defRate(st,isHol(UI.y,UI.m,+d,mo),isOTs(mo,d,id)):0;mo.pay[d]=mo.pay[d]||{};
       if(t.value.trim()===''||num(t.value)===def)delete mo.pay[d][id];else mo.pay[d][id]=num(t.value);if(!Object.keys(mo.pay[d]).length)delete mo.pay[d]}
     touch(key);const el=$('#day-pay');if(el)el.textContent='฿'+fmt(dayPay(mo,d,isHol(UI.y,UI.m,+d,mo)));needRender=true;return}
-  if(t.id==='e-amt'&&UI.esheet){UI.esheet.amt=t.value;const on=num(t.value)>0;const cs=$('#catsec'),ch=$('#cathint');if(cs&&cs.hidden===on){cs.hidden=!on;if(ch)ch.hidden=on;if(on)paintIcons()}return}
+  if(t.dataset.slip&&UI.esheet&&UI.esheet.slip){UI.esheet.slip.v[t.dataset.slip]=t.value;if(UI.esheet.slip.auto)UI.esheet.slip.auto[t.dataset.slip]=false;slipRefresh();return}
+  if(t.id==='e-amt'&&UI.esheet){UI.esheet.amt=t.value;if(UI.esheet.slip){const sl=UI.esheet.slip,A=sl.auto||{},amt=num(t.value);if(A.sso&&S.sso){sl.v.sso=Math.round(0.05*Math.min(Math.max(amt,SSO_MIN_WAGE),taxRule(UI.y).ssoWage));const i=document.querySelector('[data-slip=sso]');if(i)i.value=sl.v.sso}if(A.pvd&&num(S.pvdPct)){sl.v.pvd=Math.round(amt*num(S.pvdPct)/100);const i=document.querySelector('[data-slip=pvd]');if(i)i.value=sl.v.pvd}slipRefresh()}const on=num(t.value)>0;const cs=$('#catsec'),ch=$('#cathint');if(cs&&cs.hidden===on){cs.hidden=!on;if(ch)ch.hidden=on;if(on)paintIcons()}return}
   if(t.id==='e-q'&&UI.esheet){UI.esheet.q=t.value;regrid();return}
   if(t.id==='what'){const box=$('#taxResults');box.dataset.what=t.value;const W=num(t.value);const r=taxCalc(UI.ty);const w=taxCalc(UI.ty,{other:W});
     $('#what-v').textContent='฿'+fmt(W);$('#what-r').textContent=`฿${fmt(w.tax)} (ประหยัด ฿${fmt(r.tax-w.tax)})`}
