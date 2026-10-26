@@ -733,6 +733,11 @@ html.fitpage #view .cal{grid-template-rows:auto repeat(var(--rows,5),minmax(40px
 .sl-edit{display:flex;flex-wrap:wrap;gap:6px}.sl-edit button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;color:var(--muted);cursor:pointer}.sl-edit button.on{background:var(--soft);border-color:var(--primary);color:var(--accent)}
 .sl-sum{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:8px}.sl-sum div{display:flex;justify-content:space-between;font-size:13.5px}.sl-sum .net{font-family:var(--f-display);font-size:15px}.sl-sum .net b{color:var(--good);font-size:17px}
 .sl-note{margin:-4px 2px 0}
+
+.guide{background:linear-gradient(180deg,#F1FAF6,#FFFDF5);border:1.5px solid color-mix(in srgb,var(--primary) 55%,var(--line));border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:8px;position:sticky;top:6px;z-index:5;box-shadow:0 6px 16px rgba(80,150,130,.12)}
+.gsteps{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.gsteps span{white-space:nowrap;padding:3px 9px;border-radius:999px;background:#fff;border:1px solid var(--line)}.gsteps span.on{background:var(--primary);border-color:var(--primary);color:var(--primary-ink);font-weight:600}
+.gsteps i{flex:1;height:2px;background:var(--line);border-radius:2px;min-width:8px}.gsteps i.on{background:var(--primary)}
+.guide p{margin:0;font-size:13px}
 </style>
 
 <div class="wrap">
@@ -1585,8 +1590,8 @@ function regSend(){try{if(!REG_FORM.url||S.regSent||!S.onboarded||regBusy||navig
   if(REG_FORM.dev)fd.append(REG_FORM.dev,devId());if(REG_FORM.kind)fd.append(REG_FORM.kind,isNew?'สมัครใหม่':'ผู้ใช้เดิม');
   fetch(REG_FORM.url,{method:'POST',mode:'no-cors',body:fd}).then(()=>{S.regSent=Date.now();touch('settings')}).catch(()=>{}).finally(()=>{regBusy=false})}catch(e){regBusy=false}}
 window.addEventListener('online',()=>setTimeout(regSend,1500));
-function finishSetup(){S.onboarded=true;S.setupDone=true;if(S.sample&&num(S.salary))S.sample=false;if(fbUser)S.fbLinked=true;touch('settings');markUnlocked();
-  UI.onb=0;UI.lock=false;UI.pin=null;UI.setSec=null;UI.tab='roster';render();window.scrollTo(0,0);setTimeout(regSend,800)}
+function finishSetup(){const fresh=!!S.regNew&&!S.guideDone;S.onboarded=true;S.setupDone=true;if(S.sample&&num(S.salary))S.sample=false;if(fbUser)S.fbLinked=true;touch('settings');markUnlocked();
+  UI.onb=0;UI.lock=false;UI.pin=null;UI.setSec=fresh?'pay':null;UI.tab=fresh?'settings':'roster';UI.guide=fresh?1:0;render();window.scrollTo(0,0);setTimeout(regSend,800)}
 async function pinKey(k){const P=UI.pin;if(!P)return;if(UI.lockUntil&&Date.now()<UI.lockUntil)return;
   P.err='';if(k==='del'){P.buf=P.buf.slice(0,-1);renderOnb();return}
   if(P.buf.length>=4)return;P.buf+=k;renderOnb();if(P.buf.length<4)return;
@@ -1595,7 +1600,7 @@ async function pinKey(k){const P=UI.pin;if(!P)return;if(UI.lockUntil&&Date.now()
   if(P.stage==='confirm'){if(v!==P.first){P.stage='new';P.buf='';P.first='';P.err='PIN 2 ครั้งไม่ตรงกัน ลองตั้งใหม่อีกครั้ง';renderOnb();return}
     const salt=Math.random().toString(36).slice(2,10);S.pin={s:salt,h:await pinHash(v,salt)};
     if(P.mode==='change'){touch('settings');UI.lock=false;UI.pin=null;renderOnb();toast('เปลี่ยน PIN แล้ว');return}
-    if(UI.onb){finishSetup();toast(`พร้อมแล้วค่ะ คุณ${S.userName||''} 💚 ตั้งเงินเดือน ค่าเวร OT ได้ที่ ตั้งค่า`);return}
+    if(UI.onb){finishSetup();toast(UI.guide?`ยินดีต้อนรับค่ะ คุณ${S.userName||''} 💚 กรอกรายได้ก่อนนะคะ`:`พร้อมแล้วค่ะ คุณ${S.userName||''} 💚`);return}
     touch('settings');markUnlocked();UI.lock=false;UI.pin=null;render();toast('ตั้ง PIN ใหม่แล้ว');return}
   // enter / old
   const ok=S.pin&&(await pinHash(v,S.pin.s))===S.pin.h;
@@ -2161,7 +2166,11 @@ function setSecs(){return [
   ['data','บัญชีและข้อมูล',!CLOUD_ON?(S.email||'บัญชีในเครื่องนี้')+' · ออกจากระบบ · ล้างข้อมูล':fbUser?`ซิงก์กับ ${fbUser.email||'บัญชี Google'}`:'เข้าสู่ระบบ Google เพื่อสำรองและใช้หลายเครื่อง · ล้างข้อมูล','export']]}
 function vSettings(){const secs=setSecs();const parts=settingsAll().split('<section class="card">').slice(1).map(x=>'<section class="card">'+x);
   const i=secs.findIndex(x=>x[0]===UI.setSec);
-  if(i>=0&&parts[i])return `<div class="setback"><button class="btn sm" data-act="setsec" data-v="">‹ ตั้งค่าทั้งหมด</button></div>${parts[i]}`;
+  const g=UI.guide&&(UI.setSec==='pay'||UI.setSec==='types')?(UI.setSec==='pay'?1:2):0;
+  const gbar=g?`<div class="guide"><div class="gsteps"><span class="on">1 รายได้</span><i class="${g>=2?'on':''}"></i><span class="${g>=2?'on':''}">2 ค่าเวร / OT</span><i></i><span>3 ลงตารางเวร</span></div>
+    <p>${g===1?'ใส่เงินเดือน เงินเพิ่ม (พ.ต.ส.) รายการหัก และเดือนที่ได้รับเงิน':'ใส่ค่าเวรต่อเวร วันหยุด และค่า OT ของโรงพยาบาล'}</p>
+    <div class="row" style="justify-content:space-between"><button class="btn sm" data-act="guide-skip">ข้ามไปก่อน</button><button class="btn sm primary" data-act="guide-next">${g===1?'ถัดไป: ค่าเวร ›':'เสร็จ ไปลงตารางเวร ›'}</button></div></div>`:'';
+  if(i>=0&&parts[i])return `${g?'':`<div class="setback"><button class="btn sm" data-act="setsec" data-v="">‹ ตั้งค่าทั้งหมด</button></div>`}${gbar}${parts[i]}${g?`<button class="btn primary big" style="width:100%" data-act="guide-next">${g===1?'ถัดไป: ตั้งค่าเวร / OT ›':'เสร็จ ไปลงตารางเวร ›'}</button>`:''}`;
   return `<div class="setlogo"><img src="${LOGO_FULL}" alt="ShiftTax · ตารางเวร รายรับรายจ่าย วางแผนภาษี"></div><p class="slogan"><span class="s1">Your Shifts.</span> <span class="s2">Your Income.</span> <span class="s3">Your Balance.</span></p><h2 class="h-ico" style="margin:4px 2px 0">ตั้งค่า</h2><div class="sumbars">${secs.map(([k,t,d,ic])=>`<button class="sumbar" data-act="setsec" data-v="${k}"><img src="${IMG[ic]||IMG.calendar}" alt=""><span class="grow"><b>${t}</b><small>${esc(d)}</small></span><span class="chev">›</span></button>`).join('')}</div>
     <button class="sumbar donate-bar" data-act="donate-open"><span class="dn-ic">☕</span><span class="grow"><b>สนับสนุนการพัฒนาแอป</b><small>ShiftTax ใช้ฟรี · เลี้ยงกาแฟทีมพัฒนาผ่านพร้อมเพย์</small></span><span class="chev">›</span></button>`}
 function settingsAll(){
@@ -2385,6 +2394,8 @@ document.addEventListener('click',async ev=>{
     case 'slip-tog':{captureSheet();const s=UI.esheet;if(!s.slip)slipPrefill(s);else s.slip.on=!s.slip.on;refreshForm();break}
     case 'slip-edit':captureSheet();UI.esheet.slipEdit=!UI.esheet.slipEdit;refreshForm();break;
     case 'slip-item':{captureSheet();const id=b.dataset.id;let L=slipItems().slice();L=L.includes(id)?L.filter(x=>x!==id):[...L,id];S.slipItems=L;touch('settings');refreshForm();break}
+    case 'guide-next':if(UI.guide===1&&UI.setSec==='pay'){UI.setSec='types';UI.guide=2;render();window.scrollTo(0,0);break}
+    case 'guide-skip':S.guideDone=true;touch('settings');UI.guide=0;UI.setSec=null;UI.tab='roster';render();window.scrollTo(0,0);toast('พร้อมแล้ว! แตะเวรด้านบน แล้วแตะวันที่เพื่อลงเวร');break;
     case 'es-tax':captureSheet();UI.esheet.tax=b.dataset.v;if(b.dataset.v==='none')UI.esheet.wh='';refreshForm();break;
     case 'es-type':captureSheet();UI.esheet.t=b.dataset.v;UI.esheet.cat=null;UI.esheet.pick=false;UI.esheet.adding=null;UI.esheet.q='';UI.esheet.tax=b.dataset.v==='in'?'401':'';refreshForm();break;
     case 'cat-open':captureSheet();UI.esheet.pick=true;UI.esheet.pickT=Date.now();UI.esheet.pi=null;UI.esheet.q='';renderPicker();break;
