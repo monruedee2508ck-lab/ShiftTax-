@@ -738,6 +738,7 @@ html.fitpage #view .cal{grid-template-rows:auto repeat(var(--rows,5),minmax(40px
 .gsteps{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.gsteps span{white-space:nowrap;padding:3px 9px;border-radius:999px;background:#fff;border:1px solid var(--line)}.gsteps span.on{background:var(--primary);border-color:var(--primary);color:var(--primary-ink);font-weight:600}
 .gsteps i{flex:1;height:2px;background:var(--line);border-radius:2px;min-width:8px}.gsteps i.on{background:var(--primary)}
 .guide p{margin:0;font-size:13px}
+.ssobox{display:flex;flex-direction:column;gap:4px;background:var(--field);border:1px solid var(--line);border-radius:14px;padding:10px}.dgh{margin:10px 2px 2px;font-family:var(--f-display);font-size:14px;font-weight:500;color:var(--accent)}
 </style>
 
 <div class="wrap">
@@ -768,9 +769,9 @@ const TH_DL=['อาทิตย์','จันทร์','อังคาร','
 const SSO_CAP_WAGE=17500, SSO_MIN_WAGE=1650, SSO_DED_CAP=10500;
 /* Tax rules by tax year (พ.ศ. = y+543). Years outside the table use the nearest year. */
 const TAX_RULES={
-  2024:{sso:9000,ssoWage:15000,esg:100000,notes:['Easy E-Receipt (ซื้อ 1 ม.ค.–15 ก.พ. 67) ไม่เกิน 50,000','ค่าสร้างบ้านใหม่ 10,000 ต่อทุก 1 ล้านบาท ไม่เกิน 100,000','Thai ESG 30% ของเงินได้ ไม่เกิน 100,000']},
-  2025:{sso:9000,ssoWage:15000,esg:300000,notes:['Easy E-Receipt 2.0 (ซื้อ 16 ม.ค.–28 ก.พ. 68) ไม่เกิน 50,000','เที่ยวดีมีคืน (ต.ค.–ธ.ค. 68) เมืองหลักไม่เกิน 20,000 · เมืองรองไม่เกิน 30,000','ค่าสร้างบ้านใหม่ (สัญญาถึง 31 ธ.ค. 68) ไม่เกิน 100,000','Thai ESG / Thai ESGX 30% ของเงินได้ ไม่เกิน 300,000']},
-  2026:{sso:10500,ssoWage:17500,esg:300000,notes:['ประกันสังคม เพดานค่าจ้างใหม่ 17,500 บาท · ลดหย่อนได้สูงสุด 10,500','Thai ESG / Thai ESGX 30% ของเงินได้ ไม่เกิน 300,000','มาตรการพิเศษที่รัฐประกาศระหว่างปี ใส่เองที่ "ลดหย่อนอื่นๆ"']}};
+  2024:{sso:9000,ssoWage:15000,esg:100000,cap:{easy:50000,home2:100000},notes:['Easy E-Receipt (ซื้อ 1 ม.ค.–15 ก.พ. 67) ไม่เกิน 50,000','ค่าสร้างบ้านใหม่ 10,000 ต่อทุก 1 ล้านบาท ไม่เกิน 100,000','Thai ESG 30% ของเงินได้ ไม่เกิน 100,000']},
+  2025:{sso:9000,ssoWage:15000,esg:300000,cap:{easy:50000,travel:30000,home2:100000,esgxLtf:300000},notes:['Easy E-Receipt 2.0 (ซื้อ 16 ม.ค.–28 ก.พ. 68) ไม่เกิน 50,000','เที่ยวดีมีคืน (ต.ค.–ธ.ค. 68) เมืองหลักไม่เกิน 20,000 · เมืองรองไม่เกิน 30,000','ค่าสร้างบ้านใหม่ (สัญญาถึง 31 ธ.ค. 68) ไม่เกิน 100,000','Thai ESG / Thai ESGX 30% ของเงินได้ ไม่เกิน 300,000']},
+  2026:{sso:10500,ssoSouth:8750,ssoWage:17500,esg:300000,cap:{art:100000,solar:200000,cctv:Infinity,esgxLtf:50000},notes:['ประกันสังคม ม.33 สูงสุด 10,500 · ม.33 (9 จังหวัดภาคใต้) 8,750 · ม.39 5,184 · ม.40 ตามจ่ายจริง','ค่าซื้องานศิลปะ ไม่เกิน 100,000 · ติด Solar Rooftop ไม่เกิน 200,000','ซื้อและติดกล้อง CCTV ตามจ่ายจริง (เฉพาะเขตพิเศษ นราธิวาส ยะลา ปัตตานี และบางอำเภอในสงขลา)','Thai ESG / Thai ESGX 30% ของเงินได้ ไม่เกิน 300,000 · ESGX ส่วนที่สับเปลี่ยนจาก LTF ไม่เกิน 50,000/ปี','ลงทุน Social Enterprise ไม่เกิน 100,000 · บริจาคพรรคการเมือง ไม่เกิน 10,000','ข้อมูลอ้างอิง ณ 22 ต.ค. 2569']}};
 function taxRule(y){const ys=Object.keys(TAX_RULES).map(Number).sort((a,b)=>a-b);const k=Math.min(ys[ys.length-1],Math.max(ys[0],y));return Object.assign({y:k,exact:k===y},TAX_RULES[k])}
 const BRACKETS=[[0,150000,0],[150000,300000,.05],[300000,500000,.10],[500000,750000,.15],[750000,1000000,.20],[1000000,2000000,.25],[2000000,5000000,.30],[5000000,Infinity,.35]];
 const TAXTYPES={'401':'40(1) เงินเดือน/ค่าจ้างจากนายจ้าง','402':'40(2) ค่าจ้างทั่วไป/เวรนอก','none':'ไม่นำมาคิดภาษี'};
@@ -827,17 +828,30 @@ function icoOf(id){const t=typeById(id);const v=t&&t.ico;if(v==='none')return nu
 const shIco=(id,cls,ot)=>{const o=icoOf(id);if(!o)return '';if(o.emo)return `<span class="shi emo ${cls||''}" aria-hidden="true">${o.emo}</span>`;const k=ot&&SHIMG[o.img+'_ot']?o.img+'_ot':o.img;return SHIMG[k]?`<img class="shi ${cls||''}" src="${SHIMG[k]}" alt="">`:''};
 const ICON_CHOICES=['tag','utensils','coffee','bus','car','fuel','house','zap','wifi','smartphone','laptop','shirt','shopping-bag','shopping-cart','gift','heart','stethoscope','pill','baby','users','dog','plane','book','dumbbell','film','music','piggy-bank','coins','briefcase','wallet'];
 const DEDUCT_FIELDS=[
-  {k:'life',label:'เบี้ยประกันชีวิต',cap:'สูงสุด 100,000 (รวมประกันสุขภาพ)'},
-  {k:'health',label:'เบี้ยประกันสุขภาพตัวเอง',cap:'สูงสุด 25,000'},
-  {k:'parentsHealth',label:'เบี้ยประกันสุขภาพพ่อแม่',cap:'สูงสุด 15,000'},
-  {k:'pension',label:'ประกันชีวิตแบบบำนาญ',cap:'15% ของเงินได้ ไม่เกิน 200,000'},
-  {k:'rmf',label:'กองทุน RMF',cap:'30% ของเงินได้ ไม่เกิน 500,000'},
-  {k:'nsf',label:'กอช.',cap:'สูงสุด 30,000'},
-  {k:'thaiesg',label:'กองทุน Thai ESG / ESGX',cap:'30% ของเงินได้ ไม่เกิน 300,000'},
-  {k:'home',label:'ดอกเบี้ยเงินกู้ซื้อบ้าน',cap:'สูงสุด 100,000'},
-  {k:'donate',label:'เงินบริจาคทั่วไป',cap:'ไม่เกิน 10% ของเงินได้หลังหักลดหย่อน'},
-  {k:'donate2',label:'บริจาคการศึกษา / รพ.รัฐ',cap:'นับ 2 เท่า ไม่เกิน 10%'},
-  {k:'other',label:'ลดหย่อนอื่นๆ',cap:'เช่น Solar rooftop หรือมาตรการรัฐอื่น'}];
+  {k:'life',g:'ins',label:'เบี้ยประกันชีวิต / สะสมทรัพย์',cap:'ไม่เกิน 100,000 (รวมประกันสุขภาพ)'},
+  {k:'health',g:'ins',label:'เบี้ยประกันสุขภาพตัวเอง',cap:'ไม่เกิน 25,000'},
+  {k:'parentsHealth',g:'ins',label:'เบี้ยประกันสุขภาพพ่อแม่',cap:'ไม่เกิน 15,000'},
+  {k:'spouseLife',g:'ins',label:'ประกันชีวิตคู่สมรส (ไม่มีรายได้)',cap:'ไม่เกิน 10,000'},
+  {k:'pension',g:'inv',label:'ประกันชีวิตแบบบำนาญ',cap:'15% ของเงินได้ ไม่เกิน 200,000'},
+  {k:'rmf',g:'inv',label:'กองทุน RMF',cap:'30% ของเงินได้ ไม่เกิน 500,000'},
+  {k:'nsf',g:'inv',label:'กอช.',cap:'ไม่เกิน 30,000'},
+  {k:'teacher',g:'inv',label:'กองทุนสงเคราะห์ครูเอกชน',cap:'ไม่เกิน 500,000'},
+  {k:'thaiesg',g:'inv',label:'กองทุน Thai ESG / ESGX',cap:'30% ของเงินได้ ไม่เกิน 300,000'},
+  {k:'esgxLtf',g:'inv',label:'Thai ESGX ส่วนที่สับเปลี่ยนจาก LTF',cap:'',yr:1},
+  {k:'se',g:'inv',label:'ลงทุนวิสาหกิจเพื่อสังคม (SE)',cap:'ไม่เกิน 100,000'},
+  {k:'home',g:'gov',label:'ดอกเบี้ยเงินกู้ที่อยู่อาศัย',cap:'ไม่เกิน 100,000'},
+  {k:'art',g:'gov',label:'ค่าซื้องานศิลปะ',cap:'',yr:1},
+  {k:'solar',g:'gov',label:'ติด Solar Rooftop',cap:'',yr:1},
+  {k:'cctv',g:'gov',label:'ซื้อและติดกล้อง CCTV (เขตพิเศษชายแดนใต้)',cap:'',yr:1},
+  {k:'easy',g:'gov',label:'Easy E-Receipt',cap:'',yr:1},
+  {k:'travel',g:'gov',label:'เที่ยวดีมีคืน',cap:'',yr:1},
+  {k:'home2',g:'gov',label:'ค่าสร้างบ้านใหม่',cap:'',yr:1},
+  {k:'party',g:'don',label:'บริจาคพรรคการเมือง',cap:'ไม่เกิน 10,000'},
+  {k:'donate',g:'don',label:'เงินบริจาคทั่วไป',cap:'ไม่เกิน 10% ของเงินได้หลังหักลดหย่อน'},
+  {k:'donate2',g:'don',label:'การศึกษา กีฬา พัฒนาสังคม รพ.รัฐ',cap:'นับ 2 เท่า ไม่เกิน 10% (ผ่าน e-Donation)'},
+  {k:'other',g:'gov',label:'ลดหย่อนอื่นๆ',cap:'มาตรการรัฐอื่นที่ประกาศเพิ่ม'}];
+const DED_GROUPS=[['ins','ประกัน'],['inv','การลงทุน'],['gov','มาตรการรัฐ'],['don','บริจาค']];
+const SSO_TYPES=[['m33','ม.33 ลูกจ้าง'],['m33s','ม.33 (9 จังหวัดภาคใต้)'],['m39','ม.39'],['m40','ม.40']];
 const DEFAULTS={
   sample:true, salary:25000,
   allowances:[{id:'a1',name:'ค่าตอบแทนวิชาชีพ (พ.ต.ส.)',amount:1500}], deductions:[], whDefault:0,
@@ -857,7 +871,7 @@ const DEFAULTS={
     {id:'TR',code:'อบ',name:'อบรม',start:'',end:'',hours:0,color:3,wd:0,hd:0,tax:'401',work:false}],
   tax:{}
 };
-const TAX_DEFAULT={okInc:false,okDed:false,okWh:false,x401:0,x402:0,x408:0,whx:0,project:true,spouse:false,child1:0,child2:0,parents:0,disabled:0,life:0,health:0,parentsHealth:0,pension:0,rmf:0,nsf:0,thaiesg:0,home:0,donate:0,donate2:0,other:0};
+const TAX_DEFAULT={ssoType:'m33',ssoAmt:0,adopted:0,maternity:0,spouseLife:0,teacher:0,esgxLtf:0,se:0,art:0,solar:0,cctv:0,easy:0,travel:0,home2:0,party:0,okInc:false,okDed:false,okWh:false,x401:0,x402:0,x408:0,whx:0,project:true,spouse:false,child1:0,child2:0,parents:0,disabled:0,life:0,health:0,parentsHealth:0,pension:0,rmf:0,nsf:0,thaiesg:0,home:0,donate:0,donate2:0,other:0};
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -992,21 +1006,24 @@ function taxCalc(y,extra){
   const total=inc401+inc402+inc408;const e12=Math.min((inc401+inc402)*.5,100000);const e8=inc408*.6;const expense=e12+e8;
   const raw=k=>num(T[k])+(auto[k]||0)+num(extra[k]);
   const v={};
-  v.personal=60000;v.spouse=T.spouse?60000:0;v.children=num(T.child1)*30000+num(T.child2)*60000;
+  v.personal=60000;v.spouse=T.spouse?60000:0;v.children=num(T.child1)*30000+num(T.child2)*60000+Math.min(3,num(T.adopted))*30000;v.maternity=Math.min(num(T.maternity),60000);
   v.parents=Math.min(4,num(T.parents))*30000;v.disabled=num(T.disabled)*60000;
-  v.sso=Math.min(sso,R.sso);
+  const st=T.ssoType||'m33';v.sso=st==='m33s'?Math.min(sso,R.ssoSouth||R.sso):st==='m39'?Math.min(num(T.ssoAmt),5184):st==='m40'?num(T.ssoAmt):Math.min(sso,R.sso);
   v.health=Math.min(raw('health'),25000);v.life=Math.min(raw('life'),100000);if(v.life+v.health>100000)v.life=Math.max(0,100000-v.health);
-  v.parentsHealth=Math.min(raw('parentsHealth'),15000);
+  v.parentsHealth=Math.min(raw('parentsHealth'),15000);v.spouseLife=Math.min(raw('spouseLife'),10000);
   v.pvd=Math.min(pvd,.15*salaryAll,500000);
   v.pension=Math.min(raw('pension'),.15*total,200000);
   v.rmf=Math.min(raw('rmf'),.30*total,500000);
-  v.nsf=Math.min(raw('nsf'),30000);
-  let over=v.pvd+v.pension+v.rmf+v.nsf-500000;
-  for(const k of ['rmf','pension','nsf']){if(over<=0)break;const cut=Math.min(v[k],over);v[k]-=cut;over-=cut}
+  v.nsf=Math.min(raw('nsf'),30000);v.teacher=Math.min(raw('teacher'),500000);
+  let over=v.pvd+v.pension+v.rmf+v.nsf+v.teacher-500000;
+  for(const k of ['rmf','pension','teacher','nsf']){if(over<=0)break;const cut=Math.min(v[k],over);v[k]-=cut;over-=cut}
   v.thaiesg=Math.min(raw('thaiesg'),.30*total,R.esg);
+  const cp=R.cap||{};const yc=(k)=>cp[k]!=null?Math.min(raw(k),cp[k]):0;
+  v.esgxLtf=yc('esgxLtf');v.art=yc('art');v.solar=yc('solar');v.cctv=yc('cctv');v.easy=yc('easy');v.travel=yc('travel');v.home2=yc('home2');
+  v.se=Math.min(raw('se'),100000);v.party=Math.min(raw('party'),10000);
   v.home=Math.min(raw('home'),100000);
   v.other=raw('other');
-  const dedKeys=['personal','spouse','children','parents','disabled','sso','pvd','life','health','parentsHealth','pension','rmf','nsf','thaiesg','home','other'];
+  const dedKeys=['personal','spouse','children','maternity','parents','disabled','sso','pvd','life','health','parentsHealth','spouseLife','pension','rmf','nsf','teacher','thaiesg','esgxLtf','se','home','art','solar','cctv','easy','travel','home2','party','other'];
   const dedSum=sum(dedKeys.map(k=>v[k]));
   const before=Math.max(0,total-expense-dedSum);
   v.donate=Math.min(raw('donate')+2*raw('donate2'),.10*before);
@@ -2019,7 +2036,7 @@ function taxRow(k,i,title,desc){return `<button class="trow" data-act="taxsec" d
 const TAX_STEPS=[['inc','ประมาณการรายได้ทั้งปี','income'],['type','แยกประเภทเงินได้','summary'],['wh','ภาษีหัก ณ ที่จ่าย','slip'],['ded','ค่าลดหย่อนภาษี','tax'],['due','ชำระเพิ่ม / ขอคืนภาษี','money'],['calc','วิธีคำนวณ','stats']];
 function okBtn(k,l){const on=!!taxP(UI.ty)[k];return `<button class="okbtn ${on?'on':''}" data-act="tax-ok" data-k="${k}" aria-pressed="${on}">${on?'✓ '+l:'○ แตะเมื่อ'+l.replace('แล้ว','').replace('ครบ','ครบ')}</button>`}
 function taxRuleBox(y){const R=taxRule(y);return `<details class="taxnote"><summary><img class="tn-ic" src="${IMG.help}" alt=""><span class="grow tn-t">เป็นการประมาณการ · เกณฑ์ปี ${R.y+543}${R.exact?'':'*'}</span><span class="small">ดูเกณฑ์ ▾</span></summary>
-  ${R.exact?'':`<p class="small" style="margin:6px 0 0">* ยังไม่มีเกณฑ์ปี ${y+543} จึงใช้เกณฑ์ปี ${R.y+543}</p>`}<ul>${['ส่วนตัว 60,000 · คู่สมรสไม่มีเงินได้ 60,000 · บุตร 30,000 (คนที่ 2 เกิดปี 2561 ขึ้นไป 60,000)','หักค่าใช้จ่าย 40(1)+40(2) 50% ไม่เกิน 100,000 · 40(8) เหมา 60%',`ประกันสังคมลดหย่อนได้ไม่เกิน ${fmt(R.sso)} (เพดานค่าจ้าง ${fmt(R.ssoWage)})`,'ประกันชีวิต+สุขภาพ ไม่เกิน 100,000 · RMF/บำนาญ/กองทุนสำรองฯ/กอช. รวมไม่เกิน 500,000',...R.notes].map(x=>`<li>${x}</li>`).join('')}</ul>
+  ${R.exact?'':`<p class="small" style="margin:6px 0 0">* ยังไม่มีเกณฑ์ปี ${y+543} จึงใช้เกณฑ์ปี ${R.y+543}</p>`}<ul>${['ส่วนตัว 60,000 · คู่สมรสไม่มีเงินได้ 60,000 · บุตร 30,000 (คนที่ 2 เกิดปี 2561 ขึ้นไป 60,000)','หักค่าใช้จ่าย 40(1)+40(2) 50% ไม่เกิน 100,000 · 40(8) เหมา 60%',`ประกันสังคมลดหย่อนได้ไม่เกิน ${fmt(R.sso)} (เพดานค่าจ้าง ${fmt(R.ssoWage)})`,'ประกันชีวิต+สุขภาพ ไม่เกิน 100,000 · RMF/บำนาญ/PVD/กบข./กองทุนครูเอกชน/กอช. รวมไม่เกิน 500,000','ฝากครรภ์และคลอดบุตร 60,000/ครรภ์ · บุตรบุญธรรม 30,000 (สูงสุด 3 คน) · ประกันชีวิตคู่สมรส 10,000',...R.notes].map(x=>`<li>${x}</li>`).join('')}</ul>
   <p class="small muted" style="margin:0">ก่อนยื่นจริง ตรวจสอบกับกรมสรรพากร (rd.go.th) อีกครั้ง หลักเกณฑ์อาจเปลี่ยนตามประกาศของปีนั้น</p></details>`}
 function vTax(){
   const y=UI.ty;const T=taxP(y);const sec=UI.taxSec;
@@ -2028,9 +2045,16 @@ function vTax(){
     <label>บุตร (คนละ 30,000)<input class="num" data-tax="child1" inputmode="numeric" value="${T.child1||''}" placeholder="0"></label>
     <label>บุตรคนที่ 2 ขึ้นไป เกิดตั้งแต่ปี 2561 (คนละ 60,000)<input class="num" data-tax="child2" inputmode="numeric" value="${T.child2||''}" placeholder="0"></label>
     <label>พ่อแม่อายุ 60+ (คนละ 30,000 สูงสุด 4)<input class="num" data-tax="parents" inputmode="numeric" value="${T.parents||''}" placeholder="0"></label>
-    <label>อุปการะคนพิการ (คนละ 60,000)<input class="num" data-tax="disabled" inputmode="numeric" value="${T.disabled||''}" placeholder="0"></label></div>`;
+    <label>อุปการะคนพิการ (คนละ 60,000)<input class="num" data-tax="disabled" inputmode="numeric" value="${T.disabled||''}" placeholder="0"></label>
+    <label>บุตรบุญธรรม (คนละ 30,000 สูงสุด 3)<input class="num" data-tax="adopted" inputmode="numeric" value="${T.adopted||''}" placeholder="0"></label>
+    <label>ค่าฝากครรภ์และคลอดบุตร (ไม่เกิน 60,000/ครรภ์)<input class="num" data-tax="maternity" inputmode="decimal" value="${T.maternity||''}" placeholder="0"></label></div>`;
   const R=taxRule(y);
-  const inv=`<div class="grid2">${DEDUCT_FIELDS.map(f=>`<label>${f.label}<input class="num" data-tax="${f.k}" inputmode="decimal" value="${T[f.k]||''}" placeholder="0"><span class="small muted">${f.k==='thaiesg'?`30% ของเงินได้ ไม่เกิน ${fmt(R.esg)}`:f.cap}</span><span class="auto" id="auto-${f.k}"></span></label>`).join('')}</div>`;
+  const capOf=f=>f.k==='thaiesg'?`30% ของเงินได้ ไม่เกิน ${fmt(R.esg)}`:f.yr?((R.cap||{})[f.k]===Infinity?'ตามที่จ่ายจริง':`ไม่เกิน ${fmt((R.cap||{})[f.k])}`):f.cap;
+  const showF=f=>!f.yr||(R.cap||{})[f.k]!=null;
+  const ssoBox=`<div class="ssobox"><label>ประกันสังคม<select data-taxs="ssoType">${SSO_TYPES.map(([k,l])=>`<option value="${k}" ${(T.ssoType||'m33')===k?'selected':''}>${l}</option>`).join('')}</select></label>
+    ${(T.ssoType==='m39'||T.ssoType==='m40')?`<label>จ่ายทั้งปี (บาท)<input class="num" data-tax="ssoAmt" inputmode="decimal" value="${T.ssoAmt||''}" placeholder="0"><span class="small muted">${T.ssoType==='m39'?'ไม่เกิน 5,184':'ตามที่จ่ายจริง'}</span></label>`:`<span class="small muted">คิดจากเงินเดือนให้อัตโนมัติ · ไม่เกิน ${fmt(T.ssoType==='m33s'?(R.ssoSouth||R.sso):R.sso)}</span>`}</div>`;
+  const inv=`${ssoBox}${DED_GROUPS.map(([g,gl])=>{const F=DEDUCT_FIELDS.filter(f=>f.g===g&&showF(f));return F.length?`<h4 class="dgh">${gl}</h4><div class="grid2">${F.map(f=>`<label>${f.label}<input class="num" data-tax="${f.k}" inputmode="decimal" value="${T[f.k]||''}" placeholder="0"><span class="small muted">${capOf(f)}</span><span class="auto" id="auto-${f.k}"></span></label>`).join('')}</div>`:''}).join('')}
+    <p class="small muted" style="margin:0">RMF + PVD/กบข. + ประกันบำนาญ + กองทุนครูเอกชน + กอช. รวมไม่เกิน 500,000</p>`;
   const back='<div class="setback"><button class="btn sm" data-act="taxsec" data-v="">‹ ภาษีทั้งหมด</button></div>';
   const no=k=>TAX_STEPS.findIndex(x=>x[0]===k)+1;
   const head=(k,t)=>`<h2 class="h-ico thead"><span class="tic"><img src="${IMG[TAX_ICO[k]]}" alt=""></span>${t}</h2>`;
@@ -2083,10 +2107,11 @@ function renderTaxResults(){
     ['หักค่าใช้จ่าย 50% (ไม่เกิน 100,000)',-r.expense],['ค่าลดหย่อนรวม',-r.dedSum]];
   const dedRows=[['ส่วนตัว',r.v.personal],['คู่สมรส',r.v.spouse],['บุตร',r.v.children],['บิดามารดา',r.v.parents],['คนพิการ',r.v.disabled],
     ['ประกันสังคม',r.v.sso],['กบข. / กองทุนสำรองเลี้ยงชีพ',r.v.pvd],['ประกันชีวิต',r.v.life],['ประกันสุขภาพ',r.v.health],['ประกันสุขภาพพ่อแม่',r.v.parentsHealth],
-    ['ประกันบำนาญ',r.v.pension],['RMF',r.v.rmf],['กอช.',r.v.nsf],['Thai ESG',r.v.thaiesg],['ดอกเบี้ยบ้าน',r.v.home],['ลดหย่อนอื่นๆ',r.v.other],['เงินบริจาค',r.v.donate]].filter(x=>x[1]>0);
+    ['ประกันบำนาญ',r.v.pension],['RMF',r.v.rmf],['กอช.',r.v.nsf],['กองทุนสงเคราะห์ครูเอกชน',r.v.teacher],['Thai ESG / ESGX',r.v.thaiesg],['ESGX (สับเปลี่ยนจาก LTF)',r.v.esgxLtf],['Social Enterprise',r.v.se],['ดอกเบี้ยที่อยู่อาศัย',r.v.home],
+    ['ฝากครรภ์และคลอดบุตร',r.v.maternity],['ประกันชีวิตคู่สมรส',r.v.spouseLife],['งานศิลปะ',r.v.art],['Solar Rooftop',r.v.solar],['กล้อง CCTV',r.v.cctv],['Easy E-Receipt',r.v.easy],['เที่ยวดีมีคืน',r.v.travel],['สร้างบ้านใหม่',r.v.home2],['บริจาคพรรคการเมือง',r.v.party],['ลดหย่อนอื่นๆ',r.v.other],['เงินบริจาค',r.v.donate]].filter(x=>x[1]>0);
   const W=Math.max(0,num(box.dataset.what||0));
   const wt=W?taxCalc(y,{other:W}):null;
-  const T0=taxP(y);const famD=r.v.spouse+r.v.children+r.v.parents+r.v.disabled;const invD=['life','health','parentsHealth','pension','rmf','nsf','thaiesg','home','other','donate','donate2'].reduce((a,k)=>a+(num(r.v[k])||0),0);
+  const T0=taxP(y);const famD=r.v.spouse+r.v.children+r.v.parents+r.v.disabled+r.v.maternity;const invD=['life','health','parentsHealth','spouseLife','pension','rmf','nsf','teacher','thaiesg','esgxLtf','se','home','art','solar','cctv','easy','travel','home2','party','other','donate'].reduce((a,k)=>a+(num(r.v[k])||0),0);
   const fill=(id,v)=>{const e=$('#'+id);if(e)e.textContent=v};
   fill('ty-401','฿'+fmt(r.inc401));fill('ty-402','฿'+fmt(r.inc402));fill('ty-408','฿'+fmt(r.inc408));fill('ty-ex','฿'+fmt(r.exempt));fill('wh-tot','฿'+fmt(r.wh));fill('ded-tot','฿'+fmt(r.dedSum));
   for(const mr of r.mrows){const e=$('#whe-'+mr.key);if(e)e.textContent=mr.whE?`+ จากรายรับ ฿${fmt(mr.whE)}`:''}
@@ -2520,6 +2545,7 @@ document.addEventListener('input',ev=>{
   if(t.dataset&&(t.dataset.set==='pvdPct'||t.dataset.set==='salary')){const R=t.closest('.onb-card,.card,section')||document;const pi=R.querySelector('[data-set=pvdPct]')||document.querySelector('[data-set=pvdPct]'),si=R.querySelector('[data-set=salary]')||document.querySelector('[data-set=salary]');pvdRefresh(pi?pi.value:null,si?si.value:null)}
   if(t.id==='debt-extra'){S.nw.extra=num(t.value);touch('settings');const el=$('#debt-sim');if(el)el.innerHTML=debtSimHtml();return}
   if(t.dataset.nw==='amt'){const x=(S.nw[t.dataset.k]||[]).find(x=>x.id===t.dataset.id);if(x){x.amt=num(t.value);S.nw.upd=Date.now();touch('settings');nwRefresh(x.id)}return}
+  if(t.dataset.taxs){setTax(UI.ty,t.dataset.taxs,t.value);render();return}
   if(t.dataset.tax){setTax(UI.ty,t.dataset.tax,num(t.value));renderTaxResults();return}
   if(t.dataset.whm){const mw=getM(t.dataset.whm,true);mw.withheld=num(t.value);mw.whSet=t.value.trim()!=='';touch(t.dataset.whm);renderTaxResults();return}
   if(t.dataset.otf&&UI.sheet){const key=mkey(UI.y,UI.m);const mo=getM(key,true);const d=UI.sheet;const x=otList(mo,d).find(o=>o.id===t.dataset.id);if(!x)return;
